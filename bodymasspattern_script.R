@@ -28,15 +28,12 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
     Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"weaning_weight_g"]
   }
   else if(Amniote_Database_Aug_2015$class[i]=='Reptilia') {
-    Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"egg_mass_g"]
+    Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"birth_or_hatching_weight_g"]
   }
   else if(Amniote_Database_Aug_2015$class[i]=='Aves') {
     Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"fledging_mass_g"]
   }
 }
-
-#C=reproductive effort
-#C
 
 #How many non-NA values for R?
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R)])
@@ -47,6 +44,61 @@ length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote
 #How many reptiles?
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Reptilia"])
 
+
+#C=reproductive effort
+#C=R/m
+
+Amniote_Database_Aug_2015$C<-Amniote_Database_Aug_2015$R/Amniote_Database_Aug_2015$adult_body_mass_g
+
+#How many non-NA values for C?
+length(Amniote_Database_Aug_2015$C[!is.na(Amniote_Database_Aug_2015$C)])
+
+
+#Calculate C*E
+
+Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$longevity_y
+
+#How many non-NA values for C?
+length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)])
+
+
+
+#Calculate E/alpha
+
+Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$longevity_y/Amniote_Database_Aug_2015$female_maturity_d
+
+
+#Calculate I/m
+
+#I=size of offspring at independence
+#For mammals:
+##I=weaning_weight_g
+#For birds:
+##I=fledging_mass_g
+#For reptiles:
+##I=birth_or_hatching_weight_g
+
+for (i in 1:nrow(Amniote_Database_Aug_2015)) {
+  print(i)
+  if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
+    Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"weaning_weight_g"]
+  }
+  else if(Amniote_Database_Aug_2015$class[i]=='Reptilia') {
+    Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"birth_or_hatching_weight_g"]
+  }
+  else if(Amniote_Database_Aug_2015$class[i]=='Aves') {
+    Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"fledging_mass_g"]
+  }
+}
+
+#How many non-NA values for I?
+length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I)])
+#How many birds?
+length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Aves"])
+#How many mammals?
+length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Mammalia"])
+#How many reptiles?
+length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Reptilia"])
 
 
 #Determine how many non-NA values there are for each trait:
