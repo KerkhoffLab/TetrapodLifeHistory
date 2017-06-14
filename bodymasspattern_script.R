@@ -1,4 +1,14 @@
 library(readr)
+library(lattice)
+library(RColorBrewer)
+
+myColours <- brewer.pal(6,"Set2")
+
+my.settings <- list(
+  superpose.polygon=list(col=myColours[1:4], border="transparent"),
+  strip.background=list(col=myColours[6]),
+  strip.border=list(col="black")
+)
 
 
 #Import amniote database
@@ -58,7 +68,7 @@ length(Amniote_Database_Aug_2015$C[!is.na(Amniote_Database_Aug_2015$C)])
 
 Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$longevity_y
 
-#How many non-NA values for C?
+#How many non-NA values for C*E?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)])
 #How many birds?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Aves"])
@@ -71,7 +81,7 @@ length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amn
 
 #Calculate E/alpha
 
-Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$longevity_y/Amniote_Database_Aug_2015$female_maturity_d
+Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$longevity_y*365/Amniote_Database_Aug_2015$female_maturity_d
 
 #How many non-NA values for E/alpha?
 length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)])
@@ -118,7 +128,7 @@ length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote
 
 Amniote_Database_Aug_2015$I_m<-Amniote_Database_Aug_2015$I/Amniote_Database_Aug_2015$adult_body_mass_g
 
-#How many non-NA values for R?
+#How many non-NA values for I/m?
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)])
 #How many birds?
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Aves"])
@@ -126,6 +136,47 @@ length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amn
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Mammalia"])
 #How many reptiles?
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Reptilia"])
+
+
+#How many species have values for E/alpha, C*E, and I/m?
+sum(complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]))
+#How many birds?
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Aves"])
+#How many mammals?
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Mammalia"])
+#How many reptiles?
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Reptilia"])
+
+#Create bargraph with the number of species with values for each of the traits
+traitcoverage<-data.frame(Class=c("Aves","Mammalia","Reptilia"),C_E=numeric(3),E_alpha=numeric(3),I_m=numeric(3),All=numeric(3))
+for(i in 1:3){
+  traitcoverage$C_E[i]<-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
+}
+for(i in 1:3){
+  traitcoverage$E_alpha[i]<-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
+}
+for(i in 1:3){
+  traitcoverage$I_m[i]<-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
+}
+for(i in 1:3){
+  traitcoverage$All[i]<-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
+}
+
+traitcoverage$C_E<-as.numeric(traitcoverage$C_E)
+traitcoverage$E_alpha<-as.numeric(traitcoverage$E_alpha)
+traitcoverage$I_m<-as.numeric(traitcoverage$I_m)
+traitcoverage$All<-as.numeric(traitcoverage$All)
+
+traitcoverage$Class<-as.character(traitcoverage$Class)
+#Add a row of totals
+traitcoverage<-rbind(traitcoverage,c("Total",colSums(traitcoverage[,2:5])))
+traitcoverage[4,1]<-"Total"
+
+speciesperinvariant<-gather(traitcoverage,key = Class)
+colnames(speciesperinvariant)<-c("Class","Trait","Count")
+
+#Grouped bargraph of the number of species with values for each invariant
+barchart(Count~Class,data=speciesperinvariant,groups=Trait,ylab="Number of Species",auto.key=list(space="top",columns=4),par.settings=my.settings)
 
 
 #Determine how many non-NA values there are for each trait:
