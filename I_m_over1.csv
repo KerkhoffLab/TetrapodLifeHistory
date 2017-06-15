@@ -1,0 +1,66 @@
+"","class","genus","species","common_name","adult_body_mass_g","female_body_mass_g","male_body_mass_g","no_sex_body_mass_g","I","I_m"
+"464","Aves","Aeronautes","saxatalis","White-throated Swift",31.95,31.2,31.2,32.05,38.65,1.20970266040689
+"589","Aves","Archilochus","colubris","Ruby-throated Hummingbird",3.1425,3.345,3.05,3.03925,4.85,1.54335719968178
+"1042","Aves","Aethia","cristatella","Crested Auklet",264,251.4,268,272,269,1.01893939393939
+"1247","Aves","Onychoprion","fuscatus","Sooty Tern",183,249,239,183.5,188.3,1.02896174863388
+"2847","Aves","Bombycilla","cedrorum","Cedar Waxwing",32.04816667,33,30.7,31.7945,33.2,1.03594069332765
+"3832","Aves","Acanthis","hornemanni","Arctic Redpoll",14.3,12.7,13.6,15.45,475,33.2167832167832
+"3957","Aves","Leucosticte","tephrocotis","Grey-crowned Rosy Finch",32.6,28.9,35.15,25.8,40.5,1.24233128834356
+"4016","Aves","Spinus","pinus","Pine Siskin",13.05,NA,NA,13.6,18.6,1.42528735632184
+"4427","Aves","Progne","subis","Purple Martin",51.45,50.55,51.75,50.5,52,1.01068999028183
+"4442","Aves","Riparia","diluta","Pale Martin",13.4,14.35,13.325,13.1,14.5,1.08208955223881
+"4444","Aves","Riparia","riparia","Sand Martin",13.4,14.35,13.325,13.1,14.5,1.08208955223881
+"4455","Aves","Tachycineta","thalassina","Violet-green Swallow",14.15,13.9,14.4,14,16.5,1.1660777385159
+"5315","Aves","Ficedula","albicollis","Collared Flycatcher",12.55,12.5,12.9,11.9,14.71,1.17211155378486
+"5326","Aves","Ficedula","hypoleuca","European Pied Flycatcher",12.775,13,12.1,12.25,13.6,1.06457925636008
+"5335","Aves","Ficedula","semitorquata","Semicollared Flycatcher",12.7,12.5,12.9,13.95,14.71,1.15826771653543
+"5336","Aves","Ficedula","speculigera","Atlas Pied Flycatcher",12.775,13,12.1,12.25,13.6,1.06457925636008
+"5816","Aves","Periparus","ater","Coal Tit",9.275,8.85,8.9,9.225,10.445,1.12614555256065
+"5819","Aves","Poecile","atricapillus","Black-capped Chickadee",10.8,12.4,11.65,10.8,11.3,1.0462962962963
+"5866","Aves","Geothlypis","trichas","Common Yellowthroat",9.666666667,9.775,10.04166667,10.49,10.3,1.06551724134257
+"7573","Aves","Cistothorus","palustris","Marsh Wren",11.25,10.3,11.65,11.9,11.5,1.02222222222222
+"7856","Aves","Empidonax","minimus","Least Flycatcher",10.275,10.1,11.05,10.3,10.8,1.05109489051095
+"8105","Aves","Sayornis","nigricans","Black Phoebe",18.25,17.75,19.475,18,18.7,1.02465753424658
+"8933","Aves","Diomedea","amsterdamensis","Amsterdam Albatross",7046.7,6719,8559,7618.5,9992,1.41796869456625
+"8934","Aves","Diomedea","antipodensis","Antipodean Albatross",7790,6950,8600,8727,9992,1.28267008985879
+"8935","Aves","Diomedea","dabbenena","Tristan Albatross",7704.25,6950,8600,8727,9992,1.29694649057338
+"8937","Aves","Diomedea","exulans","Wandering Albatross",7990,6950,8600,8727,9992,1.25056320400501
+"8949","Aves","Thalassarche","chrysostoma","Grey-headed Albatross",3700,3870,3900,3700,3770,1.01891891891892
+"8951","Aves","Thalassarche","impavida","Campbell Albatross",3440,3170,3710,3595,3760,1.09302325581395
+"8952","Aves","Thalassarche","melanophris","Black-browed Albatross",3440,3170,3710,3595,3760,1.09302325581395
+"8962","Aves","Oceanodroma","furcata","Fork-tailed Storm Petrel",57.1,60,60,59.45,79.45,1.39141856392294
+"8981","Aves","Calonectris","borealis","Cory's Shearwater",775.225,832.15,955.6,775.225,956,1.23319036408785
+"8982","Aves","Calonectris","diomedea","Scopoli's Shearwater",775.225,832.15,955.6,775.225,956,1.23319036408785
+"8983","Aves","Calonectris","edwardsii","Cape Verde Shearwater",775.225,832.15,955.6,775.225,956,1.23319036408785
+"9034","Aves","Pterodroma","nigripennis","Black-winged Petrel",170.875,165.9,169.6,174,175.5,1.02706656912948
+"9444","Aves","Megadyptes","antipodes","Yellow-eyed Penguin",5365,5130,5615,5200,5650,1.05312208760485
+"9452","Aves","Aegolius","acadicus","Northern Saw-whet Owl",95.625,131,77.4,105.5,96,1.00392156862745
+"9453","Aves","Aegolius","funereus","Boreal Owl",131.5,167,107,131.5,156,1.18631178707224
+"10218","Mammalia","Enhydra","lutris","Sea Otter",943.25,21500,32800,13886.65,12540.745,13.2952504638219
+"11092","Mammalia","Rhinolophus","pusillus","Least Horseshoe Bat",5,NA,NA,NA,6.41,1.282
+"11103","Mammalia","Rhinolophus","sinicus","Chinese Rufous Horseshoe Bat",10.255,9.9,8.5,NA,11,1.07264748902974
+"11251","Mammalia","Miniopterus","fuscus","Southeast Asian Long-fingered Bat",10.905,NA,NA,10.9,12.5,1.14626318202659
+"11256","Mammalia","Miniopterus","majori","Major's Long-fingered Bat",11.46,NA,NA,10.9,12.5,1.09075043630017
+"11258","Mammalia","Miniopterus","medius","Intermediate Long-fingered Bat",10.91,NA,NA,10.9,12.5,1.14573785517874
+"11259","Mammalia","Miniopterus","natalensis","Natal Long-fingered Bat",11.185,NA,NA,10.9,12.5,1.11756817165847
+"11263","Mammalia","Miniopterus","schreibersii","Schreibers's Long-fingered Bat",11.185,NA,NA,10.9,12.5,1.11756817165847
+"11317","Mammalia","Myotis","fortidens","Cinnamon Myotis",6.5,NA,NA,5.8,6.79,1.04461538461538
+"11394","Mammalia","Nyctalus","furvus","Japanese Noctule",19.375,NA,NA,NA,20.21,1.04309677419355
+"11398","Mammalia","Nyctalus","noctula","Noctule",19.375,NA,NA,NA,20.21,1.04309677419355
+"11399","Mammalia","Nyctalus","plancyi","Chinese Noctule",19.375,NA,NA,NA,20.21,1.04309677419355
+"11615","Mammalia","Marmosa","mexicana","Mexican Mouse Opossum",60,46,58.25,1045.5,118,1.96666666666667
+"12916","Mammalia","Phodopus","roborovskii","Roborovski's Desert Hamster",12.02,26,NA,NA,18.1,1.50582362728785
+"14622","Mammalia","Sorex","antinorii","Valais Shrew",8.195,NA,NA,8.4,8.5,1.03721781574131
+"14623","Mammalia","Sorex","araneus","Common Shrew",8.195,NA,NA,8.4,8.5,1.03721781574131
+"14634","Mammalia","Sorex","coronatus","Millet's Shrew",8.4,NA,NA,8.4,8.5,1.01190476190476
+"14639","Mammalia","Sorex","excelsus","Chinese Highland Shrew",8.2,NA,NA,8.4,8.5,1.03658536585366
+"14642","Mammalia","Sorex","gracillimus","Slender Shrew",4.26,NA,NA,NA,4.73,1.11032863849765
+"14657","Mammalia","Sorex","minutus","Eurasian Pygmy Shrew",4.2,NA,NA,NA,4.73,1.12619047619048
+"14667","Mammalia","Sorex","planiceps","Kashmir Pygmy Shrew",4.2,NA,NA,NA,4.73,1.12619047619048
+"14671","Mammalia","Sorex","roboratus","Flat-skulled Shrew",8.2,NA,NA,8.4,8.5,1.03658536585366
+"14672","Mammalia","Sorex","samniticus","Apennine Shrew",8.2,NA,NA,8.4,8.5,1.03658536585366
+"14673","Mammalia","Sorex","satunini","Caucasian Shrew",8.195,NA,NA,8.4,8.5,1.03721781574131
+"14677","Mammalia","Sorex","sinalis","Chinese Shrew",8.2,NA,NA,8.4,8.5,1.03658536585366
+"14681","Mammalia","Sorex","thibetanus","Tibetan Shrew",4.2,NA,NA,NA,4.73,1.12619047619048
+"14690","Mammalia","Sorex","volnuchini","Caucasian Pygmy Shrew",4.2,NA,NA,NA,4.73,1.12619047619048
+"21253","Reptilia","Podocnemis","sextuberculata","Six-tubercled Amazon River Turtle, Amazon River Turtle",14.3,25800,NA,25800,27.9,1.95104895104895
