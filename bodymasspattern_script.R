@@ -198,22 +198,73 @@ View(availabletraits)
 hist(log(Amniote_Database_Aug_2015$adult_body_mass_g[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g)]),xlab="Log(Body Mass)",main="")
 hist(log(Amniote_Database_Aug_2015$adult_body_mass_g[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g)]),breaks=200,xlab="Log(Body Mass)",main="",col = myColours[6])
 
+
+ggplot(data=Amniote_Database_Aug_2015,aes(x=log(adult_body_mass_g)))+
+  geom_histogram(binwidth = 0.1)
+#Stacked histogram by class
+ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g),],aes(x=log(adult_body_mass_g),colour=class))+
+  geom_freqpoly(binwidth = 0.1)
+
 #Histogram of C*E
 hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),xlab="Log(C*E)",main="")
 hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),breaks=200,xlab="Log(C*E)",main="",col = myColours[2])
+
+ggplot(data=Amniote_Database_Aug_2015,aes(x=log(C_E)))+
+  geom_histogram(binwidth = 0.1)
+#Stacked histogram by class
+ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$C_E),],aes(x=log(C_E),colour=class))+
+  geom_freqpoly(binwidth = 0.1)
+
 
 #Histogram of E/alpha
 hist(log(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)]),xlab="Log(E/alpha)",main="")
 hist(log(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)]),breaks=200,xlab="Log(E/alpha)",main="",col = myColours[3])
 
+ggplot(data=Amniote_Database_Aug_2015,aes(x=log(E_alpha)))+
+  geom_histogram(binwidth = 0.1)
+#Stacked histogram by class
+ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$E_alpha),],aes(x=log(E_alpha),colour=class))+
+  geom_freqpoly(binwidth = 0.1)
+
 #Histogram of I/m
 hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),xlab="Log(I/m)",main="")
 hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),breaks=200,xlab="Log(I/m)",main="",col = myColours[4])
+
+ggplot(data=Amniote_Database_Aug_2015,aes(x=log(I_m)))+
+  geom_histogram(binwidth = 0.1)
+#Stacked histogram by class
+ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],aes(x=log(I_m),colour=class))+
+  geom_freqpoly(binwidth = 0.1)
 
 
 #Subset of database including only species for all of the invariants
 desiredcolumns<-c(1:7,11,39,41,42)
 completecase_species<-Amniote_Database_Aug_2015[,desiredcolumns]
+
+
+#Some species have values of I/m greater than 1 (juvenile larger than adult)
+which(log(Amniote_Database_Aug_2015$I_m)>0)
+
+I_m_over1<-Amniote_Database_Aug_2015[which(log(Amniote_Database_Aug_2015$I_m)>0),c(1,4,5,7,11,23:25,40,41)]
+View(I_m_over1)
+write.csv(I_m_over1,"I_m_over1.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ##The following code is from hypervolume_code.R
