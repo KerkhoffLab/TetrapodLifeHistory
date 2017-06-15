@@ -1,6 +1,8 @@
 library(readr)
 library(lattice)
 library(RColorBrewer)
+library(ggplot2)
+library(hypervolume)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -212,8 +214,11 @@ hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),b
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(C_E)))+
   geom_histogram(binwidth = 0.1)
 #Stacked histogram by class
+#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$C_E),],aes(x=log(C_E),colour=class))+
-  geom_freqpoly(binwidth = 0.1)
+  geom_freqpoly(binwidth = 0.1)+
+  geom_vline(aes(xintercept=log(5)),lty=2)+
+  geom_vline(aes(xintercept= log(1.7)),lty=2)
 
 
 #Histogram of E/alpha
@@ -223,8 +228,11 @@ hist(log(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_al
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(E_alpha)))+
   geom_histogram(binwidth = 0.1)
 #Stacked histogram by class
+#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$E_alpha),],aes(x=log(E_alpha),colour=class))+
-  geom_freqpoly(binwidth = 0.1)
+  geom_freqpoly(binwidth = 0.1)+
+  geom_vline(aes(xintercept=log(3)),lty=2)+
+  geom_vline(aes(xintercept= log(1.35)),lty=2)
 
 #Histogram of I/m
 hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),xlab="Log(I/m)",main="")
@@ -233,13 +241,11 @@ hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),b
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(I_m)))+
   geom_histogram(binwidth = 0.1)
 #Stacked histogram by class
+#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],aes(x=log(I_m),colour=class))+
-  geom_freqpoly(binwidth = 0.1)
-
-
-#Subset of database including only species for all of the invariants
-desiredcolumns<-c(1:7,11,39,41,42)
-completecase_species<-Amniote_Database_Aug_2015[,desiredcolumns]
+  geom_freqpoly(binwidth = 0.1)+
+  geom_vline(aes(xintercept=log(1)),lty=2)+
+  geom_vline(aes(xintercept= log(0.3)),lty=2)
 
 
 #Some species have values of I/m greater than 1 (juvenile larger than adult)
@@ -251,15 +257,102 @@ write.csv(I_m_over1,"I_m_over1.csv")
 
 
 
+#Subset of database including only species for all of the invariants
+desiredcolumns<-c(1:7,11,39,41,42)
+completecase_species<-Amniote_Database_Aug_2015[complete.cases(Amniote_Database_Aug_2015$adult_body_mass_g,Amniote_Database_Aug_2015$C_E,Amniote_Database_Aug_2015$I_m,Amniote_Database_Aug_2015$E_alpha),desiredcolumns]
+#Log transform
+completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
+completecase_species$log_C_E<-log(completecase_species$C_E)
+completecase_species$log_I_m<-log(completecase_species$I_m)
+completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
+#Scale the log transformed traits
+completecase_species$scale_log_bodymass<-scale(completecase_species$log_bodymass)
+completecase_species$scale_log_C_E<-scale(completecase_species$log_C_E)
+completecase_species$scale_log_I_m<-scale(completecase_species$log_I_m)
+completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
+
+#Create hypervolumes for each class of amniotes
 
 
+#Bird Gaussian hypervolume
+
+#Log transform bird hypervolume
+completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",12:15],
+                                             name = "completebirds_gaussian")
+completebirds_gaussian@Volume
+
+#Scale log transform bird hypervolume
+completebirds_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",16:19],
+                                             name = "completebirds_scale_gaussian")
+completebirds_scale_gaussian@Volume
+
+#Plot bird hypervolume
+#Log transform bird hypervolume
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
+plot(completebirds_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+#Scale log transform bird hypervolume
+plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
+plot(completebirds_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+
+#Mammal Gaussian hypervolume
+
+#Log transform mammal hypervolume
+completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",12:15],
+                                             name = "completemammals_gaussian")
+completemammals_gaussian@Volume
+#Scaled log transform mammal hypervolume
+completemammals_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",16:19],
+                                               name = "completemammals_scale_gaussian")
+completemammals_scale_gaussian@Volume
+
+#Plot mammal hypervolume
+#Log transform mammal hypervolume
+plot(completemammals_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
+plot(completemammals_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+#Scaled log transform mammal hypervolume
+plot(completemammals_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
+plot(completemammals_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
 
 
+#Reptile Gaussian hypervolume
+
+#Log transform reptile hypervolume
+completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],
+                                               name = "completereptiles_gaussian")
+completereptiles_gaussian@Volume
+#Scaled log transform reptile hypervolume
+completereptiles_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],
+                                                name = "completereptiles_scale_gaussian")
+completereptiles_scale_gaussian@Volume
+
+#Plot reptile hypervolume
+#Log transformed reptile hypervolume
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
+plot(completereptiles_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     point.alpha.min=0.5,point.dark.factor=1)
+#Scaled log transformed reptile hypervolume
+plot(completereptiles_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
+plot(completereptiles_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     point.alpha.min=0.5,point.dark.factor=1)
 
 
-
-
-
+#Plotting all three hypervolumes together
+#Log transformed hypervolumes
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
+     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
+     show.3d=TRUE,plot.3d.axes.id=2:4,
+     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
+#Scaled log transformed hypervolumes
+plot(hypervolume_join(completebirds_scale_gaussian,completemammals_scale_gaussian,completereptiles_scale_gaussian),
+     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
+     show.3d=TRUE,plot.3d.axes.id=2:4,
+     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
 
 
 
