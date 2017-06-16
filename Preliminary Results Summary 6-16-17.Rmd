@@ -1,9 +1,26 @@
+---
+title: "Preliminary Results Summary 6-16-17"
+author: "Cecina Babich Morrow"
+date: "June 16, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\ 
+
+The following is an overview of what I have been working on.
+
+##Loading packages and creating color defaults
+```{r packages_colors, warning=FALSE}
 library(readr)
 library(lattice)
 library(RColorBrewer)
 library(ggplot2)
-library(hypervolume)
 library(tidyr)
+library(hypervolume)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -13,28 +30,37 @@ my.settings <- list(
   strip.border=list(col="black")
 )
 
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+```
 
-#Import amniote database
-#(Replaced -999 with NA in the .csv document itself prior to importing)
+##Importing the data
+
+Prior to importing the data, I replaced all of the -999 values with NA in the .csv file.
+
+```{r load_data}
 Amniote_Database_Aug_2015 <- read_csv("C:/Users/Cecina/Desktop/Amniote_Database_Aug_2015.csv")
 Amniote_Database_Aug_2015$weaning_weight_g<-as.numeric(Amniote_Database_Aug_2015$weaning_weight_g)
+```
 
-#How many species have trait information for the following traits?
+##Calculating Charnov's invariants
 
-#female_maturity_d, litter_or_clutch_size_n, litter_or_clutches_per_y, adult_body_mass_g, longevity_y
-sum(complete.cases(Amniote_Database_Aug_2015[,c(8:11,20)]))
-#2770
+###$C\cdot E$
 
-#Create columns for invariant traits
+The first invariant trait is $C\cdot E$, where $C$ is reproductive effort and $E$ is average adult lifespan. Thus $C\cdot E$ represents the fraction of body mass allocated to reproduction per death (Charnov 2002).
 
-#R=average reproductive allocation per unit time
-#For mammals:
-##R=litter_or_clutch_size_n*litters_or_clutches_y*weaning_weight_g
-#For birds:
-##R=litter_or_clutch_size_n*litters_or_clutches_y*fledging_mass_g
-#For reptiles:
-##R=litter_or_clutch_size_n*litters_or_clutches_y*egg_mass_g
+Charnov (2002) defines $C$ as $R/m$, where $R$ is the average reproductive allocation per unit time and $m$ is average adult mass.
 
+\ 
+
+####$R$
+
+Charnov defines $R$ as an organism's average allocation to reproduction per unit time (Charnov 2002). To calculate this value, I first multiplied the litter or clutch size of the organism by the number of litters or clutches per year to determine the number of offspring in a year. Then, I multiplied this number by the mass of offspring at independence. The mass at independence was represented by fledging mass for birds, weaning weight for mammals, and hatching size for reptiles. I selected hatching size, rather than egg mass, for the reptiles because the database has better trait coverage for reptile hatching size.
+
+
+```{r calculate_R, results="hide"}
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
   print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
@@ -47,65 +73,85 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
     Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"fledging_mass_g"]
   }
 }
+```
 
-#How many non-NA values for R?
+Thus $R$ is the amount of mass allocated by a parent to offspring every year.
+
+```{r R_available}
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R)])
-#How many birds?
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
 length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Reptilia"])
 
+```
 
-#C=reproductive effort
-#C=R/m
+There are 1964 species in the database with $R$ values: 197 birds, 942 mammals, and 825 reptiles.
 
+\ 
+
+####$C$
+
+Then I calculated $C=R/m$:
+
+```{r calculate_C}
 Amniote_Database_Aug_2015$C<-Amniote_Database_Aug_2015$R/Amniote_Database_Aug_2015$adult_body_mass_g
+```
 
-#How many non-NA values for C?
+```{r}
 length(Amniote_Database_Aug_2015$C[!is.na(Amniote_Database_Aug_2015$C)])
+```
 
+There are 1957 species with value for $C$.
 
-#Calculate C*E
+\ 
 
+\ 
+
+Finally, I calculated $C\cdot E$:
+
+```{r calculate_C_E}
 Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$longevity_y
 
-#How many non-NA values for C*E?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)])
-#How many birds?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
 length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Reptilia"])
+```
 
+There are 1416 species with values for $C\cdot E$: 185 birds, 897 mammals, and 334 reptiles.
 
+\ 
 
-#Calculate E/alpha
+###$E/ \alpha$
 
+The second invariant trait is $E/ \alpha$, where $E$ is once again average lifespan and $\alpha$ is the time to female maturity. This ratio represents the trade-off between life-span and time to reproduction.
+
+In order to keep the ratio dimensionless, I converted the longevity values from years to days.
+
+```{r calculate_E_alpha}
 Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$longevity_y*365/Amniote_Database_Aug_2015$female_maturity_d
 
-#How many non-NA values for E/alpha?
 length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)])
-#How many birds?
 length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
 length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
 length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Reptilia"])
+```
 
+There are 3126 species with values for $E/ \alpha$: 1095 birds, 1801 mammals, and 230 reptiles.
 
-#Calculate I/m
+\ 
 
-#I=size of offspring at independence
-#For mammals:
-##I=weaning_weight_g
-#For birds:
-##I=fledging_mass_g
-#For reptiles:
-##I=birth_or_hatching_weight_g
+###$I / m$
 
+The third invariant trait is $I / m$, where $I$ is the mass of an offspring at independence and $m$ is average adult body mass. This ratio describes the relative size of an independent offspring.
+
+\ 
+
+####$I$
+
+First I calculated $I$ according to the same definitions I used when calculating $R$: fledging mass for birds, weaning weight for mammals, and hatching mass for reptiles.
+
+```{r calculate_I, results="hide"}
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
   print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
@@ -118,17 +164,16 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
     Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"fledging_mass_g"]
   }
 }
+```
 
-#How many non-NA values for I?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I)])
-#How many birds?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Reptilia"])
+\ 
+
+\ 
 
 
+Then I calculated $I/m$:
+
+```{r calculate_I_m}
 Amniote_Database_Aug_2015$I_m<-Amniote_Database_Aug_2015$I/Amniote_Database_Aug_2015$adult_body_mass_g
 
 #How many non-NA values for I/m?
@@ -139,8 +184,17 @@ length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amn
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Mammalia"])
 #How many reptiles?
 length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Reptilia"])
+```
 
+There are 2127 species with values for $I/m$: 211 birds, 1061 mammals, and 855 reptiles.
 
+\ 
+
+##Trait Coverage
+
+Next I determined how many species had values for all three of the invariant traits.
+
+```{r complete_cases}
 #How many species have values for E/alpha, C*E, and I/m?
 sum(complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]))
 #How many birds?
@@ -149,8 +203,12 @@ length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_201
 length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Mammalia"])
 #How many reptiles?
 length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Reptilia"])
+```
 
-#Create bargraph with the number of species with values for each of the traits
+1138 species have complete cases for all three traits: 172 birds, 849 mammals, and 117 reptiles.
+
+```{r bargraph}
+require(tidyr)
 traitcoverage<-data.frame(Class=c("Aves","Mammalia","Reptilia"),C_E=numeric(3),E_alpha=numeric(3),I_m=numeric(3),All=numeric(3))
 for(i in 1:3){
   traitcoverage$C_E[i]<-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
@@ -177,90 +235,82 @@ traitcoverage[4,1]<-"Total"
 
 speciesperinvariant<-gather(traitcoverage,key = Class)
 colnames(speciesperinvariant)<-c("Class","Trait","Count")
+speciesperinvariant$Count<-as.numeric(speciesperinvariant$Count)
 
-#Grouped bargraph of the number of species with values for each invariant
 barchart(Count~Class,data=speciesperinvariant,groups=Trait,ylab="Number of Species",auto.key=list(space="top",columns=4),par.settings=my.settings)
 
-
-#Determine how many non-NA values there are for each trait:
-availabletraits=NULL
-for (i in 8:36) {
-  availabletraits$Trait[i]<-colnames(Amniote_Database_Aug_2015)[i]
-  availabletraits$Available[i]<-length(which(!is.na(Amniote_Database_Aug_2015[,i])))
-}
-availabletraits<-as.data.frame(availabletraits)
-availabletraits<-availabletraits[8:36,]
-#order by the number of non-NA values
-availabletraits<-availabletraits[order(-availabletraits$Available),]
-View(availabletraits)
+```
 
 
-#Histograms of traits
+\ 
 
-#Histogram of body mass
-hist(log(Amniote_Database_Aug_2015$adult_body_mass_g[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g)]),xlab="Log(Body Mass)",main="")
-hist(log(Amniote_Database_Aug_2015$adult_body_mass_g[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g)]),breaks=200,xlab="Log(Body Mass)",main="",col = myColours[6])
+##Trait Distributions
 
+I created histograms of body mass and the three invariant traits to examine the distributions. Following the total distribution of all species, I plotted separate distributions for birds, mammals, and reptiles.
 
+Body mass:
+```{r bodymass_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(adult_body_mass_g)))+
   geom_histogram(binwidth = 0.1)
-#Stacked histogram by class
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g),],aes(x=log(adult_body_mass_g),colour=class))+
   geom_freqpoly(binwidth = 0.1)
+```
 
-#Histogram of C*E
-hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),xlab="Log(C*E)",main="")
-hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),breaks=200,xlab="Log(C*E)",main="",col = myColours[2])
+For the three invariant traits, I included vertical dotted lines showing Charnov's estimates for the trait values of mammals and altricial birds (Charnov 2002). These often aren't very close to the values I've calculated, but they appear remarkably accurate for $I/m$.
 
+$C\cdot E$:
+```{r C_E_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(C_E)))+
   geom_histogram(binwidth = 0.1)
-#Stacked histogram by class
-#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$C_E),],aes(x=log(C_E),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
   geom_vline(aes(xintercept=log(5)),color=gg_color_hue(3)[1],lty=2)+
   geom_vline(aes(xintercept= log(1.7)),color=gg_color_hue(3)[2],lty=2)
+```
 
-
-#Histogram of E/alpha
-hist(log(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)]),xlab="Log(E/alpha)",main="")
-hist(log(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)]),breaks=200,xlab="Log(E/alpha)",main="",col = myColours[3])
-
+$E/ \alpha$:
+```{r E_alpha_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(E_alpha)))+
   geom_histogram(binwidth = 0.1)
-#Stacked histogram by class
-#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$E_alpha),],aes(x=log(E_alpha),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
   geom_vline(aes(xintercept=log(3)),color=gg_color_hue(3)[1],lty=2)+
   geom_vline(aes(xintercept= log(1.35)),color=gg_color_hue(3)[2],lty=2)
+```
 
-#Histogram of I/m
-hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),xlab="Log(I/m)",main="")
-hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),breaks=200,xlab="Log(I/m)",main="",col = myColours[4])
-
+$I/m$:
+```{r I_m_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(I_m)))+
   geom_histogram(binwidth = 0.1)
-#Stacked histogram by class
-#dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],aes(x=log(I_m),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
   geom_vline(aes(xintercept=log(1)),color=gg_color_hue(3)[1],lty=2)+
   geom_vline(aes(xintercept= log(0.3)),color=gg_color_hue(3)[2],lty=2)
+```
 
 
-#Some species have values of I/m greater than 1 (juvenile larger than adult)
-which(log(Amniote_Database_Aug_2015$I_m)>0)
+##Questionable $I/m$ Values
 
+As seen in the distribution of $I/m$ values, some species have $I/m$ values greater than 1, implying that the offspring are larger at independence than the adults. I created a .csv file of just these species. Most are birds with some mammals and one reptile. For the birds, most of the time the fledglings are only slightly larger than the adults, which seems plausible. Some species, however, clearly have incorrect values for either the juvenile or the adult masses. The .csv and an Excel spreadsheet with my notes on this are both available on the GitHub.
+
+```{r I_m_over1}
 I_m_over1<-Amniote_Database_Aug_2015[which(log(Amniote_Database_Aug_2015$I_m)>0),c(1,4,5,7,11,23:25,40,41)]
-View(I_m_over1)
 write.csv(I_m_over1,"I_m_over1.csv")
+```
 
 
+##Creating Hypervolumes
 
-#Subset of database including only species for all of the invariants
+I started by subsetting the dataset to include only those species with values for the three invariant traits.
+
+```{r completecase_species}
 desiredcolumns<-c(1:7,11,39,41,42)
 completecase_species<-Amniote_Database_Aug_2015[complete.cases(Amniote_Database_Aug_2015$adult_body_mass_g,Amniote_Database_Aug_2015$C_E,Amniote_Database_Aug_2015$I_m,Amniote_Database_Aug_2015$E_alpha),desiredcolumns]
+```
+
+Next I log-transformed the body mass and invariant trait values. I also Z-transformed these log-transformed values.
+
+```{r log_and_scale, eval=FALSE}
 #Log transform
 completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
@@ -271,151 +321,83 @@ completecase_species$scale_log_bodymass<-scale(completecase_species$log_bodymass
 completecase_species$scale_log_C_E<-scale(completecase_species$log_C_E)
 completecase_species$scale_log_I_m<-scale(completecase_species$log_I_m)
 completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
+```
 
-#Create hypervolumes for each class of amniotes
+```{r, echo=FALSE}
+read.csv("completecase_species.csv")
+```
 
 
-#Bird Gaussian hypervolume
+I created hypervolumes for each class using both the log-transformed and scaled trait values. These hypervolumes did not differ much based on whether they have been scaled or not, so we will most likely use the log-transformed trait values (without scaling) moving forward.
 
-#Log transform bird hypervolume
-completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",12:15],
-                                             name = "completebirds_gaussian")
+###Bird Hypervolumes
+
+The bird hypervolume using log-transformed traits:
+```{r bird_log_hyp}
+completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",12:15],name = "completebirds_gaussian")
 completebirds_gaussian@Volume
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
+```
 
-#Scale log transform bird hypervolume
+Using scaled log-transformed traits:
+```{r bird_scale_hyp}
 completebirds_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",16:19],
                                              name = "completebirds_scale_gaussian")
 completebirds_scale_gaussian@Volume
-
-#Plot bird hypervolume
-#Log transform bird hypervolume
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
-plot(completebirds_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
-#Scale log transform bird hypervolume
 plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
-plot(completebirds_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+```
 
-#Mammal Gaussian hypervolume
+###Mammal Hypervolumes
 
-#Log transform mammal hypervolume
+Log-transformed traits:
+```{r mammal_log_hyp}
 completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",12:15],
                                              name = "completemammals_gaussian")
 completemammals_gaussian@Volume
-#Scaled log transform mammal hypervolume
+plot(completemammals_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
+```
+
+Scaled log-transformed traits:
+```{r mammal_scale_hyp}
 completemammals_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",16:19],
                                                name = "completemammals_scale_gaussian")
 completemammals_scale_gaussian@Volume
-
-#Plot mammal hypervolume
-#Log transform mammal hypervolume
-plot(completemammals_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
-plot(completemammals_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
-#Scaled log transform mammal hypervolume
 plot(completemammals_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
-plot(completemammals_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+```
 
+###Reptile Hypervolumes
 
-#Reptile Gaussian hypervolume
-
-#Log transform reptile hypervolume
+Log-transformed traits:
+```{r reptile_log_hyp}
 completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],
                                                name = "completereptiles_gaussian")
 completereptiles_gaussian@Volume
-#Scaled log transform reptile hypervolume
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
+```
+
+
+Scaled log-transformed traits:
+```{r reptile_scale_hyp}
 completereptiles_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",16:19],
                                                 name = "completereptiles_scale_gaussian")
 completereptiles_scale_gaussian@Volume
-
-#Plot reptile hypervolume
-#Log transformed reptile hypervolume
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
-plot(completereptiles_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     point.alpha.min=0.5,point.dark.factor=1)
-#Scaled log transformed reptile hypervolume
 plot(completereptiles_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
-plot(completereptiles_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     point.alpha.min=0.5,point.dark.factor=1)
+```
 
+###All Classes
 
-#Plotting all three hypervolumes together
-#Log transformed hypervolumes
+Finally, I overlaid the hypervolumes for all three classes to visualize differences.
+
+Log-transformed traits:
+```{r three_log_hyp}
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
-     show.3d=TRUE,plot.3d.axes.id=2:4,
-     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
-#Scaled log transformed hypervolumes
+```
+
+Scaled log-transformed traits:
+```{r three_scale_hyp}
 plot(hypervolume_join(completebirds_scale_gaussian,completemammals_scale_gaussian,completereptiles_scale_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
-     show.3d=TRUE,plot.3d.axes.id=2:4,
-     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
-
-
-
-
-
-
-
-##The following code is from hypervolume_code.R
-
-#GIS code
-
-#save an object containing the coordinate reference system of wgs84
-P4S.latlon <- CRS("+proj=longlat +datum=WGS84")  
-#This CRS needs to be supplied when loading in a shapefile(or else added later).  If you don't supply this you can't transform to a new crs
-#Note that some shapefiles contain added metadata containing the CRS.
-
-#Import shape polygons from IUCN range maps
-mammals<-readShapePoly("C:/Users/Cecina/Desktop/TERRESTRIAL_MAMMALS/TERRESTRIAL_MAMMALS.shp",proj4string = P4S.latlon)
-#Taxonomic information as well as information on whether a shapefile corresponds to native vs invader range, and whether the species is there seasonally vs constantly:
-mammal_data<-mammals@data
-
-#change to an equal area projection
-ea_tf<-CRS("+proj=cea +units=m")
-mammals_ea<-spTransform(x = mammals,CRSobj = ea_tf)
-
-#create a raster: specify extent and resolution (size of grid cells) in meters
-r<-raster(ext= extent(mammals_ea),resolution=100000)
-
-#create columns for traits (hopefully) not correlated with body mass (invariants)
-#b: number of daughters per year = (litter size x litters/yr)/2
-amniote_mammals$b<-(amniote_mammals$litter_or_clutch_size_n*amniote_mammals$litters_or_clutches_per_y)/2
-#alpha_b: female maturity x b
-amniote_mammals$alpha_b<-amniote_mammals$female_maturity_d*amniote_mammals$b
-#E_alpha: longevity/female maturity
-amniote_mammals$E_alpha<-amniote_mammals$longevity_y/amniote_mammals$female_maturity_d
-#S: 1/(longevity*b)
-amniote_mammals$S<-1/(amniote_mammals$longevity_y*amniote_mammals$b)
-#unfortunately S is equal to 1/(E_alpha*alpha_b) so you can't use all three of these
-
-
-#Create list of mammal species with complete cases for top -- trait values
-
-#number of species with values for the top 10 traits=45
-sum(complete.cases(amniote_mammals[,c(8:14,22,29,35)]))
-#top 9 traits=1164 (longevity_y instead of maximum_longevity_y)
-sum(complete.cases(amniote_mammals[,c(8:11,13:15,20,29)]))
-#top 8 traits=1297
-sum(complete.cases(amniote_mammals[,c(8:11,13,14,20,29)]))
-#top 7 traits=1375
-sum(complete.cases(amniote_mammals[,c(9:14,29)]))
-#top 4 traits=2192
-sum(complete.cases(amniote_mammals[,c(11,29,9,20)]))
-#body mass, litter size, longevity, gestation, and litters per year
-sum(complete.cases(amniote_mammals[,c(11,9,20,13,10)]))
-#body mass and invariant traits=1548
-sum(complete.cases(amniote_mammals[,c(11,38:40)]))
-
-
-#list of mammal species in database with values for body mass, alpha_b, and E_alpha
-amniote_mammals_complete<-amniote_mammals[complete.cases(amniote_mammals[,c(11,38,39)]),]
-#create new genusspecies column to match with IUCN data
-amniote_mammals_complete<-unite(amniote_mammals_complete, genusspecies, genus, species, sep=" ", remove=FALSE)
-#contains 1548 species with all 4 trait values
+```
 
 
