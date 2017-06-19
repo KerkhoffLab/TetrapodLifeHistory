@@ -2,7 +2,9 @@
 title: "Preliminary Results Summary 6-16-17"
 author: "Cecina Babich Morrow"
 date: "June 16, 2017"
-output: html_document
+output:
+  html_notebook: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -62,7 +64,7 @@ Charnov defines $R$ as an organism's average allocation to reproduction per unit
 
 ```{r calculate_R, results="hide"}
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
-  print(i)
+  #print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
     Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"weaning_weight_g"]
   }
@@ -153,7 +155,7 @@ First I calculated $I$ according to the same definitions I used when calculating
 
 ```{r calculate_I, results="hide"}
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
-  print(i)
+  #print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
     Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"weaning_weight_g"]
   }
@@ -241,6 +243,7 @@ barchart(Count~Class,data=speciesperinvariant,groups=Trait,ylab="Number of Speci
 
 ```
 
+Overall, we have the best trait coverage for mammals. $E/ \alpha$ is the trait with the most values for both birds and mammals (although not for reptiles). We have at least 100 species in every class with values for each of the traits.
 
 \ 
 
@@ -256,6 +259,9 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$adult_bod
   geom_freqpoly(binwidth = 0.1)
 ```
 
+The three classes have relatively similar centers for their body mass distributions, but they differ in spread and shape of the distribution. Mammals and reptiles have a wider range than the birds, and the reptile distribution is relatively flat in general.
+
+
 For the three invariant traits, I included vertical dotted lines showing Charnov's estimates for the trait values of mammals and altricial birds (Charnov 2002). These often aren't very close to the values I've calculated, but they appear remarkably accurate for $I/m$.
 
 $C\cdot E$:
@@ -268,6 +274,9 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$C_E),],ae
   geom_vline(aes(xintercept= log(1.7)),color=gg_color_hue(3)[2],lty=2)
 ```
 
+The overall distribution of $C\cdot E$ values appears bimodal. This is driven by the offsets in the distributions of reptiles and mammals (and, to a lesser extent, birds). The three classes have very distinct centers. Reptiles have the lowest $C\cdot E$, followed by mammals, and then birds. Thus birds have the highest reproductive payoff per unit death cost. Mammals also have a relatively high payoff relative to death cost, but a wider range. Reptiles have the lowest payoff and a wide range of values.
+
+
 $E/ \alpha$:
 ```{r E_alpha_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(E_alpha)))+
@@ -278,6 +287,9 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$E_alpha),
   geom_vline(aes(xintercept= log(1.35)),color=gg_color_hue(3)[2],lty=2)
 ```
 
+The distributions of values for $E/ \alpha$ are more similar across the different classes. Mammals have a wider spread than birds, however, demonstrating more variation in the relationship between lifespan and time to reproduction. Reptiles have the lowest $E/ \alpha$ values, possibly driven by very high times to reproduction in long-lived reptiles.
+
+
 $I/m$:
 ```{r I_m_dist}
 ggplot(data=Amniote_Database_Aug_2015,aes(x=log(I_m)))+
@@ -287,6 +299,9 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],ae
   geom_vline(aes(xintercept=log(1)),color=gg_color_hue(3)[1],lty=2)+
   geom_vline(aes(xintercept= log(0.3)),color=gg_color_hue(3)[2],lty=2)
 ```
+
+The three classes had very distinct distributions for $I/m$. Reptiles have the lowest values, suggesting that their mass at independence is quite low relative to their adult mass. Since the vast majority of reptiles are independent immediately upon hatching, this result makes sense. Mammals had intermediate $I/m$ values remarkably similar to the value projected by Charnov (2002). Birds have high masses at independence relative to adult mass, also following Charnov's prediction (2002).
+
 
 
 ##Questionable $I/m$ Values
@@ -304,13 +319,13 @@ write.csv(I_m_over1,"I_m_over1.csv")
 I started by subsetting the dataset to include only those species with values for the three invariant traits.
 
 ```{r completecase_species}
-desiredcolumns<-c(1:7,11,39,41,42)
+desiredcolumns<-c(1:7,11,39,40,42)
 completecase_species<-Amniote_Database_Aug_2015[complete.cases(Amniote_Database_Aug_2015$adult_body_mass_g,Amniote_Database_Aug_2015$C_E,Amniote_Database_Aug_2015$I_m,Amniote_Database_Aug_2015$E_alpha),desiredcolumns]
 ```
 
 Next I log-transformed the body mass and invariant trait values. I also Z-transformed these log-transformed values.
 
-```{r log_and_scale, eval=FALSE}
+```{r log_and_scale}
 #Log transform
 completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
@@ -321,10 +336,7 @@ completecase_species$scale_log_bodymass<-scale(completecase_species$log_bodymass
 completecase_species$scale_log_C_E<-scale(completecase_species$log_C_E)
 completecase_species$scale_log_I_m<-scale(completecase_species$log_I_m)
 completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
-```
-
-```{r, echo=FALSE}
-read.csv("completecase_species.csv")
+head(completecase_species)
 ```
 
 
@@ -333,56 +345,72 @@ I created hypervolumes for each class using both the log-transformed and scaled 
 ###Bird Hypervolumes
 
 The bird hypervolume using log-transformed traits:
-```{r bird_log_hyp}
+```{r bird_log_hyp,results="hide"}
 completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",12:15],name = "completebirds_gaussian")
+```
+```{r bird_log_hyp_plot}
 completebirds_gaussian@Volume
 plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 ```
 
+
+
 Using scaled log-transformed traits:
-```{r bird_scale_hyp}
-completebirds_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",16:19],
-                                             name = "completebirds_scale_gaussian")
+```{r bird_scale_hyp,results="hide"}
+completebirds_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",16:19],name ="completebirds_scale_gaussian")
+```
+```{r bird_scale_hyp_plot}
 completebirds_scale_gaussian@Volume
 plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 ```
 
+The bird hypervolumes show no relationship of body mass with any of the invariant traits, suggesting they truly are invariant for this class. 
+
 ###Mammal Hypervolumes
 
 Log-transformed traits:
-```{r mammal_log_hyp}
-completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",12:15],
-                                             name = "completemammals_gaussian")
+```{r mammal_log_hyp, results="hide"}
+completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",12:15],name = "completemammals_gaussian")
+```
+```{r mammal_log_hyp_plot}
 completemammals_gaussian@Volume
 plot(completemammals_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
 ```
 
+
 Scaled log-transformed traits:
-```{r mammal_scale_hyp}
-completemammals_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",16:19],
-                                               name = "completemammals_scale_gaussian")
+```{r mammal_scale_hyp, results="hide"}
+completemammals_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",16:19],name ="completemammals_scale_gaussian")
+```
+```{r}
 completemammals_scale_gaussian@Volume
 plot(completemammals_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
 ```
 
+For the mammals, there appears to be a weak negative relationship between body mass and $I/m$, implying that this may not be an invariant trait for mammals.
+
 ###Reptile Hypervolumes
 
 Log-transformed traits:
-```{r reptile_log_hyp}
-completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],
-                                               name = "completereptiles_gaussian")
+```{r reptile_log_hyp, results="hide"}
+completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],name = "completereptiles_gaussian")
+```
+```{r reptile_log_hyp_plot}
 completereptiles_gaussian@Volume
 plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
 ```
 
 
 Scaled log-transformed traits:
-```{r reptile_scale_hyp}
-completereptiles_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",16:19],
-                                                name = "completereptiles_scale_gaussian")
+```{r reptile_scale_hyp, results="hide"}
+completereptiles_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",16:19],name = "completereptiles_scale_gaussian")
+```
+```{r reptile_scale_hyp_plot}
 completereptiles_scale_gaussian@Volume
 plot(completereptiles_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
 ```
+
+For reptiles, there is a definite negative relationship between mass and $I/m$, so $I/m$ is not an invariant for reptiles.
 
 ###All Classes
 
@@ -400,4 +428,4 @@ plot(hypervolume_join(completebirds_scale_gaussian,completemammals_scale_gaussia
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
 ```
 
-
+There is noticeable separation between the centroids for the three different classes. The bird hypervolume is noticeably smaller than that of the mammals or reptiles, and it often overlaps with the mammal hypervolume quite a bit. The reptile hypervolume is largest and mostly distinct from the other two. Thus it appears like birds have the narrowest range of life history value combinations while reptiles have the largest.

@@ -259,7 +259,7 @@ write.csv(I_m_over1,"I_m_over1.csv")
 
 
 #Subset of database including only species for all of the invariants
-desiredcolumns<-c(1:7,11,39,41,42)
+desiredcolumns<-c(1:7,11,39,40,42)
 completecase_species<-Amniote_Database_Aug_2015[complete.cases(Amniote_Database_Aug_2015$adult_body_mass_g,Amniote_Database_Aug_2015$C_E,Amniote_Database_Aug_2015$I_m,Amniote_Database_Aug_2015$E_alpha),desiredcolumns]
 #Log transform
 completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
