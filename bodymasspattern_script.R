@@ -4,6 +4,8 @@ library(RColorBrewer)
 library(ggplot2)
 library(hypervolume)
 library(tidyr)
+library(taxize)
+library(brranching)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -514,22 +516,9 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completeba
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(4)[4]))
 
 #Add bat points to mammal hypervolume
-plot(completemammals_gaussian,colors=gg_color_hue(3)[2])
-plot(hypervolume_join(completemammals_gaussian,completebats_gaussian))
-
-completebatdata<-completecase_species[completecase_species$order=="Chiroptera",12:15]
-op = par(no.readonly = T)
-
-par(mfrow=c(3, 3))
-par(mar=c(0,0,0,0))
-par(oma=c(0.5,0.5,0.5,0.5))
-for(i in 1:2){
-  for(j in 1:2){
-    if (j > i){
-      points(completebatdata[,j],completebatdata[,i])
-    }
-  }
-}
+plot(completemammals_gaussian,plot.function.additional=function(i,j) {
+  points(x=completecase_species[completecase_species$order=="Chiroptera",12+j],y=completecase_species[completecase_species$order=="Chiroptera",11+i]) 
+  })
 
 
 
@@ -561,15 +550,18 @@ points(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"])~log(A_mamma
 A_model<-lm(log(A_mammals$female_maturity_d)~log(A_mammals$adult_body_mass_g))
 summary(A_model)
 abline(A_model)
-#Remove primates
+#Remove primates and recalculate alpha
 A_mammals_noprimates<-Amniote_Database_Aug_2015[which(!is.na(Amniote_Database_Aug_2015$female_maturity_d) & !is.na(Amniote_Database_Aug_2015$adult_body_mass_g) & !is.na(Amniote_Database_Aug_2015$weaning_d) & Amniote_Database_Aug_2015$class=="Mammalia" & Amniote_Database_Aug_2015$order!="Primates"),]
 A_mammals_noprimates$alpha5 <- A_mammals_noprimates$female_maturity_d - as.numeric(A_mammals_noprimates$weaning_d)
 plot(log(A_mammals_noprimates$alpha5)~log(A_mammals_noprimates$adult_body_mass_g),ylab="Ln(Alpha)",xlab="Ln(Adult Body Mass)")
 A_model_noprimates<-lm(log(A_mammals_noprimates$alpha5)~log(A_mammals_noprimates$adult_body_mass_g))
 summary(A_model_noprimates)
 abline(A_model_noprimates)
-
-
+#just primates
+plot(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"])~log(A_mammals$adult_body_mass_g[A_mammals$order=="Primates"]),ylab="Ln(Female Maturity)",xlab="Ln(Adult Body Mass)")
+A_model_primates<-lm(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"])~log(A_mammals$adult_body_mass_g[A_mammals$order=="Primates"]))
+summary(A_model_primates)
+abline(A_model)
 
 
 ##The following code is from hypervolume_code.R
