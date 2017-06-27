@@ -6,6 +6,8 @@ library(hypervolume)
 library(tidyr)
 library(taxize)
 library(brranching)
+library(picante)
+library(ape)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -563,6 +565,26 @@ A_model_primates<-lm(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"
 summary(A_model_primates)
 abline(A_model)
 
+
+
+
+#Phylogenetic analyses
+completecase_species$taxaname<-paste(completecase_species$genus,completecase_species$species,sep="_")
+#Bininda-Emonds 2007 tree
+phylomatic(taxa=paste(completecase_species$genus[completecase_species$class=="Mammalia"],completecase_species$species[completecase_species$class=="Mammalia"],sep="_"),storedtree = "binindaemonds2007",get = 'POST')
+#missing 187 species
+#
+phylomatic(taxa=completecase_species$taxaname[completecase_species$class=="Mammalia"],informat = "nexml",treeuri = "http://onlinelibrary.wiley.com/store/10.1111/j.1461-0248.2009.01307.x/asset/supinfo/ELE_1307_sm_SA1.tre?v=1&s=366b28651a9b5d1a3148ef9a8620f8aa31a7df44",get = 'POST')
+
+
+mammaltrees<-read.nexus("fritztree2009.txt")
+mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
+
+#want to prune to just the mammals with trait data
+#named vector including all the mammal species with complete trait data
+names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
+pruned_mammaltree_best<-pruned_mammaltree_best$tree
 
 ##The following code is from hypervolume_code.R
 
