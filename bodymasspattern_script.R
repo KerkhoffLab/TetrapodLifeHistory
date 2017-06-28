@@ -689,15 +689,32 @@ pruned_birdtree<-pruned_birdtree$tree
 
 
 #adding traits to tree
+#C*E
 mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
 names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
 mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.8,6.6)))
-color.legend(-250,-120,-150,-110,legend=c(-2.8,6.6),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.760842,5.378637)))
+color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
+#I/m
+mammal_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Mammalia"]
+names(mammal_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_I_m_tiporder<-mammal_log_I_m[pruned_mammaltree_best$tip.label]
 
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-3.77,2.59),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+mammal_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Mammalia"]
+names(mammal_log_E_alpha)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_E_alpha_tiporder<-mammal_log_E_alpha[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 ##The following code is from hypervolume_code.R
