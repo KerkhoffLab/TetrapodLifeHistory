@@ -438,6 +438,62 @@ plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 plot(completebirds_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
 
+#Plot different orders
+#Accipitriformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Accipitriformes",i],y=complete_data[complete_data$order=="Accipitriformes",j],col="seagreen3",pch=19) 
+     })
+#Anseriformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Anseriformes",i],y=complete_data[complete_data$order=="Anseriformes",j],col="seagreen3",pch=19) 
+     })
+#Apodiformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Apodiformes",i],y=complete_data[complete_data$order=="Apodiformes",j],col="seagreen3",pch=19) 
+     })
+#Caprimulgiformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Caprimulgiformes",i],y=complete_data[complete_data$order=="Caprimulgiformes",j],col="seagreen3",pch=19) 
+     })
+#Charadriiformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Charadriiformes",i],y=complete_data[complete_data$order=="Charadriiformes",j],col="seagreen3",pch=19) 
+     })
+#Passeriformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Passeriformes",i],y=complete_data[complete_data$order=="Passeriformes",j],col="seagreen3",pch=19) 
+     })
+#Procellariiformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Procellariiformes",i],y=complete_data[complete_data$order=="Procellariiformes",j],col="seagreen3",pch=19) 
+     })
+#Sphenisciformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Sphenisciformes",i],y=complete_data[complete_data$order=="Sphenisciformes",j],col="seagreen3",pch=19) 
+     })
+#Strigiformes
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Strigiformes",i],y=complete_data[complete_data$order=="Strigiformes",j],col="seagreen3",pch=19) 
+     })
+
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Passeriformes",i],y=complete_data[complete_data$order=="Passeriformes",j],col="green",pch=19)
+       points(x=complete_data[complete_data$order=="Charadriiformes",i],y=complete_data[complete_data$order=="Charadriiformes",j],col="red",pch=19)
+       points(x=complete_data[complete_data$order=="Procellariiformes",i],y=complete_data[complete_data$order=="Procellariiformes",j],col="blue",pch=19)
+     })
+
+
+
 #Mammal Gaussian hypervolume
 
 #Log transform mammal hypervolume
@@ -480,6 +536,30 @@ plot(completereptiles_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex
 plot(completereptiles_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
 plot(completereptiles_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      point.alpha.min=0.5,point.dark.factor=1)
+#Visualize the three reptile orders
+#Crocodilia
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19) 
+     })
+#Squamata
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="red",pch=19) 
+     })
+#Testudines
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="red",pch=19) 
+     })
+#View all three orders
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19)
+       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="purple",pch=19)
+       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="darkgreen",pch=19)
+     })
+
 
 
 #Plotting all three hypervolumes together
