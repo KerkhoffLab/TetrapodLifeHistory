@@ -517,10 +517,25 @@ plot(completebats_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completebats_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(4)[4]))
 
+complete_data<-completecase_species[,c(1:5,12:15)]
 #Add bat points to mammal hypervolume
-plot(completemammals_gaussian,plot.function.additional=function(i,j) {
-  points(x=completecase_species[completecase_species$order=="Chiroptera",12+j],y=completecase_species[completecase_species$order=="Chiroptera",11+i]) 
-  })
+plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
+     points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="red",pch=19) 
+     })
+#Add primate points
+plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
+  points(x=complete_data[complete_data$order=="Primates",i],y=complete_data[complete_data$order=="Primates",j],col="red",pch=19) 
+})
+#Add cetacean points
+plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
+  points(x=complete_data[complete_data$order=="Cetacea",i],y=complete_data[complete_data$order=="Cetacea",j],col="red",pch=19) 
+})
+#Add marsupial points
+plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
+  points(x=complete_data[complete_data$order=="Dasyuromorphia" | complete_data$order=="Didelphimorphia" | complete_data$order=="Peramelemorphia" | complete_data$order=="Diprotodontia",i],y=complete_data[complete_data$order=="Dasyuromorphia" | complete_data$order=="Didelphimorphia" | complete_data$order=="Peramelemorphia" | complete_data$order=="Diprotodontia",j],col="red",pch=19) 
+})
+
+
 
 
 
@@ -569,22 +584,41 @@ abline(A_model)
 
 
 #Phylogenetic analyses
-completecase_species$taxaname<-paste(completecase_species$genus,completecase_species$species,sep="_")
-#Bininda-Emonds 2007 tree
-phylomatic(taxa=paste(completecase_species$genus[completecase_species$class=="Mammalia"],completecase_species$species[completecase_species$class=="Mammalia"],sep="_"),storedtree = "binindaemonds2007",get = 'POST')
-#missing 187 species
-#
-phylomatic(taxa=completecase_species$taxaname[completecase_species$class=="Mammalia"],informat = "nexml",treeuri = "http://onlinelibrary.wiley.com/store/10.1111/j.1461-0248.2009.01307.x/asset/supinfo/ELE_1307_sm_SA1.tre?v=1&s=366b28651a9b5d1a3148ef9a8620f8aa31a7df44",get = 'POST')
 
-
+#Mammals
 mammaltrees<-read.nexus("fritztree2009.txt")
+#Pick just the tree with the best date estimate
 mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
-
 #want to prune to just the mammals with trait data
 #named vector including all the mammal species with complete trait data
+bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
 names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
 pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
+
+#Birds
+birdtree<-read.nexus("davispagetree2014.tre")
+#pruning birds
+bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves"]
+names(bmvec_bird)<-completecase_species$taxaname[completecase_species$class=="Aves"]
+pruned_birdtree<-prune.missing(x=bmvec_bird, phylo=birdtree)
+pruned_birdtree<-pruned_birdtree$tree
+
+#Reptiles
+
+
+
+#adding traits to tree
+mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
+names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.8,6.6)))
+color.legend(-250,-120,-150,-110,legend=c(-2.8,6.6),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+
 
 ##The following code is from hypervolume_code.R
 
