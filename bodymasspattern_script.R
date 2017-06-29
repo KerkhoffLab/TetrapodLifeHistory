@@ -8,6 +8,12 @@ library(taxize)
 library(brranching)
 library(picante)
 library(ape)
+library(maptools)
+library(mapproj)
+library(rgeos)
+library(rgdal)
+library(sp)
+library(raster)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -745,11 +751,21 @@ tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","re
 color.legend(5,5,40,10,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
+#Add trophic level for mammals
+MammalDIET_v1_0$taxaname<-paste(MammalDIET_v1_0$Genus,MammalDIET_v1_0$Species,sep="_")
+completemammal_trophic<-merge(completecase_species,MammalDIET_v1_0[,c("taxaname","TrophicLevel")],by="taxaname")
+
+#carnivore hypervolume
+mammalcarnivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Carnivore",13:16],
+                                               name = "mammalcarnivore_gaussian")
+#omnivore hypervolume
+mammalomnivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Omnivore",13:16],
+                                               name = "mammalomnivore_gaussian")
+#herbivore hypervolume
+mammalherbivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Herbivore",13:16],
+                                              name = "mammalherbivore_gaussian")
 
 
-
-
-##The following code is from hypervolume_code.R
 
 #GIS code
 
@@ -759,51 +775,14 @@ P4S.latlon <- CRS("+proj=longlat +datum=WGS84")
 #Note that some shapefiles contain added metadata containing the CRS.
 
 #Import shape polygons from IUCN range maps
-mammals<-readShapePoly("C:/Users/Cecina/Desktop/TERRESTRIAL_MAMMALS/TERRESTRIAL_MAMMALS.shp",proj4string = P4S.latlon)
+mammal_polys<-readShapePoly("C:/Users/Cecina/Desktop/HypervolumeFiles/TERRESTRIAL_MAMMALS/TERRESTRIAL_MAMMALS.shp",proj4string = P4S.latlon)
 #Taxonomic information as well as information on whether a shapefile corresponds to native vs invader range, and whether the species is there seasonally vs constantly:
-mammal_data<-mammals@data
+mammal_data<-mammal_polys@data
 
 #change to an equal area projection
 ea_tf<-CRS("+proj=cea +units=m")
-mammals_ea<-spTransform(x = mammals,CRSobj = ea_tf)
+mammals_ea<-spTransform(x = mammal_polys,CRSobj = ea_tf)
 
 #create a raster: specify extent and resolution (size of grid cells) in meters
 r<-raster(ext= extent(mammals_ea),resolution=100000)
-
-#create columns for traits (hopefully) not correlated with body mass (invariants)
-#b: number of daughters per year = (litter size x litters/yr)/2
-amniote_mammals$b<-(amniote_mammals$litter_or_clutch_size_n*amniote_mammals$litters_or_clutches_per_y)/2
-#alpha_b: female maturity x b
-amniote_mammals$alpha_b<-amniote_mammals$female_maturity_d*amniote_mammals$b
-#E_alpha: longevity/female maturity
-amniote_mammals$E_alpha<-amniote_mammals$longevity_y/amniote_mammals$female_maturity_d
-#S: 1/(longevity*b)
-amniote_mammals$S<-1/(amniote_mammals$longevity_y*amniote_mammals$b)
-#unfortunately S is equal to 1/(E_alpha*alpha_b) so you can't use all three of these
-
-
-#Create list of mammal species with complete cases for top -- trait values
-
-#number of species with values for the top 10 traits=45
-sum(complete.cases(amniote_mammals[,c(8:14,22,29,35)]))
-#top 9 traits=1164 (longevity_y instead of maximum_longevity_y)
-sum(complete.cases(amniote_mammals[,c(8:11,13:15,20,29)]))
-#top 8 traits=1297
-sum(complete.cases(amniote_mammals[,c(8:11,13,14,20,29)]))
-#top 7 traits=1375
-sum(complete.cases(amniote_mammals[,c(9:14,29)]))
-#top 4 traits=2192
-sum(complete.cases(amniote_mammals[,c(11,29,9,20)]))
-#body mass, litter size, longevity, gestation, and litters per year
-sum(complete.cases(amniote_mammals[,c(11,9,20,13,10)]))
-#body mass and invariant traits=1548
-sum(complete.cases(amniote_mammals[,c(11,38:40)]))
-
-
-#list of mammal species in database with values for body mass, alpha_b, and E_alpha
-amniote_mammals_complete<-amniote_mammals[complete.cases(amniote_mammals[,c(11,38,39)]),]
-#create new genusspecies column to match with IUCN data
-amniote_mammals_complete<-unite(amniote_mammals_complete, genusspecies, genus, species, sep=" ", remove=FALSE)
-#contains 1548 species with all 4 trait values
-
 
