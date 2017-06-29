@@ -438,62 +438,6 @@ plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 plot(completebirds_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
 
-#Plot different orders
-#Accipitriformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Accipitriformes",i],y=complete_data[complete_data$order=="Accipitriformes",j],col="seagreen3",pch=19) 
-     })
-#Anseriformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Anseriformes",i],y=complete_data[complete_data$order=="Anseriformes",j],col="seagreen3",pch=19) 
-     })
-#Apodiformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Apodiformes",i],y=complete_data[complete_data$order=="Apodiformes",j],col="seagreen3",pch=19) 
-     })
-#Caprimulgiformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Caprimulgiformes",i],y=complete_data[complete_data$order=="Caprimulgiformes",j],col="seagreen3",pch=19) 
-     })
-#Charadriiformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Charadriiformes",i],y=complete_data[complete_data$order=="Charadriiformes",j],col="seagreen3",pch=19) 
-     })
-#Passeriformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Passeriformes",i],y=complete_data[complete_data$order=="Passeriformes",j],col="seagreen3",pch=19) 
-     })
-#Procellariiformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Procellariiformes",i],y=complete_data[complete_data$order=="Procellariiformes",j],col="seagreen3",pch=19) 
-     })
-#Sphenisciformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Sphenisciformes",i],y=complete_data[complete_data$order=="Sphenisciformes",j],col="seagreen3",pch=19) 
-     })
-#Strigiformes
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Strigiformes",i],y=complete_data[complete_data$order=="Strigiformes",j],col="seagreen3",pch=19) 
-     })
-
-plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Passeriformes",i],y=complete_data[complete_data$order=="Passeriformes",j],col="green",pch=19)
-       points(x=complete_data[complete_data$order=="Charadriiformes",i],y=complete_data[complete_data$order=="Charadriiformes",j],col="red",pch=19)
-       points(x=complete_data[complete_data$order=="Procellariiformes",i],y=complete_data[complete_data$order=="Procellariiformes",j],col="blue",pch=19)
-     })
-
-
-
 #Mammal Gaussian hypervolume
 
 #Log transform mammal hypervolume
@@ -536,30 +480,6 @@ plot(completereptiles_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex
 plot(completereptiles_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3])
 plot(completereptiles_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      point.alpha.min=0.5,point.dark.factor=1)
-#Visualize the three reptile orders
-#Crocodilia
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19) 
-     })
-#Squamata
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="red",pch=19) 
-     })
-#Testudines
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="red",pch=19) 
-     })
-#View all three orders
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19)
-       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="purple",pch=19)
-       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="darkgreen",pch=19)
-     })
-
 
 
 #Plotting all three hypervolumes together
@@ -597,25 +517,10 @@ plot(completebats_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completebats_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(4)[4]))
 
-complete_data<-completecase_species[,c(1:5,12:15)]
 #Add bat points to mammal hypervolume
-plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
-     points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="red",pch=19) 
-     })
-#Add primate points
-plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
-  points(x=complete_data[complete_data$order=="Primates",i],y=complete_data[complete_data$order=="Primates",j],col="red",pch=19) 
-})
-#Add cetacean points
-plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
-  points(x=complete_data[complete_data$order=="Cetacea",i],y=complete_data[complete_data$order=="Cetacea",j],col="red",pch=19) 
-})
-#Add marsupial points
-plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
-  points(x=complete_data[complete_data$order=="Dasyuromorphia" | complete_data$order=="Didelphimorphia" | complete_data$order=="Peramelemorphia" | complete_data$order=="Diprotodontia",i],y=complete_data[complete_data$order=="Dasyuromorphia" | complete_data$order=="Didelphimorphia" | complete_data$order=="Peramelemorphia" | complete_data$order=="Diprotodontia",j],col="red",pch=19) 
-})
-
-
+plot(completemammals_gaussian,plot.function.additional=function(i,j) {
+  points(x=completecase_species[completecase_species$order=="Chiroptera",12+j],y=completecase_species[completecase_species$order=="Chiroptera",11+i]) 
+  })
 
 
 
@@ -667,54 +572,20 @@ abline(A_model)
 
 #Mammals
 mammaltrees<-read.nexus("fritztree2009.txt")
-#Pick just the tree with the best date estimate
 mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
+
 #want to prune to just the mammals with trait data
 #named vector including all the mammal species with complete trait data
-bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
 names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
 pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
 
 #Birds
-birdtree<-read.nexus("davispagetree2014.tre")
-#pruning birds
-bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves"]
-names(bmvec_bird)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-pruned_birdtree<-prune.missing(x=bmvec_bird, phylo=birdtree)
-pruned_birdtree<-pruned_birdtree$tree
-
-#Reptiles
 
 
 
-#adding traits to tree
-#C*E
-mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
-names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
-mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
 
-plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.760842,5.378637)))
-color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
-#I/m
-mammal_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Mammalia"]
-names(mammal_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
-mammal_log_I_m_tiporder<-mammal_log_I_m[pruned_mammaltree_best$tip.label]
-
-plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
-color.legend(-255,-125,-155,-115,legend=c(-3.77,2.59),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#E/alpha
-mammal_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Mammalia"]
-names(mammal_log_E_alpha)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
-mammal_log_E_alpha_tiporder<-mammal_log_E_alpha[pruned_mammaltree_best$tip.label]
-
-plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
-color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 ##The following code is from hypervolume_code.R
