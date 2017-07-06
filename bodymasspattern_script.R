@@ -684,12 +684,17 @@ pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
 
 #Birds
-birdtree<-read.nexus("davispagetree2014.tre")
+bigbirdtree<-read.newick("C:/Users/Cecina/Desktop/BigBird.All.NewNames.7000Taxa.tre.gz")
+birdtree<-bigbirdtree[1]
+birdtree<-birdtree[[1]]
+birdtree$tip.label<-gsub("^(.*?-.*?_.*?_)","",birdtree$tip.label)
+
 #pruning birds
 bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves"]
 names(bmvec_bird)<-completecase_species$taxaname[completecase_species$class=="Aves"]
 pruned_birdtree<-prune.missing(x=bmvec_bird, phylo=birdtree)
 pruned_birdtree<-pruned_birdtree$tree
+
 
 #Reptiles
 
