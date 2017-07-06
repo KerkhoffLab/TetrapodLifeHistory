@@ -14,6 +14,7 @@ library(rgeos)
 library(rgdal)
 library(sp)
 library(raster)
+library(phytools)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -722,6 +723,17 @@ plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
+#tree with mapped continuous character
+mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
+plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
+
+#phylomorphospace
+mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
+mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
+mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
+rownames(mammaltraitmatrix)<-mammaltraits$taxaname
+phylomorphospace(pruned_mammaltree_best,mammaltraitmatrix[,c(2,4)])
+
 #Adding traits to bird tree
 #C*E
 bird_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Aves"]
@@ -749,6 +761,16 @@ bird_log_E_alpha_tiporder<-bird_log_E_alpha[pruned_birdtree$tip.label]
 plot(pruned_birdtree,no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(5,5,40,10,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#heat map of all traits
+birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree$tip.label,c(20,12:15)]
+birdtraitmatrix<-as.matrix(birdtraits[,2:5])
+rownames(birdtraitmatrix)<-birdtraits$taxaname
+phylo.heatmap(pruned_birdtree,birdtraitmatrix,fsize=c(0.5,0.7,1),standardize = TRUE)
+
+
+
+
 
 
 #Add trophic level for mammals
