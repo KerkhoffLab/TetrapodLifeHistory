@@ -701,6 +701,16 @@ pruned_birdtree<-pruned_birdtree$tree
 
 
 #adding traits to mammal tree
+#Body mass
+mammal_log_bodymass<-completecase_species$log_bodymass[completecase_species$class=="Mammalia"]
+names(mammal_log_bodymass)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_bodymass_tiporder<-mammal_log_bodymass[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
 #C*E
 mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
 names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
@@ -728,6 +738,48 @@ plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
+#make mammal tree dichotomous
+pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
+
+#Create Brownian motion, OU, etc. models
+#For body mass
+mammal_bodymass_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="OU")
+mammal_bodymass_fit.ou
+mammal_bodymass_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="BM")
+mammal_bodymass_fit.bm
+mammal_bodymass_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="lambda")
+mammal_bodymass_fit.lambda
+mammal_bodymass_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="white")
+mammal_bodymass_fit.white
+#For C*E
+mammal_C_E_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="OU")
+mammal_C_E_fit.ou
+mammal_C_E_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="BM")
+mammal_C_E_fit.bm
+mammal_C_E_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="lambda")
+mammal_C_E_fit.lambda
+mammal_C_E_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="white")
+mammal_C_E_fit.white
+#For I/m
+mammal_I_m_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="OU")
+mammal_I_m_fit.ou
+mammal_I_m_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="BM")
+mammal_I_m_fit.bm
+mammal_I_m_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="lambda")
+mammal_I_m_fit.lambda
+mammal_I_m_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="white")
+mammal_I_m_fit.white
+#For E/alpha
+mammal_E_alpha_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="OU")
+mammal_E_alpha_fit.ou
+mammal_E_alpha_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="BM")
+mammal_E_alpha_fit.bm
+mammal_E_alpha_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="lambda")
+mammal_E_alpha_fit.lambda
+mammal_E_alpha_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="white")
+mammal_E_alpha_fit.white
+
+
 #tree with mapped continuous character
 mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
 plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
@@ -747,12 +799,12 @@ bird_log_C_E_tiporder<-bird_log_C_E[pruned_birdtree$tip.label]
 
 plot(pruned_birdtree,no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(bird_log_C_E_tiporder,extremes=c("blue","red")))
-color.legend(5,5,40,10,legend=c(1.51,6.53),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+color.legend(0,100,0.05,105,legend=c(2.65,6.53),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 #I/m
 bird_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Aves"]
 names(bird_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-mammal_log_I_m_tiporder<-bird_log_I_m[pruned_birdtree$tip.label]
+bird_log_I_m_tiporder<-bird_log_I_m[pruned_birdtree$tip.label]
 
 plot(pruned_birdtree,no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
