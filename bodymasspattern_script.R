@@ -792,6 +792,15 @@ rownames(mammaltraitmatrix)<-mammaltraits$taxaname
 phylomorphospace(pruned_mammaltree_best,mammaltraitmatrix[,c(2,4)])
 
 #Adding traits to bird tree
+#Body mass
+bird_log_bodymass<-completecase_species$log_bodymass[completecase_species$class=="Aves"]
+names(bird_log_bodymass)<-completecase_species$taxaname[completecase_species$class=="Aves"]
+bird_log_bodymass_tiporder<-bird_log_bodymass[pruned_birdtree$tip.label]
+
+plot(pruned_birdtree,no.margin = TRUE,show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(bird_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(0,100,0.05,105,legend=c(2.65,6.53),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
 #C*E
 bird_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Aves"]
 names(bird_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Aves"]
@@ -825,6 +834,43 @@ birdtraitmatrix<-as.matrix(birdtraits[,2:5])
 rownames(birdtraitmatrix)<-birdtraits$taxaname
 phylo.heatmap(pruned_birdtree,birdtraitmatrix,fsize=c(0.5,0.7,1),standardize = TRUE)
 
+#Create Brownian motion, OU, etc. models
+#For body mass
+bird_bodymass_fit.ou<-fitContinuous(pruned_birdtree,bird_log_bodymass_tiporder,model="OU")
+bird_bodymass_fit.ou
+bird_bodymass_fit.bm<-fitContinuous(pruned_birdtree,bird_log_bodymass_tiporder,model="BM")
+bird_bodymass_fit.bm
+bird_bodymass_fit.lambda<-fitContinuous(pruned_birdtree,bird_log_bodymass_tiporder,model="lambda")
+bird_bodymass_fit.lambda
+bird_bodymass_fit.white<-fitContinuous(pruned_birdtree,bird_log_bodymass_tiporder,model="white")
+bird_bodymass_fit.white
+#For C*E
+bird_C_E_fit.ou<-fitContinuous(pruned_birdtree_di,bird_log_C_E_tiporder,model="OU")
+bird_C_E_fit.ou
+bird_C_E_fit.bm<-fitContinuous(pruned_birdtree_di,bird_log_C_E_tiporder,model="BM")
+bird_C_E_fit.bm
+bird_C_E_fit.lambda<-fitContinuous(pruned_birdtree_di,bird_log_C_E_tiporder,model="lambda")
+bird_C_E_fit.lambda
+bird_C_E_fit.white<-fitContinuous(pruned_birdtree_di,bird_log_C_E_tiporder,model="white")
+bird_C_E_fit.white
+#For I/m
+bird_I_m_fit.ou<-fitContinuous(pruned_birdtree_di,bird_log_I_m_tiporder,model="OU")
+bird_I_m_fit.ou
+bird_I_m_fit.bm<-fitContinuous(pruned_birdtree_di,bird_log_I_m_tiporder,model="BM")
+bird_I_m_fit.bm
+bird_I_m_fit.lambda<-fitContinuous(pruned_birdtree_di,bird_log_I_m_tiporder,model="lambda")
+bird_I_m_fit.lambda
+bird_I_m_fit.white<-fitContinuous(pruned_birdtree_di,bird_log_I_m_tiporder,model="white")
+bird_I_m_fit.white
+#For E/alpha
+bird_E_alpha_fit.ou<-fitContinuous(pruned_birdtree_di,bird_log_E_alpha_tiporder,model="OU")
+bird_E_alpha_fit.ou
+bird_E_alpha_fit.bm<-fitContinuous(pruned_birdtree_di,bird_log_E_alpha_tiporder,model="BM")
+bird_E_alpha_fit.bm
+bird_E_alpha_fit.lambda<-fitContinuous(pruned_birdtree_di,bird_log_E_alpha_tiporder,model="lambda")
+bird_E_alpha_fit.lambda
+bird_E_alpha_fit.white<-fitContinuous(pruned_birdtree_di,bird_log_E_alpha_tiporder,model="white")
+bird_E_alpha_fit.white
 
 
 
