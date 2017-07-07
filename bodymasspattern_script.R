@@ -687,7 +687,7 @@ pruned_mammaltree_best<-pruned_mammaltree_best$tree
 bigbirdtree<-read.newick("C:/Users/Cecina/Desktop/BigBird.All.NewNames.7000Taxa.tre.gz")
 birdtree<-bigbirdtree[1]
 birdtree<-birdtree[[1]]
-birdtree$tip.label<-gsub("^(.*?-.*?_.*?_)","",birdtree$tip.label)
+birdtree$tip.label<-gsub("^(.*?_.*?_)","",birdtree$tip.label)
 
 #pruning birds
 bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves"]
