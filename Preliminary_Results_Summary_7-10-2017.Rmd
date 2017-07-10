@@ -1,0 +1,317 @@
+---
+title: "Results Summary 7-10-2017"
+author: "Cecina Babich Morrow"
+date: "July 10, 2017"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\ 
+
+```{r packages, warning=FALSE}
+library(readr)
+library(lattice)
+library(RColorBrewer)
+library(ggplot2)
+library(hypervolume)
+library(tidyr)
+library(taxize)
+library(brranching)
+library(picante)
+library(ape)
+library(maptools)
+library(mapproj)
+library(rgeos)
+library(rgdal)
+library(sp)
+library(raster)
+library(phytools)
+library(geiger)
+```
+
+##Bats
+
+I examined how bats relate to birds and mammals in terms of their life history trait space to see how their life history constraints balance being volant with being a mammal.
+
+###Histograms
+
+I began by creating the histograms for the bats overlaid on those for the birds and mammals.
+
+
+Body mass:
+
+```{r bat_bodymass_hist}
+ggplot(data=Amniote_Database_Aug_2015)+
+  geom_freqpoly(aes(x=log(adult_body_mass_g),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Aves"))+
+  geom_freqpoly(aes(x=log(adult_body_mass_g),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Mammalia"))+
+  geom_freqpoly(aes(x=log(adult_body_mass_g),color=order),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,order=="Chiroptera"))
+```
+
+Bats are at the lowest end of the mammals in terms of body mass, most likely due to the constraints of flight.
+
+$C\cdot E$:
+
+```{r bat_CE_hist}
+ggplot(data=Amniote_Database_Aug_2015)+
+  geom_freqpoly(aes(x=log(C_E),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Aves"))+
+  geom_freqpoly(aes(x=log(C_E),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Mammalia"))+
+  geom_freqpoly(aes(x=log(C_E),color=order),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,order=="Chiroptera"))
+```
+
+In terms of $C\cdot E$, the distribution of bats appears more similar to that of mammals as a whole than it does to the birds. Bats have a reproduction per unit death representative of the general mammal values, which are slightly lower than those of birds.
+
+$E/ \alpha$:
+
+```{r bat_Ealpha_hist}
+ggplot(data=Amniote_Database_Aug_2015)+
+  geom_freqpoly(aes(x=log(E_alpha),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Aves"))+
+  geom_freqpoly(aes(x=log(E_alpha),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Mammalia"))+
+  geom_freqpoly(aes(x=log(E_alpha),color=order),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,order=="Chiroptera"))
+```
+
+The distributions of $E/ \alpha$ for birds and mammals are fairly similar, so the bats are similar to both classes for this trait.
+
+$I/m$:
+
+```{r bat_Im_hist}
+ggplot(data=Amniote_Database_Aug_2015)+
+  geom_freqpoly(aes(x=log(I_m),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Aves"))+
+  geom_freqpoly(aes(x=log(I_m),color=class),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,class=="Mammalia"))+
+  geom_freqpoly(aes(x=log(I_m),color=order),binwidth = 0.1,data=subset(Amniote_Database_Aug_2015,order=="Chiroptera"))
+```
+
+The $I/m$ values of bats appear to be constrained in the same way as those of the birds. Both bats and birds have a narrower range of $I/m$ values than mammals do, and these values are at the higher end.
+
+###Hypervolumes
+
+Next, I overlaid the bat data points on the hypervolumes for the birds and mammals. In order to do this, I needed to first reorder the columns of my data so that plot.function.additional works correctly.
+
+```{r complete_data}
+complete_data<-completecase_species[,c(12:15,1:5)]
+complete_data<-as.data.frame(complete_data)
+```
+
+```{r bat_points_hypervolumes}
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian),colors=c(gg_color_hue(3)[1],gg_color_hue(3)[2]),plot.function.additional=function(i,j) {
+  points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="darkviolet",pch=19) 
+})
+```
+
+The purple points show the location of the bat data relative to the bird and mammal hypervolumes. The similarities and differences from the histograms are also evident in the hypervolumes. The bats have low body masses and have constraints on $I/m$ similar to the birds. Their $C/E$ values, however, are more similar to the mammals.
+
+I also created a separate hypervolume for the bats to compare overlap metrics to the mammal and bird hypervolumes.
+
+```{r bat_hypervolume, results="hide"}
+completebats_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$order=="Chiroptera",12:15],
+                                                name = "completebats_gaussian")
+```
+
+```{r bat_overlap}
+#Birds and bats:
+hypervolume_overlap_statistics(hypervolume_set(completebirds_gaussian,completebats_gaussian,check.memory = FALSE))
+#Mammals and bats:
+hypervolume_overlap_statistics(hypervolume_set(completemammals_gaussian,completebats_gaussian,check.memory = FALSE))
+```
+
+
+Clearly the bat hypervolume is more similar to that of mammals than that of birds since bats are included in the mammal hypervolume. Bats are more similar to birds than mammals as a whole are, however (0.187 vs. 0.143 Sorensen overlap).
+
+##Primates
+
+I also examined the histograms of primate traits relative to the three classes, expecting to find that primates had different constraints than the mammals as a whole. This was not the case, however; primates had very similar ranges of trait values to all mammals.
+
+In somewhat of a sidetrack, I looked at how primates differ in their value of $A$ as defined in Charnov (1993) Chapter 5. If $W$ is body mass and $T$ is time, then $\frac{dW}{dT}=AW^{0.75}$. $A$ can be calculated by regressing $\ln(\alpha)$ on $\ln(W)$.
+
+```{r}
+A_mammals<-Amniote_Database_Aug_2015[which(!is.na(Amniote_Database_Aug_2015$female_maturity_d) & !is.na(Amniote_Database_Aug_2015$adult_body_mass_g) & Amniote_Database_Aug_2015$class=="Mammalia"),]
+plot(log(A_mammals$female_maturity_d)~log(A_mammals$adult_body_mass_g),ylab="Ln(Female Maturity)",xlab="Ln(Adult Body Mass)")
+points(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"])~log(A_mammals$adult_body_mass_g[A_mammals$order=="Primates"]),col="red")
+```
+
+The red datapoints highlight the position of the primates relative to the other mammals.
+
+```{r}
+A_mammals_noprimates<-Amniote_Database_Aug_2015[which(!is.na(Amniote_Database_Aug_2015$female_maturity_d) & !is.na(Amniote_Database_Aug_2015$adult_body_mass_g) & !is.na(Amniote_Database_Aug_2015$weaning_d) & Amniote_Database_Aug_2015$class=="Mammalia" & Amniote_Database_Aug_2015$order!="Primates"),]
+A_model_noprimates<-lm(log(A_mammals_noprimates$female_maturity_d)~log(A_mammals_noprimates$adult_body_mass_g))
+summary(A_model_noprimates)
+```
+
+Charnov reports an intercept of about 4.1 and a slope of about 0.25 for a regression on mammals without primates using the units of grams and days, so I am in the ballpark.
+
+```{r}
+A_model_primates<-lm(log(A_mammals$female_maturity_d[A_mammals$order=="Primates"])~log(A_mammals$adult_body_mass_g[A_mammals$order=="Primates"]))
+summary(A_model_primates)
+```
+
+This slope is very similar to the 0.34 reported by  Charnov for just primates. Primates thus have very different $A$ values from mammals as a whole. Since they have higher slopes, they have lower $A$ values, which means that they have slower growth than other mammal species. This is not directly related to any of the invariant traits, but I thought it was interesting to note.
+
+###Bird Orders
+
+I looked at each of the bird orders and examined their placement relative to the bird hypervolume as a whole. There were three orders that had more than 5 species with complete trait coverage: Passeriformes (plotted in green), Charadriiformes (red), and Procellariformes (blue).
+
+```{r}
+plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Passeriformes",i],y=complete_data[complete_data$order=="Passeriformes",j],col="green",pch=19)
+       points(x=complete_data[complete_data$order=="Charadriiformes",i],y=complete_data[complete_data$order=="Charadriiformes",j],col="red",pch=19)
+       points(x=complete_data[complete_data$order=="Procellariiformes",i],y=complete_data[complete_data$order=="Procellariiformes",j],col="blue",pch=19)
+     })
+```
+
+The three orders had fairly noticeable separation in body mass. The Passeriformes tended to be clustered in trait space, while the Charadriiformes were more scattered throughout. We did not have very many Procellariformes with complete trait coverage, but those that we had tended to be towards the edges of the hypervolume, with high $I/m$ and low $E/\alpha$ values.
+
+###Reptile Orders
+
+I also visualized the three reptile orders in relation to the entire reptile hypervolume.
+
+```{r}
+plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
+     plot.function.additional=function(i,j) {
+       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19)
+       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="purple",pch=19)
+       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="darkgreen",pch=19)
+     })
+```
+
+Crocodilia is plotted in red, Squamata in purple, and Testudines in green. There is some clustering, but it is not incredibly well-defined. The orders appear to be most partitioned along the $I/m$ axis.
+
+##Phylogenetic Analyses
+
+###Birds
+
+I am struggling to find an avian phylogeny that has branch lengths and is also ultrametric. I am continuing to look through literature for something that meets these requirements.
+
+###Mammals
+
+I used a mammal supertree downloaded from Fritz et al. 2009 and pruned it to include only the species for which we have values for body mass and the three invariants.
+
+```{r}
+mammaltrees<-read.nexus("fritztree2009.txt")
+#Pick just the tree with the best date estimate
+mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
+
+#named vector including all the mammal species with complete trait data
+bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
+names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+#Pruned to just the mammals with trait data
+pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
+pruned_mammaltree_best<-pruned_mammaltree_best$tree
+```
+
+There are 849 mammal species with complete trait coverage and 834 of those species are represented in this tree.
+
+We can visualize body mass and the three invariant traits on this tree using a color scale.
+
+Body mass:
+```{r}
+mammal_log_bodymass<-completecase_species$log_bodymass[completecase_species$class=="Mammalia"]
+names(mammal_log_bodymass)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_bodymass_tiporder<-mammal_log_bodymass[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(0.85,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+```
+
+The heaviest mammal in the tree is the blue whale (Balaenoptera musculus) and the lightest are three species of shrew from the genus Suncus.
+
+$C\cdot E$:
+
+```{r}
+mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
+names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.760842,5.378637)))
+color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+```
+
+Marmosa mexicana (Mexican mouse opossum) has the highest $C\cdot E$ value and Geomys pinetis (Southeastern pocket gopher) has the lowest.
+
+$E/\alpha$:
+
+```{r}
+mammal_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Mammalia"]
+names(mammal_log_E_alpha)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_E_alpha_tiporder<-mammal_log_E_alpha[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+```
+
+Podomys floridanus (Florida mouse) has the highest $E/\alpha$ value and Murexechinus melanurus (black-tailed dasyure) has the lowest.
+
+$I/m$:
+
+```{r}
+mammal_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Mammalia"]
+names(mammal_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_I_m_tiporder<-mammal_log_I_m[pruned_mammaltree_best$tip.label]
+
+plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-3.77,2.59),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+```
+
+Enhydra lutris (sea otter) has the highest $I/m$ value, although we believe that there is most likely an error in the data for this species since the recorded adult body mass is far too low to be realistic. Dasyurus geoffroii (Western quoll) has the lowest $I/m$ value, which makes sense due to the incredibly low mass of juvenile marsupials.
+
+####Macroevolutionary Models
+
+I fit Brownian motion, Ornstein-Uhlenbeck, and Pagel's lambda models to each of the four traits and noted the model with the lowest AIC score for each trait.
+
+Body mass:
+```{r}
+mammal_bodymass_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="OU")
+mammal_bodymass_fit.ou
+mammal_bodymass_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="BM")
+mammal_bodymass_fit.bm
+mammal_bodymass_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="lambda")
+mammal_bodymass_fit.lambda
+```
+
+
+The lambda model has the best fit for body mass.
+
+$C\cdot E$:
+```{r}
+mammal_C_E_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="OU")
+mammal_C_E_fit.ou
+mammal_C_E_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="BM")
+mammal_C_E_fit.bm
+mammal_C_E_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="lambda")
+mammal_C_E_fit.lambda
+```
+
+The lambda model also has the best fit for $C\cdot E$.
+
+$E/\alpha$:
+```{r}
+mammal_E_alpha_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="OU")
+mammal_E_alpha_fit.ou
+mammal_E_alpha_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="BM")
+mammal_E_alpha_fit.bm
+mammal_E_alpha_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="lambda")
+mammal_E_alpha_fit.lambda
+```
+
+The Ornstein-Uhlenbeck model has the best fit for $E/\alpha$.
+
+$I/m$:
+
+```{r}
+mammal_I_m_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="OU")
+mammal_I_m_fit.ou
+mammal_I_m_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="BM")
+mammal_I_m_fit.bm
+mammal_I_m_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="lambda")
+mammal_I_m_fit.lambda
+```
+
+The lambda model once again has the best fit for $I/m$.
+
+

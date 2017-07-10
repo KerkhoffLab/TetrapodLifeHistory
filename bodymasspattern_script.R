@@ -15,6 +15,7 @@ library(rgdal)
 library(sp)
 library(raster)
 library(phytools)
+library(geiger)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -604,11 +605,16 @@ plot(completebats_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completebats_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(4)[4]))
 
-complete_data<-completecase_species[,c(1:5,12:15)]
+complete_data<-completecase_species[,c(12:15,1:5)]
+complete_data<-as.data.frame(complete_data)
 #Add bat points to mammal hypervolume
 plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
      points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="red",pch=19) 
      })
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian),colors=c(gg_color_hue(3)[1],gg_color_hue(3)[2]),plot.function.additional=function(i,j) {
+  points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="darkviolet",pch=19) 
+})
+
 #Add primate points
 plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
   points(x=complete_data[complete_data$order=="Primates",i],y=complete_data[complete_data$order=="Primates",j],col="red",pch=19) 
@@ -708,7 +714,7 @@ mammal_log_bodymass_tiporder<-mammal_log_bodymass[pruned_mammaltree_best$tip.lab
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
-color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+color.legend(-255,-125,-155,-115,legend=c(0.85,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 #C*E
@@ -778,6 +784,9 @@ mammal_E_alpha_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha
 mammal_E_alpha_fit.lambda
 mammal_E_alpha_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="white")
 mammal_E_alpha_fit.white
+
+#Playing around with PGLS
+C_E.I_m_pglsmodel<-gls(log_C_E~log_I_m,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML")
 
 
 #tree with mapped continuous character
