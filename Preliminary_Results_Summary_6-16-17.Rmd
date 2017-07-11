@@ -198,13 +198,13 @@ Next I determined how many species had values for all three of the invariant tra
 
 ```{r complete_cases}
 #How many species have values for E/alpha, C*E, and I/m?
-sum(complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]))
+sum(complete.cases(Amniote_Database_Aug_2015[,c(39,40,42)]))
 #How many birds?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Aves"])
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,40,42)]) & Amniote_Database_Aug_2015$class=="Aves"])
 #How many mammals?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Mammalia"])
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,40,42)]) & Amniote_Database_Aug_2015$class=="Mammalia"])
 #How many reptiles?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Reptilia"])
+length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,40,42)]) & Amniote_Database_Aug_2015$class=="Reptilia"])
 ```
 
 1138 species have complete cases for all three traits: 172 birds, 849 mammals, and 117 reptiles.
