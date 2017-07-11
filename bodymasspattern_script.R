@@ -16,6 +16,7 @@ library(sp)
 library(raster)
 library(phytools)
 library(geiger)
+library(plotrix)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -785,6 +786,25 @@ mammal_E_alpha_fit.lambda
 mammal_E_alpha_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="white")
 mammal_E_alpha_fit.white
 
+#Body mass
+mammal_bodymass_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_bodymass_fit.lambda$opt$lambda)
+mammal_bodymass_lam_fastAnc<-fastAnc(mammal_bodymass_lam_tree, mammal_log_bodymass_tiporder)
+
+#C*E
+mammal_C_E_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_C_E_fit.lambda$opt$lambda)
+mammal_C_E_lam_fastAnc<-fastAnc(mammal_C_E_lam_tree, mammal_log_C_E_tiporder)
+
+#E/alpha
+mammal_E_alpha_ou_tree<-rescale(pruned_mammaltree_best,model="OU", mammal_E_alpha_fit.ou$opt$alpha)
+mammal_E_alpha_ou_fastAnc<-fastAnc(mammal_E_alpha_ou_tree, mammal_log_E_alpha_tiporder)
+
+#I/m
+mammal_I_m_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_I_m_fit.lambda$opt$lambda)
+mammal_I_m_lam_fastAnc<-fastAnc(mammal_I_m_lam_tree, mammal_log_I_m_tiporder)
+
+
+
+
 #Playing around with PGLS
 C_E.I_m_pglsmodel<-gls(log_C_E~log_I_m,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML")
 
@@ -899,6 +919,26 @@ mammalomnivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[comp
 mammalherbivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Herbivore",13:16],
                                               name = "mammalherbivore_gaussian")
 
+plot(hypervolume_join(mammalcarnivore_gaussian,mammalomnivore_gaussian,mammalherbivore_gaussian))
+
+#trophic overlap
+#carnivore and herbivore
+hypervolume_overlap_statistics(hypervolume_set(mammalcarnivore_gaussian,mammalherbivore_gaussian,check.memory=FALSE))
+#carnivore and omnivore
+hypervolume_overlap_statistics(hypervolume_set(mammalcarnivore_gaussian,mammalomnivore_gaussian,check.memory=FALSE))
+#herbivore and omnivore
+hypervolume_overlap_statistics(hypervolume_set(mammalherbivore_gaussian,mammalomnivore_gaussian,check.memory=FALSE))
+
+#trophic hypervolume volumes
+mammalcarnivore_gaussian@Volume
+mammalherbivore_gaussian@Volume
+mammalomnivore_gaussian@Volume
+
+#Intersection of carnivores and herbivores
+carnherb_set<-hypervolume_set(mammalcarnivore_gaussian,mammalherbivore_gaussian,check.memory = FALSE)
+carnherb_int<-carnherb_set@HVList$Intersection
+#overlap of omnivores with this intersection
+hypervolume_overlap_statistics(hypervolume_set(mammalomnivore_gaussian,carnherb_int,check.memory = FALSE))
 
 
 #GIS code

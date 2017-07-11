@@ -32,6 +32,62 @@ library(phytools)
 library(geiger)
 ```
 
+##Trophic Levels
+
+I used the dataset MammalDIET (Kissling et al. 2014) to add trophic level to the mammal species. 758 of the 849 mammals with trait coverage for body mass and the three invariants had trophic level (188 carnivores, 270 omnivores, and 300 herbivores).
+
+```{r}
+MammalDIET_v1_0$taxaname<-paste(MammalDIET_v1_0$Genus,MammalDIET_v1_0$Species,sep="_")
+completemammal_trophic<-merge(completecase_species,MammalDIET_v1_0[,c("taxaname","TrophicLevel")],by="taxaname")
+```
+
+I created hypervolumes for the carnivores, herbivores, and omnivores in order to compare them.
+
+```{r, results="hide"}
+mammalcarnivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Carnivore",13:16],
+                                               name = "mammalcarnivore_gaussian")
+#omnivore hypervolume
+mammalomnivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Omnivore",13:16],
+                                               name = "mammalomnivore_gaussian")
+#herbivore hypervolume
+mammalherbivore_gaussian<-hypervolume_gaussian(data = completemammal_trophic[completemammal_trophic$TrophicLevel=="Herbivore",13:16],
+                                              name = "mammalherbivore_gaussian")
+```
+
+```{r}
+plot(hypervolume_join(mammalcarnivore_gaussian,mammalomnivore_gaussian,mammalherbivore_gaussian))
+```
+
+
+It appears as if the carnivores and herbivores both occupy unique trait space whereas the omnivores reside primarily in the intersection of the two other trophic levels.
+
+```{r}
+mammalcarnivore_gaussian@Volume
+mammalherbivore_gaussian@Volume
+mammalomnivore_gaussian@Volume
+```
+
+The carnivore hypervolume is the largest, followed by the herbivores and omnivores.
+
+```{r}
+#carnivore and herbivore
+hypervolume_overlap_statistics(hypervolume_set(mammalcarnivore_gaussian,mammalherbivore_gaussian,check.memory=FALSE))
+#carnivore and omnivore
+hypervolume_overlap_statistics(hypervolume_set(mammalcarnivore_gaussian,mammalomnivore_gaussian,check.memory=FALSE))
+#herbivore and omnivore
+hypervolume_overlap_statistics(hypervolume_set(mammalherbivore_gaussian,mammalomnivore_gaussian,check.memory=FALSE))
+```
+
+From examining the overlaps, we can see that all three groups overlap quite a bit, more so than the three classes do. The carnivores have the most unique space in general. The omnivores, however, have much less unique area than either the herbivores and carnivores. These overlap values support the qualitative assessment from the graph that the omnivores occupy the intersection of the trait space of the carnivores and herbivores. To test this hypothesis, I compared the hypervolume intersection of carnivores and herbivores to the omnivore hypervolume.
+
+```{r,results="hide"}
+carnherb_set<-hypervolume_set(mammalcarnivore_gaussian,mammalherbivore_gaussian,check.memory = FALSE)
+carnherb_int<-carnherb_set@HVList$Intersection
+hypervolume_overlap_statistics(hypervolume_set(mammalomnivore_gaussian,carnherb_int,check.memory = FALSE))
+```
+
+The omnivores are more similar to the intersection of the herbivores and carnivores than they are to either group separately. Over a quarter of the omnivore area is not in the intersection, however.
+
 ##Bats
 
 I examined how bats relate to birds and mammals in terms of their life history trait space to see how their life history constraints balance being volant with being a mammal.
@@ -148,7 +204,7 @@ summary(A_model_primates)
 
 This slope is very similar to the 0.34 reported by  Charnov for just primates. Primates thus have very different $A$ values from mammals as a whole. Since they have higher slopes, they have lower $A$ values, which means that they have slower growth than other mammal species. This is not directly related to any of the invariant traits, but I thought it was interesting to note.
 
-###Bird Orders
+##Bird Orders
 
 I looked at each of the bird orders and examined their placement relative to the bird hypervolume as a whole. There were three orders that had more than 5 species with complete trait coverage: Passeriformes (plotted in green), Charadriiformes (red), and Procellariformes (blue).
 
@@ -163,7 +219,7 @@ plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
 
 The three orders had fairly noticeable separation in body mass. The Passeriformes tended to be clustered in trait space, while the Charadriiformes were more scattered throughout. We did not have very many Procellariformes with complete trait coverage, but those that we had tended to be towards the edges of the hypervolume, with high $I/m$ and low $E/\alpha$ values.
 
-###Reptile Orders
+##Reptile Orders
 
 I also visualized the three reptile orders in relation to the entire reptile hypervolume.
 
@@ -264,6 +320,12 @@ Enhydra lutris (sea otter) has the highest $I/m$ value, although we believe that
 
 I fit Brownian motion, Ornstein-Uhlenbeck, and Pagel's lambda models to each of the four traits and noted the model with the lowest AIC score for each trait.
 
+In order to run these models, I first needed to make the mammal phylogeny dichotomous:
+```{r}
+pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
+```
+
+
 Body mass:
 ```{r}
 mammal_bodymass_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="OU")
@@ -311,7 +373,35 @@ mammal_I_m_fit.bm
 mammal_I_m_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_I_m_tiporder,model="lambda")
 mammal_I_m_fit.lambda
 ```
-
+6
 The lambda model once again has the best fit for $I/m$.
+
+####Ancestral Reconstruction
+
+Next, I performed ancestral reconstruction on the four traits using the macroevolutionary models with lowest AIC scores from the previous section.
+
+Body mass:
+```{r}
+mammal_bodymass_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_bodymass_fit.lambda$opt$lambda)
+mammal_bodymass_lam_fastAnc<-fastAnc(mammal_bodymass_lam_tree, mammal_log_bodymass_tiporder)
+```
+
+$C\cdot E$:
+```{r}
+mammal_C_E_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_C_E_fit.lambda$opt$lambda)
+mammal_C_E_lam_fastAnc<-fastAnc(mammal_C_E_lam_tree, mammal_log_C_E_tiporder)
+```
+
+$E/\alpha$:
+```{r}
+mammal_E_alpha_ou_tree<-rescale(pruned_mammaltree_best,model="OU", mammal_E_alpha_fit.ou$opt$alpha)
+mammal_E_alpha_ou_fastAnc<-fastAnc(mammal_E_alpha_ou_tree, mammal_log_E_alpha_tiporder)
+```
+
+$I/m$:
+```{r}
+mammal_I_m_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_I_m_fit.lambda$opt$lambda)
+mammal_I_m_lam_fastAnc<-fastAnc(mammal_I_m_lam_tree, mammal_log_I_m_tiporder)
+```
 
 
