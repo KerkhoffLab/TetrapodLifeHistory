@@ -685,10 +685,43 @@ mammaltrees<-read.nexus("fritztree2009.txt")
 mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
 #want to prune to just the mammals with trait data
 #named vector including all the mammal species with complete trait data
-bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
-names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+#bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
+#removing the sea otter
+bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia" & completecase_species$taxaname!="Enhydra_lutris"]
+
+names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia" & completecase_species$taxaname!="Enhydra_lutris"]
 pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
+
+#Create a table of the node labels for each order
+mammal_ordernodes<-data.frame(Order=as.character(unique(completecase_species$order[completecase_species$class=="Mammalia"])),num.species=as.numeric(0),node.num=as.numeric(0))
+#add number of species per order
+for(i in 1:nrow(mammal_ordernodes)){
+  mammal_ordernodes$num.species[i]<-sum(pruned_mammaltree_best$tip.label%in%completecase_species$taxaname[completecase_species$order==mammal_ordernodes$Order[i]])
+  if(mammal_ordernodes$num.species[i]>1)
+    mammal_ordernodes$node.num[i]<-getMRCA(pruned_mammaltree_best,pruned_mammaltree_best$tip.label[pruned_mammaltree_best$tip.label%in%completecase_species$taxaname[completecase_species$order==mammal_ordernodes$Order[i]]])
+  else
+    mammal_ordernodes$node.num[i]<-NA
+}
+
+mammal_ordernodes<-as.data.frame(mammal_ordernodes)
+mammal_ordernodes$Order<-as.character(mammal_ordernodes$Order)
+
+#plot tree with clades labeled
+plot(pruned_mammaltree_best,type="fan",show.tip.label = FALSE,no.margin = TRUE)
+mammal_ordernodenumbers<-mammal_ordernodes$node.num[!is.na(mammal_ordernodes$node.num)]
+for(i in 1:length(mammal_ordernodenumbers)){
+  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[!is.na(mammal_ordernodes$node.num)][i],
+                  mammal_ordernodenumbers[i])
+}
+
+#plot orders with greater than 50 species
+plot(pruned_mammaltree_best,type="fan",show.tip.label = FALSE,no.margin = TRUE)
+mammal_orderover50<-mammal_ordernodes$node.num[mammal_ordernodes$num.species>50]
+for(i in 1:length(mammal_orderover50)){
+  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                  mammal_orderover50[i])
+}
 
 #Birds
 bigbirdtree<-read.newick("C:/Users/Cecina/Desktop/BigBird.All.NewNames.7000Taxa.tre.gz")
@@ -716,7 +749,10 @@ mammal_log_bodymass_tiporder<-mammal_log_bodymass[pruned_mammaltree_best$tip.lab
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(0.85,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
+for(i in 1:length(mammal_orderover50)){
+     arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                      mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
+   }
 
 #C*E
 mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
@@ -726,6 +762,10 @@ mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red"),xrange=c(-2.760842,5.378637)))
 color.legend(-255,-125,-155,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+for(i in 1:length(mammal_orderover50)){
+  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                  mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
+}
 
 #I/m
 mammal_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Mammalia"]
@@ -734,7 +774,11 @@ mammal_log_I_m_tiporder<-mammal_log_I_m[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
-color.legend(-255,-125,-155,-115,legend=c(-3.77,2.59),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+color.legend(-255,-125,-155,-115,legend=c(-3.77,0.68),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+for(i in 1:length(mammal_orderover50)){
+  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                  mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
+}
 
 #E/alpha
 mammal_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Mammalia"]
@@ -744,6 +788,10 @@ mammal_log_E_alpha_tiporder<-mammal_log_E_alpha[pruned_mammaltree_best$tip.label
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+for(i in 1:length(mammal_orderover50)){
+  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                  mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
+}
 
 #make mammal tree dichotomous
 pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
