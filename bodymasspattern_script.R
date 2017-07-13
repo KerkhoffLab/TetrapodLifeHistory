@@ -731,6 +731,34 @@ for(i in 1:length(mammal_orderover40)){
                   mammal_orderover40[i])
 }
 
+#plotting clades with images of orders
+par(mar=c(3,0,2,0))
+plot(pruned_mammaltree_best,type="fan",show.tip.label = FALSE,no.margin = FALSE)
+for(i in 1:length(mammal_orderover40)){
+     arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],mammal_orderover40[i],cex=0.85)
+}
+
+primate<-readPNG("primate.png")
+rasterImage(primate,-210,60,-170,100)
+
+artiodactyla<-readPNG("artiodactyla.png")
+rasterImage(artiodactyla,-220,-70,-180,-45)
+
+soricomorpha<-readPNG("soricomorpha.png")
+rasterImage(soricomorpha,60,-185,100,-164)
+
+carnivora<-readPNG("carnivora.png")
+rasterImage(carnivora,-140,-165,-100,-146)
+
+chiroptera<-readPNG("chiroptera.png")
+#rasterImage(chiroptera,-60,-210,0,-174)
+
+diprotodontia<-readPNG("diprotodontia.png")
+rasterImage(diprotodontia,150,-120,190,-74)
+
+rodentia<-readPNG("rodentia.png")
+rasterImage(rodentia,110,140,150,180)
+
 #Birds
 bigbirdtree<-read.newick("C:/Users/Cecina/Desktop/BigBird.All.NewNames.7000Taxa.tre.gz")
 birdtree<-bigbirdtree[1]
@@ -881,8 +909,8 @@ plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
 nodelabels(pch=19,col=color.scale(mammal_E_alpha_ou_fastAnc,extremes=c("blue","red")))
 tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
-                                                         mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
+for(i in 1:length(mammal_orderover40)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],
+                                                         mammal_orderover40[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
 }
 
 #I/m
