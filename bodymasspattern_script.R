@@ -940,9 +940,78 @@ summary(C.E_pglsmodel)
 plot(C.E_pglsmodel,resid(.,type="n")~fitted(.),abline=c(0,0))
 
 #C*E and body mass
-C_E.bodymass_pglsmodel<-gls(log(C*E)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML")
+#linear model
+summary(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix))
+abline(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+#PGLS
+summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+
+#E/alpha and body mass
+#linear model
+summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix))
+abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+#PGLS
+summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+
+#I/m and body mass
+#linear model
+summary(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix))
+abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+#PGLS
+summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
 
+#C and E
+#linear model
+summary(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
+plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+#E and alpha
+#linear model
+summary(lm(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix)))
+plot(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+#I and m
+#linear model
+summary(lm(log(I)~log(m),data = as.data.frame(mammalcompmatrix)))
+plot(log(I)~log(m),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(I)~log(m),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+
+#C and m
+#linear model
+summary(lm(log(C)~log(m),data = as.data.frame(mammalcompmatrix)))
+plot(log(C)~log(m),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(C)~log(m),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+#alpha and m
+#linear model
+summary(lm(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix)))
+plot(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+#E and m
+#linear model
+summary(lm(log(E)~log(m),data = as.data.frame(mammalcompmatrix)))
+plot(log(E)~log(m),data = as.data.frame(mammalcompmatrix))
+abline(lm(log(E)~log(m),data = as.data.frame(mammalcompmatrix)))
+#PGLS
+summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
 #tree with mapped continuous character
 mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
