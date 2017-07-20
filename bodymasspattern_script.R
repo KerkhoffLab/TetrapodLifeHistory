@@ -7,7 +7,6 @@ library(tidyr)
 library(taxize)
 library(brranching)
 library(picante)
-library(ape)
 library(maptools)
 library(mapproj)
 library(rgeos)
@@ -131,6 +130,10 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
     Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"fledging_mass_g"]
   }
 }
+
+#Add taxaname column
+Amniote_Database_Aug_2015$taxaname<-paste(Amniote_Database_Aug_2015$genus,Amniote_Database_Aug_2015$species,sep="_")
+
 
 #How many non-NA values for I?
 length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I)])
@@ -931,16 +934,41 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 C_E.I_m_pglsmodel<-gls(log_C_E~log_I_m,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML")
 
 
+#C and E
+C.E_pglsmodel<-gls(log(C)~log(E),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML")
+summary(C.E_pglsmodel)
+plot(C.E_pglsmodel,resid(.,type="n")~fitted(.),abline=c(0,0))
+
+#C*E and body mass
+C_E.bodymass_pglsmodel<-gls(log(C*E)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML")
+
+
+
 #tree with mapped continuous character
 mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
 plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
 
 #phylomorphospace
 mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
+mammaltraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname])*365
+mammaltraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+mammaltraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+mammaltraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+
+
 mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
 mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
 rownames(mammaltraitmatrix)<-mammaltraits$taxaname
 phylomorphospace(pruned_mammaltree_best,mammaltraitmatrix[,c(2,4)])
+
+#matrix with components of invariants
+mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
+rownames(mammalcompmatrix)<-mammaltraits$taxaname
+#remove otter
+mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
+
 
 #Adding traits to bird tree
 #Body mass
