@@ -934,20 +934,38 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 C_E.I_m_pglsmodel<-gls(log_C_E~log_I_m,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML")
 
 
-#C and E
-C.E_pglsmodel<-gls(log(C)~log(E),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML")
-summary(C.E_pglsmodel)
-plot(C.E_pglsmodel,resid(.,type="n")~fitted(.),abline=c(0,0))
 
 #C*E and body mass
+
+#Mammals
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
-plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix))
-abline(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+
+
+plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
+points(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
+
 #E/alpha and body mass
+
+#Mammals
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix))
@@ -955,7 +973,28 @@ abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+
+
+plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
+points(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
+
 #I/m and body mass
+#Mammals
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix))
@@ -963,8 +1002,28 @@ abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+
+
+plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2])
+points(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
 
 #C and E
+
+#Mammals
 #linear model
 summary(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
 plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix))
@@ -972,52 +1031,169 @@ abline(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log(C)~log(E),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(C)~log(E),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix),col=brewer.pal(n=3,"Set1")[2])
+points(log(C)~log(E),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+plot(log(C)~log(E),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(C)~log(E),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(C)~log(E),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
+
 #E and alpha
+
+#Mammals
 #linear model
 summary(lm(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix)))
-plot(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log(E)~log(alpha),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(E)~log(alpha),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix),xlim=c(3,9.5),col=brewer.pal(n=3,"Set1")[2])
+points(log(E)~log(alpha),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log(E)~log(alpha),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(E)~log(alpha),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(E)~log(alpha),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
 #I and m
+
+#Mammals
 #linear model
 summary(lm(log(I)~log(m),data = as.data.frame(mammalcompmatrix)))
-plot(log(I)~log(m),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(I)~log(m),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log(I)~log(m),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(I)~log(m),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(I)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-2.5,16),col=brewer.pal(n=3,"Set1")[2])
+points(log(I)~log(m),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log(I)~log(m),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(I)~log(m),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(I)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(I)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
 
 #C and m
+
+#Mammals
 #linear model
 summary(lm(log(C)~log(m),data = as.data.frame(mammalcompmatrix)))
-plot(log(C)~log(m),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(C)~log(m),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log(C)~log(m),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(C)~log(m),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(C)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-4.5,3),col=brewer.pal(n=3,"Set1")[2])
+points(log(C)~log(m),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log(C)~log(m),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(C)~log(m),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(C)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(C)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
 #alpha and m
+
+#Mammals
 #linear model
 summary(lm(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix)))
-plot(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
+#Birds
+#linear model
+summary(lm(log(alpha)~log(m),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(alpha)~log(m),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(3,9),col=brewer.pal(n=3,"Set1")[2])
+points(log(alpha)~log(m),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log(alpha)~log(m),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(alpha)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(alpha)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
+
 #E and m
+
+#Mammals
 #linear model
 summary(lm(log(E)~log(m),data = as.data.frame(mammalcompmatrix)))
-plot(log(E)~log(m),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(E)~log(m),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
+
+#Birds
+#linear model
+summary(lm(log(E)~log(m),data = as.data.frame(birdcompmatrix)))
+
+#Reptiles
+#linear model
+summary(lm(log(E)~log(m),data = as.data.frame(reptilecompmatrix)))
+
+
+plot(log(E)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-2.5,5),col=brewer.pal(n=3,"Set1")[2])
+points(log(E)~log(m),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
+points(log(E)~log(m),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+
+
+abline(lm(log(E)~log(m),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log(E)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log(E)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
+
+
 
 #tree with mapped continuous character
 mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
 plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
 
-#phylomorphospace
+#Trait datasets by class
+#Mammals
 mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
 mammaltraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
 mammaltraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
@@ -1030,13 +1206,47 @@ mammaltraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug
 mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
 mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
 rownames(mammaltraitmatrix)<-mammaltraits$taxaname
-phylomorphospace(pruned_mammaltree_best,mammaltraitmatrix[,c(2,4)])
+
 
 #matrix with components of invariants
 mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
 rownames(mammalcompmatrix)<-mammaltraits$taxaname
 #remove otter
 mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
+
+#Birds
+birdtraits<-completecase_species[completecase_species$class=="Aves",c(20,12:15)]
+birdtraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+birdtraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+birdtraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname])*365
+birdtraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+birdtraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+birdtraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+
+
+birdtraitmatrix<-as.matrix(birdtraits[,2:5])
+rownames(birdtraitmatrix)<-birdtraits$taxaname
+
+#Reptiles
+reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
+reptiletraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname])*365
+reptiletraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+reptiletraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+reptiletraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+
+
+reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
+rownames(reptiletraitmatrix)<-reptiletraits$taxaname
+
+
+#matrix with components of invariants
+birdcompmatrix<-as.matrix(birdtraits[,6:11])
+rownames(birdcompmatrix)<-birdtraits$taxaname
+
+reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
+rownames(reptilecompmatrix)<-reptiletraits$taxaname
 
 
 #Adding traits to bird tree
