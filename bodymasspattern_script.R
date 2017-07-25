@@ -762,17 +762,41 @@ rasterImage(diprotodontia,150,-120,190,-74)
 rodentia<-readPNG("rodentia.png")
 rasterImage(rodentia,110,140,150,180)
 
-#Birds
-bigbirdtree<-read.newick("C:/Users/Cecina/Desktop/BigBird.All.NewNames.7000Taxa.tre.gz")
-birdtree<-bigbirdtree[1]
-birdtree<-birdtree[[1]]
-birdtree$tip.label<-gsub("^(.*?_.*?_)","",birdtree$tip.label)
+
+#Birdtree.org tree
+multbirdtree<-read.newick("C:/Users/Cecina/Desktop/HackettStage2_0001_1000/mnt/data/projects/birdphylo/Tree_sets/Stage2_full_data/CombinedTrees/AllBirdsHackett1.tre")
+birdtree1<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Hacketttree1.txt")
+plot(birdtree1)
+birdtree1$tip.label[1017]<-"Antrostomus_vociferus"
+birdtree1$tip.label[1107]<-"Hydroprogne_caspia"
+birdtree1$tip.label[1096]<-"Onychoprion_fuscatus"
+birdtree1$tip.label[1216]<-"Stercorarius_skua"
+birdtree1$tip.label[6814]<-"Melozone_aberti"
+birdtree1$tip.label[6684]<-"Acanthis_flammea"
+birdtree1$tip.label[6685]<-"Acanthis_hornemanni"
+birdtree1$tip.label[6640]<-"Haemorhous_mexicanus"
+birdtree1$tip.label[6747]<-"Spinus_pinus"
+birdtree1$tip.label[4298]<-"Periparus_ater"
+birdtree1$tip.label[4291]<-"Poecile_atricapillus"
+birdtree1$tip.label[7041]<-"Geothlypis_formosa"
+birdtree1$tip.label[7142]<-"Leiothlypis_peregrina"
+birdtree1$tip.label[7036]<-"Parkesia_motacilla"
+birdtree1$tip.label[7059]<-"Setophaga_aestiva"
+birdtree1$tip.label[7073]<-"Setophaga_discolor"
+birdtree1$tip.label[7078]<-"Setophaga_kirtlandii"
+birdtree1$tip.label[7081]<-"Setophaga_petechia"
+birdtree1$tip.label[7084]<-"Setophaga_striata"
+birdtree1$tip.label[7070]<-"Setophaga_virens"
+birdtree1$tip.label[9332]<-"Thalassarche_melanophris"
+
+
+
 
 #pruning birds
 bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves"]
 names(bmvec_bird)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-pruned_birdtree<-prune.missing(x=bmvec_bird, phylo=birdtree)
-pruned_birdtree<-pruned_birdtree$tree
+pruned_birdtree1<-prune.missing(x=bmvec_bird, phylo=birdtree1)
+pruned_birdtree1<-pruned_birdtree1$tree
 
 
 #Reptiles
@@ -784,6 +808,17 @@ names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class==
 pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
 pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
+
+#ultrametric squamate tree
+data(BergmannEtAl2012)
+#pruning
+pruned_BergmannEtAl2012<-prune.missing(x=bmvec_reptile,phylo=BergmannEtAl2012)
+pruned_BergmannEtAl2012<-pruned_BergmannEtAl2012$tree
+
+#snake tree
+snaketree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/snaketree.txt")
+
+
 
 data(JaffeEtAl2011)
 turtletree<-JaffeEtAl2011
@@ -860,6 +895,48 @@ for(i in 1:length(mammal_orderover50)){
   arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
                   mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
 }
+
+#adding traits to squamate tree
+#Body mass
+squamate_log_bodymass<-completecase_species$log_bodymass[completecase_species$order=="Squamata"]
+names(squamate_log_bodymass)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_bodymass_tiporder<-squamate_log_bodymass[pruned_squamatetree$tip.label]
+
+plot(pruned_squamatetree,cex=0.65)
+tiplabels(pch=19,col=color.scale(squamate_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(0.90,10.62),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#C*E
+squamate_log_C_E<-completecase_species$log_C_E[completecase_species$order=="Squamata"]
+names(squamate_log_C_E)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_C_E_tiporder<-squamate_log_C_E[pruned_squamatetree$tip.label]
+
+plot(pruned_squamatetree,cex=0.65)
+tiplabels(pch=19,col=color.scale(squamate_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-2.44,2.42),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#I/m
+squamate_log_I_m<-completecase_species$log_I_m[completecase_species$order=="Squamata"]
+names(squamate_log_I_m)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_I_m_tiporder<-squamate_log_I_m[pruned_squamatetree$tip.label]
+
+plot(pruned_squamatetree,cex=0.65)
+tiplabels(pch=19,col=color.scale(squamate_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-6.30,-1.95),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+squamate_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$order=="Squamata"]
+names(squamate_log_E_alpha)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_E_alpha_tiporder<-squamate_log_E_alpha[pruned_squamatetree$tip.label]
+
+plot(pruned_squamatetree,cex=0.65)
+tiplabels(pch=19,col=color.scale(squamate_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+
 
 #adding traits to croc tree
 #Body mass
@@ -943,6 +1020,44 @@ mammal_E_alpha_fit.lambda
 mammal_E_alpha_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="white")
 mammal_E_alpha_fit.white
 
+#Create Brownian motion, OU, etc. models for Squamata
+#For body mass
+squamate_bodymass_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="OU")
+squamate_bodymass_fit.ou
+squamate_bodymass_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="BM")
+squamate_bodymass_fit.bm
+squamate_bodymass_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="lambda")
+squamate_bodymass_fit.lambda
+squamate_bodymass_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="white")
+squamate_bodymass_fit.white
+#For C*E
+squamate_C_E_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="OU")
+squamate_C_E_fit.ou
+squamate_C_E_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="BM")
+squamate_C_E_fit.bm
+squamate_C_E_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="lambda")
+squamate_C_E_fit.lambda
+squamate_C_E_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="white")
+squamate_C_E_fit.white
+#For I/m
+squamate_I_m_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="OU")
+squamate_I_m_fit.ou
+squamate_I_m_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="BM")
+squamate_I_m_fit.bm
+squamate_I_m_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="lambda")
+squamate_I_m_fit.lambda
+squamate_I_m_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="white")
+squamate_I_m_fit.white
+#For E/alpha
+squamate_E_alpha_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="OU")
+squamate_E_alpha_fit.ou
+squamate_E_alpha_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="BM")
+squamate_E_alpha_fit.bm
+squamate_E_alpha_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="lambda")
+squamate_E_alpha_fit.lambda
+squamate_E_alpha_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="white")
+squamate_E_alpha_fit.white
+
 #Create Brownian motion, OU, etc. models for Crocodilia
 #For body mass
 croc_bodymass_fit.ou<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="OU")
@@ -980,7 +1095,6 @@ croc_E_alpha_fit.lambda<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder
 croc_E_alpha_fit.lambda
 croc_E_alpha_fit.white<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="white")
 croc_E_alpha_fit.white
-
 
 
 
