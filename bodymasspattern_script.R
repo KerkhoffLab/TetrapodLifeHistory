@@ -777,6 +777,35 @@ pruned_birdtree<-pruned_birdtree$tree
 
 #Reptiles
 
+squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/squamatatree.txt")
+#pruning squamates
+bmvec_reptile<-completecase_species$adult_body_mass_g[completecase_species$class=="Reptilia"]
+names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class=="Reptilia"]
+pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
+pruned_squamatetree<-pruned_squamatetree$tree
+pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
+
+data(JaffeEtAl2011)
+turtletree<-JaffeEtAl2011
+#fix spelling of Texas tortoise
+turtletree$tip.label[81]<-"Gopherus_berlandieri"
+#Get rid of Greek tortoise subspecies
+turtletree$tip.label[26]<-"Testudo_graeca"
+#fix red-footed tortoise
+turtletree$tip.label[60]<-"Chelonoidis_carbonarius"
+#pruning turtles
+pruned_turtletree<-prune.missing(x=bmvec_reptile, phylo=turtletree)
+pruned_turtletree<-pruned_turtletree$tree
+
+data("Oaks2011")
+croctree<-Oaks2011
+#rename freshwater croc to match amniote taxonomy
+croctree$tip.label[11]<-"Crocodylus_johnsoni"
+#rename one of Nile crocodiles
+croctree$tip.label[13]<-"Crocodylus_niloticus"
+#pruning crocs
+pruned_croctree<-prune.missing(x=bmvec_reptile,phylo = croctree)
+pruned_croctree<-pruned_croctree$tree
 
 
 #adding traits to mammal tree
@@ -832,6 +861,47 @@ for(i in 1:length(mammal_orderover50)){
                   mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
 }
 
+#adding traits to croc tree
+#Body mass
+croc_log_bodymass<-completecase_species$log_bodymass[completecase_species$order=="Crocodilia"]
+names(croc_log_bodymass)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
+croc_log_bodymass_tiporder<-croc_log_bodymass[pruned_croctree$tip.label]
+
+plot(pruned_croctree)
+tiplabels(pch=19,col=color.scale(croc_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(0,0,20,0.4,legend=c(9.30,12.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#C*E
+croc_log_C_E<-completecase_species$log_C_E[completecase_species$order=="Crocodilia"]
+names(croc_log_C_E)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
+croc_log_C_E_tiporder<-croc_log_C_E[pruned_croctree$tip.label]
+
+plot(pruned_croctree)
+tiplabels(pch=19,col=color.scale(croc_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(0,0,20,0.4,legend=c(-0.60,0.16),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#I/m
+croc_log_I_m<-completecase_species$log_I_m[completecase_species$order=="Crocodilia"]
+names(croc_log_I_m)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
+croc_log_I_m_tiporder<-croc_log_I_m[pruned_croctree$tip.label]
+
+plot(pruned_croctree)
+tiplabels(pch=19,col=color.scale(croc_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(0,0,20,0.4,legend=c(-7.90,-5.63),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+croc_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$order=="Crocodilia"]
+names(croc_log_E_alpha)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
+croc_log_E_alpha_tiporder<-croc_log_E_alpha[pruned_croctree$tip.label]
+
+plot(pruned_croctree)
+tiplabels(pch=19,col=color.scale(croc_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(0,0,20,0.4,legend=c(0.47,2.31),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+
 #make mammal tree dichotomous
 pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
 
@@ -872,6 +942,47 @@ mammal_E_alpha_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha
 mammal_E_alpha_fit.lambda
 mammal_E_alpha_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_E_alpha_tiporder,model="white")
 mammal_E_alpha_fit.white
+
+#Create Brownian motion, OU, etc. models for Crocodilia
+#For body mass
+croc_bodymass_fit.ou<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="OU")
+croc_bodymass_fit.ou
+croc_bodymass_fit.bm<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="BM")
+croc_bodymass_fit.bm
+croc_bodymass_fit.lambda<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="lambda")
+croc_bodymass_fit.lambda
+croc_bodymass_fit.white<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="white")
+croc_bodymass_fit.white
+#For C*E
+croc_C_E_fit.ou<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="OU")
+croc_C_E_fit.ou
+croc_C_E_fit.bm<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="BM")
+croc_C_E_fit.bm
+croc_C_E_fit.lambda<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="lambda")
+croc_C_E_fit.lambda
+croc_C_E_fit.white<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="white")
+croc_C_E_fit.white
+#For I/m
+croc_I_m_fit.ou<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="OU")
+croc_I_m_fit.ou
+croc_I_m_fit.bm<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="BM")
+croc_I_m_fit.bm
+croc_I_m_fit.lambda<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="lambda")
+croc_I_m_fit.lambda
+croc_I_m_fit.white<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="white")
+croc_I_m_fit.white
+#For E/alpha
+croc_E_alpha_fit.ou<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="OU")
+croc_E_alpha_fit.ou
+croc_E_alpha_fit.bm<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="BM")
+croc_E_alpha_fit.bm
+croc_E_alpha_fit.lambda<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="lambda")
+croc_E_alpha_fit.lambda
+croc_E_alpha_fit.white<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="white")
+croc_E_alpha_fit.white
+
+
+
 
 
 #fastAnc ancestral reconstructions
