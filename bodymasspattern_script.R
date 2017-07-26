@@ -803,6 +803,11 @@ pruned_birdtree1<-pruned_birdtree1$tree
 
 
 #Reptiles
+squamatetesttree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/europeansquamatatestudines1.txt")
+
+squamatetree<-read.newick("C:/Users/Cecina/Downloads/phylogenies/zhengWiens2016.tre")
+squamatetree<-read.newick("C:/Users/Cecina/Downloads/phylogenies/Tonini_dna.tre")
+squamatetree<-read.newick("C:/Users/Cecina/Downloads/phylogenies/Wright_Best.dated.tre")
 
 squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/squamatatree.txt")
 #pruning squamates
@@ -811,6 +816,11 @@ names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class==
 pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
 pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
+
+pruned_squamatetesttree<-prune.missing(x=bmvec_reptile, phylo=squamatetesttree)
+pruned_squamatetesttree<-pruned_squamatetesttree$tree
+
+
 
 #ultrametric squamate tree
 data(BergmannEtAl2012)
@@ -1110,7 +1120,7 @@ mammal_bodymass_lam_fastAnc<-fastAnc(mammal_bodymass_lam_tree, mammal_log_bodyma
 
 #Color node labels based on lambda model
 plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(mammal_bodymass_lam_fastAnc,extremes=c("blue","red")))
+nodelabels(pch=19,col=color.scale(mammal_bodymass_lam_fastAnc,extremes=c("blue","red"),xrange = c(min(mammal_log_bodymass_tiporder),max(mammal_log_bodymass_tiporder))))
 tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
 color.legend(-265,-125,-165,-115,legend=c(0.85,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 for(i in 1:length(mammal_orderover40)){
@@ -1124,7 +1134,7 @@ mammal_C_E_lam_fastAnc<-fastAnc(mammal_C_E_lam_tree, mammal_log_C_E_tiporder)
 
 #Color node labels based on lambda model
 plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(mammal_C_E_lam_fastAnc,extremes=c("blue","red")))
+nodelabels(pch=19,col=color.scale(mammal_C_E_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(mammal_log_C_E_tiporder),max(mammal_log_C_E_tiporder))))
 tiplabels(pch=19,col=color.scale(mammal_log_C_E_tiporder,extremes=c("blue","red")))
 color.legend(-265,-125,-165,-115,legend=c(-2.76,5.38),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 for(i in 1:length(mammal_orderover40)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],
@@ -1137,7 +1147,7 @@ mammal_E_alpha_ou_fastAnc<-fastAnc(mammal_E_alpha_ou_tree, mammal_log_E_alpha_ti
 
 #Color node labels based on OU model
 plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(mammal_E_alpha_ou_fastAnc,extremes=c("blue","red")))
+nodelabels(pch=19,col=color.scale(mammal_E_alpha_ou_fastAnc,extremes=c("blue","red"),xrange=c(min(mammal_log_E_alpha_tiporder),max(mammal_log_E_alpha_tiporder))))
 tiplabels(pch=19,col=color.scale(mammal_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-1.80,4.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 for(i in 1:length(mammal_orderover40)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],
@@ -1150,16 +1160,12 @@ mammal_I_m_lam_fastAnc<-fastAnc(mammal_I_m_lam_tree, mammal_log_I_m_tiporder)
 
 #Color node labels based on lambda model
 plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(mammal_I_m_lam_fastAnc,extremes=c("blue","red")))
+nodelabels(pch=19,col=color.scale(mammal_I_m_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(mammal_log_I_m_tiporder),max(mammal_log_I_m_tiporder))))
 tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
 color.legend(-255,-125,-155,-115,legend=c(-3.77,0.68),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
                                                          mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
 }
-
-
-#Playing around with PGLS
-C_E.I_m_pglsmodel<-gls(log_C_E~log_I_m,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML")
 
 
 
@@ -1174,6 +1180,8 @@ summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree
 #Birds
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+#PGLS
+summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
 
 #Reptiles
 #linear model
@@ -1196,14 +1204,15 @@ abline(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=bre
 #Mammals
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
-plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix))
-abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
 #Birds
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+#PGLS
+summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
+
 
 #Reptiles
 #linear model
@@ -1225,14 +1234,16 @@ abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col
 #Mammals
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
-plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix))
-abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
 #Birds
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+#PGLS
+summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
+
+
 
 #Reptiles
 #linear model
@@ -1254,14 +1265,15 @@ abline(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=bre
 #Mammals
 #linear model
 summary(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
-plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix))
-abline(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)))
 #PGLS
 summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammalcompmatrix),method = "ML"))
 
 #Birds
 #linear model
 summary(lm(log(C)~log(E),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
+
 
 #Reptiles
 #linear model
@@ -1270,7 +1282,7 @@ summary(lm(log(C)~log(E),data = as.data.frame(reptilecompmatrix)))
 
 plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix),col=brewer.pal(n=3,"Set1")[2])
 points(log(C)~log(E),data = as.data.frame(birdcompmatrix),col=brewer.pal(n=3,"Set1")[1])
-plot(log(C)~log(E),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
+points(log(C)~log(E),data = as.data.frame(reptilecompmatrix),col=brewer.pal(n=3,"Set1")[3])
 
 
 abline(lm(log(C)~log(E),data = as.data.frame(mammalcompmatrix)),col=brewer.pal(n=3,"Set1")[2])
@@ -1290,6 +1302,9 @@ summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_mammaltree_di
 #Birds
 #linear model
 summary(lm(log(E)~log(alpha),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
+
 
 #Reptiles
 #linear model
@@ -1317,6 +1332,8 @@ summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),da
 #Birds
 #linear model
 summary(lm(log(I)~log(m),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
 
 #Reptiles
 #linear model
@@ -1344,6 +1361,9 @@ summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),da
 #Birds
 #linear model
 summary(lm(log(C)~log(m),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
+
 
 #Reptiles
 #linear model
@@ -1371,6 +1391,8 @@ summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di
 #Birds
 #linear model
 summary(lm(log(alpha)~log(m),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
 
 #Reptiles
 #linear model
@@ -1399,6 +1421,8 @@ summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_mammaltree_di),da
 #Birds
 #linear model
 summary(lm(log(E)~log(m),data = as.data.frame(birdcompmatrix)))
+#PGLS
+summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data = as.data.frame(birdcompmatrix),method = "ML"))
 
 #Reptiles
 #linear model
@@ -1443,7 +1467,7 @@ rownames(mammalcompmatrix)<-mammaltraits$taxaname
 mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
 
 #Birds
-birdtraits<-completecase_species[completecase_species$class=="Aves",c(20,12:15)]
+birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
 birdtraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
 birdtraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
 birdtraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname])*365
