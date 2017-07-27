@@ -831,14 +831,6 @@ force.ultrametric<-function(tree,method=c("nnls","extend")){
 ult_pruned_squamatetree<-force.ultrametric(pruned_squamatetree,method = "nnls")
 
 
-# #ultrametric squamate tree
-# data(BergmannEtAl2012)
-# #pruning
-# pruned_BergmannEtAl2012<-prune.missing(x=bmvec_reptile,phylo=BergmannEtAl2012)
-# pruned_BergmannEtAl2012<-pruned_BergmannEtAl2012$tree
-
-#snake tree
-snaketree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/snaketree.txt")
 
 
 
@@ -924,7 +916,7 @@ squamate_log_bodymass<-completecase_species$log_bodymass[completecase_species$or
 names(squamate_log_bodymass)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
 squamate_log_bodymass_tiporder<-squamate_log_bodymass[pruned_squamatetree$tip.label]
 
-plot(pruned_squamatetree,cex=0.65)
+plot(pruned_squamatetree,cex=0.65,no.margin=TRUE)
 tiplabels(pch=19,col=color.scale(squamate_log_bodymass_tiporder,extremes=c("blue","red")))
 color.legend(0,60,40,61,legend=c(0.90,10.62),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
@@ -1044,40 +1036,40 @@ mammal_E_alpha_fit.white
 
 #Create Brownian motion, OU, etc. models for Squamata
 #For body mass
-squamate_bodymass_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="OU")
+squamate_bodymass_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="OU")
 squamate_bodymass_fit.ou
-squamate_bodymass_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="BM")
+squamate_bodymass_fit.bm<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="BM")
 squamate_bodymass_fit.bm
-squamate_bodymass_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="lambda")
+squamate_bodymass_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="lambda")
 squamate_bodymass_fit.lambda
-squamate_bodymass_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_bodymass_tiporder,model="white")
+squamate_bodymass_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="white")
 squamate_bodymass_fit.white
 #For C*E
-squamate_C_E_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="OU")
+squamate_C_E_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_C_E_tiporder,model="OU")
 squamate_C_E_fit.ou
-squamate_C_E_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="BM")
+squamate_C_E_fit.bm<-fitContinuous(ult_pruned_squamatetree,squamate_log_C_E_tiporder,model="BM")
 squamate_C_E_fit.bm
-squamate_C_E_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="lambda")
+squamate_C_E_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_C_E_tiporder,model="lambda")
 squamate_C_E_fit.lambda
-squamate_C_E_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_C_E_tiporder,model="white")
+squamate_C_E_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_C_E_tiporder,model="white")
 squamate_C_E_fit.white
 #For I/m
-squamate_I_m_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="OU")
+squamate_I_m_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_I_m_tiporder,model="OU")
 squamate_I_m_fit.ou
-squamate_I_m_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="BM")
+squamate_I_m_fit.bm<-fitContinuous(ult_pruned_squamatetree,squamate_log_I_m_tiporder,model="BM")
 squamate_I_m_fit.bm
-squamate_I_m_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="lambda")
+squamate_I_m_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_I_m_tiporder,model="lambda")
 squamate_I_m_fit.lambda
-squamate_I_m_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_I_m_tiporder,model="white")
+squamate_I_m_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_I_m_tiporder,model="white")
 squamate_I_m_fit.white
 #For E/alpha
-squamate_E_alpha_fit.ou<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="OU")
+squamate_E_alpha_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="OU")
 squamate_E_alpha_fit.ou
-squamate_E_alpha_fit.bm<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="BM")
+squamate_E_alpha_fit.bm<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="BM")
 squamate_E_alpha_fit.bm
-squamate_E_alpha_fit.lambda<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="lambda")
+squamate_E_alpha_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="lambda")
 squamate_E_alpha_fit.lambda
-squamate_E_alpha_fit.white<-fitContinuous(pruned_squamatetree,squamate_log_E_alpha_tiporder,model="white")
+squamate_E_alpha_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="white")
 squamate_E_alpha_fit.white
 
 #Create Brownian motion, OU, etc. models for Crocodilia
@@ -1176,6 +1168,57 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
                                                          mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
 }
 
+#fastAnc ancestral reconstructions for squamates
+
+# #Body mass
+# squamate_bodymass_lam_tree<-geiger::rescale(pruned_squamatetree,model="lambda", squamate_bodymass_fit.lambda$opt$lambda)
+# mammal_bodymass_lam_fastAnc<-fastAnc(mammal_bodymass_lam_tree, mammal_log_bodymass_tiporder)
+# 
+# #Color node labels based on lambda model
+# plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+# nodelabels(pch=19,col=color.scale(mammal_bodymass_lam_fastAnc,extremes=c("blue","red"),xrange = c(min(mammal_log_bodymass_tiporder),max(mammal_log_bodymass_tiporder))))
+# tiplabels(pch=19,col=color.scale(mammal_log_bodymass_tiporder,extremes=c("blue","red")))
+# color.legend(-265,-125,-165,-115,legend=c(0.85,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+# for(i in 1:length(mammal_orderover40)){
+#   arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],
+#                   mammal_orderover40[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
+# }
+
+#C*E
+squamate_C_E_lam_tree<-geiger::rescale(ult_pruned_squamatetree,model="lambda", squamate_C_E_fit.lambda$opt$lambda)
+squamate_C_E_lam_fastAnc<-fastAnc(squamate_C_E_lam_tree, squamate_log_C_E_tiporder)
+
+#Color node labels based on lambda model
+plot(pruned_squamatetree,no.margin=TRUE,show.tip.label=FALSE)
+nodelabels(pch=19,col=color.scale(squamate_C_E_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(squamate_log_C_E_tiporder),max(squamate_log_C_E_tiporder))))
+tiplabels(pch=19,col=color.scale(squamate_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(-0,60,40,61,legend=c(-2.44,2.42),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#E/alpha
+squamate_E_alpha_lam_tree<-geiger::rescale(ult_pruned_squamatetree,model="lambda", squamate_E_alpha_fit.lambda$opt$lambda)
+squamate_E_alpha_lam_fastAnc<-fastAnc(squamate_E_alpha_lam_tree, squamate_log_E_alpha_tiporder)
+
+#Color node labels based on lambda model
+plot(pruned_squamatetree,no.margin=TRUE,show.tip.label=FALSE)
+nodelabels(pch=19,col=color.scale(squamate_E_alpha_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(squamate_log_E_alpha_tiporder),max(squamate_log_E_alpha_tiporder))))
+tiplabels(pch=19,col=color.scale(squamate_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#I/m
+mammal_I_m_lam_tree<-rescale(pruned_mammaltree_best,model="lambda", mammal_I_m_fit.lambda$opt$lambda)
+mammal_I_m_lam_fastAnc<-fastAnc(mammal_I_m_lam_tree, mammal_log_I_m_tiporder)
+
+#Color node labels based on lambda model
+plot(pruned_mammaltree_best,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(mammal_I_m_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(mammal_log_I_m_tiporder),max(mammal_log_I_m_tiporder))))
+tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-3.77,0.68),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
+                                                         mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
+}
+
 
 
 #C*E and body mass
@@ -1185,6 +1228,7 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+summary(gls(log_C_E~log_bodymass,correlation = corPagel(1,phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
 
 #Birds
 #linear model
@@ -1195,6 +1239,13 @@ summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1)
 #Reptiles
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+
+#Squamates
+#linear model
+summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
+
 
 
 plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
@@ -1226,6 +1277,11 @@ summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_birdtr
 #Reptiles
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+#Squamates
+#linear model
+summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
@@ -1257,6 +1313,11 @@ summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1)
 #Reptiles
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
+#Squamates
+#linear model
+summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2])
@@ -1287,6 +1348,11 @@ summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_birdtree1),data =
 #Reptiles
 #linear model
 summary(lm(log(C)~log(E),data = as.data.frame(reptilecompmatrix)))
+#Squamates
+#linear model
+summary(lm(log(C)~log(E),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(C)~log(E),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(C)~log(E),data = as.data.frame(mammalcompmatrix),col=brewer.pal(n=3,"Set1")[2])
@@ -1318,6 +1384,11 @@ summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_birdtree1),da
 #Reptiles
 #linear model
 summary(lm(log(E)~log(alpha),data = as.data.frame(reptilecompmatrix)))
+#Squamates
+#linear model
+summary(lm(log(E)~log(alpha),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(E)~log(alpha),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(E)~log(alpha),data = as.data.frame(mammalcompmatrix),xlim=c(3,9.5),col=brewer.pal(n=3,"Set1")[2])
@@ -1347,6 +1418,11 @@ summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data =
 #Reptiles
 #linear model
 summary(lm(log(I)~log(m),data = as.data.frame(reptilecompmatrix)))
+#Squamates
+#linear model
+summary(lm(log(I)~log(m),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(I)~log(m),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(I)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-2.5,16),col=brewer.pal(n=3,"Set1")[2])
@@ -1377,6 +1453,11 @@ summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data =
 #Reptiles
 #linear model
 summary(lm(log(C)~log(m),data = as.data.frame(reptilecompmatrix)))
+#Squamates
+#linear model
+summary(lm(log(C)~log(m),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(C)~log(m),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(C)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-4.5,3),col=brewer.pal(n=3,"Set1")[2])
@@ -1406,6 +1487,11 @@ summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_birdtree1),da
 #Reptiles
 #linear model
 summary(lm(log(alpha)~log(m),data = as.data.frame(reptilecompmatrix)))
+#Squamates
+#linear model
+summary(lm(log(alpha)~log(m),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(alpha)~log(m),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(alpha)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(3,9),col=brewer.pal(n=3,"Set1")[2])
@@ -1436,6 +1522,10 @@ summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_birdtree1),data =
 #Reptiles
 #linear model
 summary(lm(log(E)~log(m),data = as.data.frame(reptilecompmatrix)))
+#linear model
+summary(lm(log(E)~log(m),data = as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,])))
+#PGLS
+summary(gls(log(E)~log(m),correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptilecompmatrix[rownames(reptilecompmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
 plot(log(E)~log(m),data = as.data.frame(mammalcompmatrix),ylim=c(-2.5,5),col=brewer.pal(n=3,"Set1")[2])
