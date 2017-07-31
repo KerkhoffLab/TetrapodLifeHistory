@@ -16,6 +16,7 @@ library(raster)
 library(phytools)
 library(geiger)
 library(plotrix)
+library(mosaic)
 library(PhyloOrchard)
 
 myColours <- brewer.pal(6,"Set2")
@@ -31,12 +32,6 @@ my.settings <- list(
 #(Replaced -999 with NA in the .csv document itself prior to importing)
 Amniote_Database_Aug_2015 <- read_csv("C:/Users/Cecina/Desktop/Amniote_Database_Aug_2015.csv")
 Amniote_Database_Aug_2015$weaning_weight_g<-as.numeric(Amniote_Database_Aug_2015$weaning_weight_g)
-
-#How many species have trait information for the following traits?
-
-#female_maturity_d, litter_or_clutch_size_n, litter_or_clutches_per_y, adult_body_mass_g, longevity_y
-sum(complete.cases(Amniote_Database_Aug_2015[,c(8:11,20)]))
-#2770
 
 #Create columns for invariant traits
 
@@ -211,6 +206,167 @@ availabletraits<-availabletraits[8:36,]
 availabletraits<-availabletraits[order(-availabletraits$Available),]
 View(availabletraits)
 
+
+#Import reptile data from Allen et al. 2017
+Allen_etal_reptiledata <- read_csv("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Allen_etal_reptiledata.csv")
+
+#Data cleaning
+#Crocodylus_johnsoni
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Crocodylus_johnstoni"]<-"Crocodylus_johnsoni"
+#Chilabothrus_fordii
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Chilabothrus_fordi"]<-"fordii"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Chilabothrus_fordi"]<-"Chilabothrus_fordii"
+#Erythrolamprus spp.
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolamprus_bizonus"]<-"Erythrolamprus_bizona"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_almadensis"]<-"Erythrolamprus_almadensis"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_maryellenae"]<-"Erythrolamprus_maryellenae"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_mossoroensis"]<-"Erythrolamprus_mossoroensis"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_poecilogyrus"]<-"Erythrolamprus_poecilogyrus"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_reginae"]<-"Erythrolamprus_reginae"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_typhlus"]<-"Erythrolamprus_typhlus"
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Erythrolampus_viridis"]<-"Erythrolamprus_viridis"
+#Philodryas_argentea
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Philodryas_argenteus"]<-"argentea"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Philodryas_argenteus"]<-"Philodryas_argentea"
+#Tomodon_dorsatus
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Tomodon_dorsatum"]<-"Tomodon_dorsatus"
+#Stenodactylus_leptocosymbotes
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Stenodactylus_leptocosymbotus"]<-"Stenodactylus_leptocosymbotes"
+#Proctoporus_oreades
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Euspondylus_oreades"]<-"Proctoporus_oreades"
+#Liolaemus_quilmes
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Liolaemus_espinozai"]<-"Liolaemus_quilmes"
+#Regina_grahamii
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Regina_grahami"]<-"Regina_grahamii"
+#Phrynosoma_douglasii
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Phrynosoma_douglassii"]<-"Phrynosoma_douglasii"
+#Anomalopus_verreauxii
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Anomalopus_verreauxi"]<-"verreauxii"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Anomalopus_verreauxi"]<-"Anomalopus_verreauxii"
+#Melanops_loveridgei
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Melanops_emmrichi"]<-"Melanops_loveridgei"
+#Tiliqua_rugosa
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Tiliqua_rugosus"]<-"Tiliqua_rugosa"
+#Aspidoscelis_flagellicauda
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Aspidoscelis_flagellicaudus"]<-"Aspidoscelis_flagellicauda"
+#Aspidoscelis_lineattissima
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Aspidoscelis_lineattissimus"]<-"Aspidoscelis_lineattissima"
+#Vermicella_calonotus
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Neelaps_calonotus"]<-"calonotus"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Neelaps_calonotus"]<-"Vermicella_calonotus"
+#Simoselaps_bimaculatus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Neelaps_bimaculatus"]<-"Simoselaps"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Neelaps_bimaculatus"]<-"Simoselaps_bimaculatus"
+#Broadleysaurus_major
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Gerrhosaurus_major"]<-"Broadleysaurus"
+Amniote_Database_Aug_2015$taxaname[Amniote_Database_Aug_2015$taxaname=="Gerrhosaurus_major"]<-"Broadleysaurus_major"
+#Chelonoidis_niger
+Allen_etal_reptiledata$Species[Allen_etal_reptiledata$Species=="Chelonoidis_nigra"]<-"Chelonoidis_niger"
+
+
+
+
+
+#create dataframe of just the reptiles from the amniote database
+amniote_reptiledata<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$class=="Reptilia",]
+#need to convert age at sexual maturity to days so it corresponds to amniote database
+Allen_etal_reptiledata$SM<-Allen_etal_reptiledata$SM*365
+
+
+#combined reptile data
+combined_reptiledata<-amniote_reptiledata[,-c(37:42)]
+
+#fill in possible missing trait values for the species in the amniote database
+for(i in 1:nrow(combined_reptiledata)){
+  species_i<-combined_reptiledata$taxaname[i]
+  if(species_i%in%Allen_etal_reptiledata$Species){
+    if(is.na(combined_reptiledata$female_maturity_d[i])){
+      combined_reptiledata$female_maturity_d[i]<-Allen_etal_reptiledata$SM[Allen_etal_reptiledata$Species==species_i]
+    }
+    if(is.na(combined_reptiledata$litter_or_clutch_size_n[i])){
+      combined_reptiledata$litter_or_clutch_size_n[i]<-Allen_etal_reptiledata$CS[Allen_etal_reptiledata$Species==species_i]
+    }
+    if(is.na(combined_reptiledata$litters_or_clutches_per_y[i])){
+      combined_reptiledata$litters_or_clutches_per_y[i]<-Allen_etal_reptiledata$CY[Allen_etal_reptiledata$Species==species_i]
+    }
+    if(is.na(combined_reptiledata$adult_body_mass_g[i])){
+      combined_reptiledata$adult_body_mass_g[i]<-Allen_etal_reptiledata$BM[Allen_etal_reptiledata$Species==species_i]
+    }
+    if(is.na(combined_reptiledata$birth_or_hatching_weight_g[i])){
+      combined_reptiledata$birth_or_hatching_weight_g[i]<-Allen_etal_reptiledata$HM[Allen_etal_reptiledata$Species==species_i]
+    }
+    if(is.na(combined_reptiledata$longevity_y[i])){
+      combined_reptiledata$longevity_y[i]<-Allen_etal_reptiledata$LG[Allen_etal_reptiledata$Species==species_i]
+    }
+  }
+}
+
+#Add the species unique to Allen into the combined_reptiledata
+Allen_uniquespecies<-Allen_etal_reptiledata[!Allen_etal_reptiledata$Species%in%amniote_reptiledata$taxaname,]
+#standardize columns
+Allen_uniquespecies$class<-"Reptilia"
+colnames(Allen_uniquespecies)[1:2]<-c("order","family")
+Allen_uniquespecies<-separate(Allen_uniquespecies,Species, c("genus", "species"), "_")
+Allen_uniquespecies$subspecies<-NA
+Allen_uniquespecies$common_name<-NA
+colnames(Allen_uniquespecies)[13]<-"female_maturity_d"
+colnames(Allen_uniquespecies)[11]<-"litter_or_clutch_size_n"
+colnames(Allen_uniquespecies)[12]<-"litters_or_clutches_per_y"
+colnames(Allen_uniquespecies)[9]<-"adult_body_mass_g"
+Allen_uniquespecies$maximum_longevity_y<-NA
+Allen_uniquespecies$gestation_d<-NA
+Allen_uniquespecies$weaning_d<-NA
+colnames(Allen_uniquespecies)[10]<-"birth_or_hatching_weight_g"
+Allen_uniquespecies$weaning_weight_g<-NA
+Allen_uniquespecies$egg_mass_g<-NA
+Allen_uniquespecies$incubation_d<-NA
+Allen_uniquespecies$fledging_age_d<-NA
+colnames(Allen_uniquespecies)[14]<-"longevity_y"
+Allen_uniquespecies$male_maturity_d<-NA
+Allen_uniquespecies$inter_litter_or_interbirth_interval_y<-NA
+Allen_uniquespecies$female_body_mass_g<-NA
+Allen_uniquespecies$male_body_mass_g<-NA
+Allen_uniquespecies$no_sex_body_mass_g<-NA
+Allen_uniquespecies$egg_width_mm<-NA
+Allen_uniquespecies$egg_length_mm<-NA
+Allen_uniquespecies$fledging_mass_g<-NA
+Allen_uniquespecies$adult_svl_cm<-NA
+Allen_uniquespecies$male_svl_cm<-NA
+Allen_uniquespecies$female_svl_cm<-NA
+Allen_uniquespecies$birth_or_hatching_svl_cm<-NA
+Allen_uniquespecies$female_svl_at_maturity_cm<-NA
+Allen_uniquespecies$female_body_mass_at_maturity_g<-NA
+Allen_uniquespecies$no_sex_svl_cm<-NA
+Allen_uniquespecies$no_sex_svl_cm<-NA
+Allen_uniquespecies$no_sex_maturity_d<-NA
+Allen_uniquespecies$taxaname<-paste(Allen_uniquespecies$genus,Allen_uniquespecies$species,sep="_")
+
+#reorder columns to match combined_reptiledata
+Allen_uniquespecies<-Allen_uniquespecies[colnames(combined_reptiledata)]
+
+#row bind the unique species
+combined_reptiledata<-rbind(combined_reptiledata,Allen_uniquespecies)
+
+#Create columns for invariant traits
+
+#R
+combined_reptiledata$R<-combined_reptiledata$litter_or_clutch_size_n*combined_reptiledata$litters_or_clutches_per_y*combined_reptiledata$birth_or_hatching_weight_g
+#C
+combined_reptiledata$C<-combined_reptiledata$R/combined_reptiledata$adult_body_mass_g
+#C*E
+combined_reptiledata$C_E<-combined_reptiledata$C*combined_reptiledata$longevity_y
+
+#E/alpha
+combined_reptiledata$E_alpha<-combined_reptiledata$longevity_y*365/combined_reptiledata$female_maturity_d
+
+#I
+combined_reptiledata$I<-combined_reptiledata$birth_or_hatching_weight_g
+#I/m
+combined_reptiledata$I_m<-combined_reptiledata$I/combined_reptiledata$adult_body_mass_g
+
+#create augmented Amniote database for use in following calculations
+augmented_amniote_database<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$class!="Reptilia",]
+augmented_amniote_database<-rbind(augmented_amniote_database,combined_reptiledata)
 
 #Histograms of traits
 
@@ -413,8 +569,12 @@ write.csv(I_m_over1,"I_m_over1.csv")
 
 
 #Subset of database including only species for all of the invariants
-desiredcolumns<-c(1:7,11,39,40,42)
-completecase_species<-Amniote_Database_Aug_2015[complete.cases(Amniote_Database_Aug_2015$adult_body_mass_g,Amniote_Database_Aug_2015$C_E,Amniote_Database_Aug_2015$I_m,Amniote_Database_Aug_2015$E_alpha),desiredcolumns]
+desiredcolumns<-c(1:7,11,39,40,42,43)
+completecase_species<-augmented_amniote_database[complete.cases(augmented_amniote_database$adult_body_mass_g,augmented_amniote_database$C_E,augmented_amniote_database$I_m,augmented_amniote_database$E_alpha),desiredcolumns]
+#remove otter
+completecase_species<-completecase_species[completecase_species$taxaname!="Enhydra_lutris",]
+#remove Acanthis hornemani
+completecase_species<-completecase_species[completecase_species$taxaname!="Acanthis_hornemanni",]
 #Log transform
 completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
@@ -432,23 +592,14 @@ completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
 #Bird Gaussian hypervolume
 
 #Log transform bird hypervolume
-completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",12:15],
+completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",13:16],
                                              name = "completebirds_gaussian")
 completebirds_gaussian@Volume
-
-#Scale log transform bird hypervolume
-completebirds_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",16:19],
-                                             name = "completebirds_scale_gaussian")
-completebirds_scale_gaussian@Volume
 
 #Plot bird hypervolume
 #Log transform bird hypervolume
 plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 plot(completebirds_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
-#Scale log transform bird hypervolume
-plot(completebirds_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
-plot(completebirds_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
 
 #Plot different orders
@@ -510,35 +661,24 @@ plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
 #Mammal Gaussian hypervolume
 
 #Log transform mammal hypervolume
-completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",12:15],
+completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",13:16],
                                              name = "completemammals_gaussian")
 completemammals_gaussian@Volume
-#Scaled log transform mammal hypervolume
-completemammals_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",16:19],
-                                               name = "completemammals_scale_gaussian")
-completemammals_scale_gaussian@Volume
+
 
 #Plot mammal hypervolume
 #Log transform mammal hypervolume
 plot(completemammals_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
 plot(completemammals_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
-#Scaled log transform mammal hypervolume
-plot(completemammals_scale_gaussian,point.dark.factor=1,color=gg_color_hue(3)[2])
-plot(completemammals_scale_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
-     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
 
 
 #Reptile Gaussian hypervolume
 
 #Log transform reptile hypervolume
-completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",12:15],
+completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",13:16],
                                                name = "completereptiles_gaussian")
 completereptiles_gaussian@Volume
-#Scaled log transform reptile hypervolume
-completereptiles_scale_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",16:19],
-                                                name = "completereptiles_scale_gaussian")
-completereptiles_scale_gaussian@Volume
 
 #Plot reptile hypervolume
 #Log transformed reptile hypervolume
@@ -582,12 +722,6 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completere
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
      show.3d=TRUE,plot.3d.axes.id=2:4,
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
-#Scaled log transformed hypervolumes
-plot(hypervolume_join(completebirds_scale_gaussian,completemammals_scale_gaussian,completereptiles_scale_gaussian),
-     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
-     show.3d=TRUE,plot.3d.axes.id=2:4,
-     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
 
 #Overlap statistics
 #Birds and mammals:
@@ -610,7 +744,7 @@ plot(completebats_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completebats_gaussian),
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(4)[4]))
 
-complete_data<-completecase_species[,c(12:15,1:5)]
+complete_data<-completecase_species[,c(13:16,1:5)]
 complete_data<-as.data.frame(complete_data)
 #Add bat points to mammal hypervolume
 plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
@@ -1546,12 +1680,12 @@ plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
 #Trait datasets by class
 #Mammals
 mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
-mammaltraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname])*365
-mammaltraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
-mammaltraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
-mammaltraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%mammaltraits$taxaname]
+mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
+mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
 
 
 mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
@@ -1567,12 +1701,12 @@ mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
 
 #Birds
 birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
-birdtraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
-birdtraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
-birdtraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname])*365
-birdtraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
-birdtraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
-birdtraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%birdtraits$taxaname]
+birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
+birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
 
 
 birdtraitmatrix<-as.matrix(birdtraits[,2:5])
@@ -1580,12 +1714,12 @@ rownames(birdtraitmatrix)<-birdtraits$taxaname
 
 #Reptiles
 reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
-reptiletraits$C<-Amniote_Database_Aug_2015$C[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E<-Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E_day<-(Amniote_Database_Aug_2015$longevity_y[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname])*365
-reptiletraits$alpha<-Amniote_Database_Aug_2015$female_maturity_d[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
-reptiletraits$I<-Amniote_Database_Aug_2015$I[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
-reptiletraits$m<-Amniote_Database_Aug_2015$adult_body_mass_g[Amniote_Database_Aug_2015$taxaname%in%reptiletraits$taxaname]
+reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
+reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
 
 
 reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
