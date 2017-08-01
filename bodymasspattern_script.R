@@ -206,6 +206,188 @@ availabletraits<-availabletraits[8:36,]
 availabletraits<-availabletraits[order(-availabletraits$Available),]
 View(availabletraits)
 
+#Import bird data from Sol et al. 2012
+Sol_etal_birddata <- read_csv("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Sol_etal_birddata.csv")
+
+#Data cleaning
+#Alopochen_aegyptiaca
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Alopochen_aegyptiacus"]<-"Alopochen_aegyptiaca"
+#Chen_caerulescens
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Anser_caerulescens"]<-"Chen_caerulescens"
+#Collocalia_vanikorensis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Aerodramus_vanikorensis"]<-"Collocalia"
+#Columbina_inca
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Scardafella_inca"]<-"Columbina_inca"
+#Spilopelia_chinensis
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Streptopelia_chinensis"]<-"Spilopelia_chinensis"
+#Spilopelia_senegalensis
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Streptopelia_senegalensis"]<-"Spilopelia_senegalensis"
+#Bambusicola_thoracicus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Bambusicola_thoracica"]<-"Bambusicola_thoracicus"
+#Tetrastes_bonasia
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Bonasa_bonasia"]<-"Tetrastes_bonasia"
+birdtree1$tip.label[birdtree1$tip.label=="Bonasa_bonasia"]<-"Tetrastes_bonasia"
+#Coturnix_chinensis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Excalfactoria_chinensis"]<-"Coturnix"
+#Dendragapus_canadensis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Falcipennis_canadensis"]<-"Dendragapus"
+#Francolinus_erckelii
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_erckelii"]<-"Francolinus"
+#Francolinus_icterorhynchus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_icterorhynchus"]<-"Francolinus"
+#Francolinus_leucoscepus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_leucoscepus"]<-"Francolinus"
+#Francolinus_afer
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_afer"]<-"Francolinus"
+#Francolinus_capensis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_capensis"]<-"Francolinus"
+#Francolinus_adspersus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_adspersus"]<-"Francolinus"
+#Francolinus_clappertoni
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_clappertoni"]<-"Francolinus"
+#Lagopus_muta
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagopus_mutus"]<-"Lagopus_muta"
+#Lagopus_leucura
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagopus_leucurus"]<-"Lagopus_leucura"
+#Tetrao_tetrix
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Lyrurus_tetrix"]<-"Tetrao"
+#Cyanopica_cyanus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Cyanopica_cyana"]<-"Cyanopica_cyanus"
+#Carduelis_tristis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_tristis"]<-"Carduelis"
+#Carduelis_cannabina
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Linaria_cannabina"]<-"Carduelis"
+#Carduelis_chloris
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Chloris_chloris"]<-"Carduelis"
+#Carduelis_cucullata
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_cucullata"]<-"Carduelis"
+#Acanthis_flammea
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Carduelis_flammea"]<-"Acanthis_flammea"
+#Carduelis_flavirostris
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Linaria_flavirostris"]<-"Carduelis"
+#Carduelis_spinus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_spinus"]<-"Carduelis"
+#Carduelis_psaltria
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_psaltria"]<-"Carduelis"
+#Haemorhous_mexicanus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Carpodacus_mexicanus"]<-"Haemorhous_mexicanus"
+#Serinus_atrogularis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_atrogularis"]<-"Serinus"
+#Serinus_mozambicus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_mozambica"]<-"Serinus"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Crithagra_mozambica"]<-"mozambicus"
+#Serinus_leucopygius
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_leucopygia"]<-"Serinus"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Crithagra_leucopygia"]<-"leucopygius"
+#Serinus_flaviventris
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_flaviventris"]<-"Serinus"
+#Tiaris_canorus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Tiaris_canora"]<-"Tiaris_canorus"
+#Tiaris_olivaceus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Tiaris_olivacea"]<-"Tiaris_olivaceus"
+#Erithacus_akahige
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Larvivora_akahige"]<-"Erithacus"
+#Erithacus_komadori
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Larvivora_komadori"]<-"Erithacus"
+#Parus_caeruleus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Cyanistes_caeruleus"]<-"Parus"
+#Parus_varius
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Sittiparus_varius"]<-"Parus"
+#Erythrura_gouldiae
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Chloebia_gouldiae"]<-"Erythrura_gouldiae"
+#Estrilda_melanotis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Coccopygia_melanotis"]<-"Estrilda"
+#Lagonosticta_rubricata
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagonistica_rubricata"]<-"Lagonosticta_rubricata"
+#Lonchura_malabarica
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Euodice_malabarica"]<-"Lonchura"
+#Lonchura_cantans
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Euodice_cantans"]<-"Lonchura"
+#Padda_oryzivora
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Lonchura_oryzivora"]<-"Padda"
+#Uraeginthus_granatinus
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Uraeginthus_granatina"]<-"Uraeginthus_granatinus"
+#Vidua_paradisaea
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Vidua_paradisea"]<-"Vidua_paradisaea"
+#Sturnus_melanopterus
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Acridotheres_melanopterus"]<-"Sturnus"
+#Sturnus_contra
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Gracupica_contra"]<-"Sturnus"
+#Cettia_diphone
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Horornis_diphone"]<-"Cettia"
+#Ara_severa
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Ara_severa"]<-"Ara_severus"
+#Aratinga_canicularis
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Eupsittula_canicularis"]<-"Aratinga"
+#Aratinga_pertinax
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Eupsittula_pertinax"]<-"Aratinga"
+#Aratinga_mitrata
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_mitratus"]<-"Aratinga"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_mitratus"]<-"mitrata"
+#Aratinga_holochlora
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_holochlorus"]<-"Aratinga"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_holochlorus"]<-"holochlora"
+#Aratinga_acuticaudata
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Thectocercus_acuticaudatus"]<-"Aratinga"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Thectocercus_acuticaudatus"]<-"acuticaudata"
+#Aratinga_chloroptera
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_chloropterus"]<-"Aratinga"
+Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_chloropterus"]<-"chloroptera"
+#Aratinga_erythrogenys
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_erythrogenys"]<-"Aratinga"
+#Cacatua_goffini
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Cacatua_goffini"]<-"Cacatua_goffiniana"
+#Eolophus_roseicapilla
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Eolophus_roseicapillus"]<-"Eolophus_roseicapilla"
+#Nandayus_nenday
+Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Aratinga_nenday"]<-"Nandayus"
+#Turnix_varius
+Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Turnix_varia"]<-"Turnix_varius"
+
+#redo taxaname column for amniote
+Amniote_Database_Aug_2015$taxaname<-paste(Amniote_Database_Aug_2015$genus,Amniote_Database_Aug_2015$species,sep="_")
+
+
+#create dataframe of just the birds from the amniote database
+amniote_birddata<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$class=="Aves",]
+
+#Convert age at first breeding to years
+Sol_etal_birddata$AgeFirstBreeding<-Sol_etal_birddata$AgeFirstBreeding/12
+#Convert age at first breeding to days
+Sol_etal_birddata$AgeFirstBreeding<-Sol_etal_birddata$AgeFirstBreeding*365
+
+#Calculate longevity from Sol et al data
+Sol_etal_birddata$longevity_y<-Sol_etal_birddata$Lifespan+(Sol_etal_birddata$AgeFirstBreeding/365)
+
+#remove duplicate observations in Sol et al data
+Sol_etal_birddata<-distinct(Sol_etal_birddata,Species, .keep_all=TRUE)
+
+#combined bird data
+combined_birddata<-amniote_birddata[,-c(37:42)]
+
+#fill in possible missing trait values for the species in the amniote database
+for(i in 1:nrow(combined_birddata)){
+  species_i<-combined_birddata$taxaname[i]
+  if(species_i%in%Sol_etal_birddata$Species){
+    if(is.na(combined_birddata$female_maturity_d[i])){
+      combined_birddata$female_maturity_d[i]<-Sol_etal_birddata$AgeFirstBreeding[Sol_etal_birddata$Species==species_i]
+    }
+    if(is.na(combined_birddata$litter_or_clutch_size_n[i])){
+      combined_birddata$litter_or_clutch_size_n[i]<-Sol_etal_birddata$Clutch_size[Sol_etal_birddata$Species==species_i]
+    }
+    if(is.na(combined_birddata$litters_or_clutches_per_y[i])){
+      combined_birddata$litters_or_clutches_per_y[i]<-Sol_etal_birddata$Broods[Sol_etal_birddata$Species==species_i]
+    }
+    if(is.na(combined_birddata$adult_body_mass_g[i])){
+      combined_birddata$adult_body_mass_g[i]<-Sol_etal_birddata$Body_mass[Sol_etal_birddata$Species==species_i]
+    }
+    if(is.na(combined_birddata$longevity_y[i])){
+      combined_birddata$longevity_y[i]<-Sol_etal_birddata$longevity_y[Sol_etal_birddata$Species==species_i]
+    }
+  }
+}
+
+
 
 #Import reptile data from Allen et al. 2017
 Allen_etal_reptiledata <- read_csv("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Allen_etal_reptiledata.csv")
