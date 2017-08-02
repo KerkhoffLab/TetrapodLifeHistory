@@ -18,6 +18,7 @@ library(geiger)
 library(plotrix)
 library(mosaic)
 library(PhyloOrchard)
+library(phangorn)
 
 myColours <- brewer.pal(6,"Set2")
 
@@ -1119,13 +1120,19 @@ pruned_birdtree1<-pruned_birdtree1$tree
 
 
 #Reptiles
-squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/squamatatree.txt")
+#Zheng and Wiens tree
+squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/zhengwienstree.txt")
 #pruning squamates
 bmvec_reptile<-completecase_species$adult_body_mass_g[completecase_species$class=="Reptilia"]
 names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class=="Reptilia"]
 pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
 pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
+
+#Pyron et al. tree
+pyrontree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/pyronetaltree.txt")
+pruned_pyrontree<-prune.missing(x=bmvec_reptile, phylo=pyrontree)
+pruned_pyrontree<-pruned_pyrontree$tree
 
 #make Zheng and Wiens tree ultrametric
 #function from Liam Revell's page
