@@ -900,8 +900,9 @@ plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
 
 #Plotting all three hypervolumes together
 #Log transformed hypervolumes
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
-     colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]))
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),show.legend=FALSE)
+legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),bty="n",cex=1.1,text.font=2)
+
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
      show.3d=TRUE,plot.3d.axes.id=2:4,
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
@@ -930,6 +931,16 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completeba
 complete_data<-completecase_species[,c(13:16,1:5)]
 complete_data<-as.data.frame(complete_data)
 #Add bat points to mammal hypervolume
+#with rodents too
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2]),show.legend=FALSE,
+     plot.function.additional=function(i,j) {   
+       points(x=complete_data[complete_data$order=="Rodentia",i],y=complete_data[complete_data$order=="Rodentia",j],col=brewer.pal(n=6,"Set1")[6])
+       points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col=brewer.pal(n=5,"Set1")[5],pch=19)
+       })
+legend("bottomleft",legend = c("Bats","Rodents","Birds","Mammals"),text.col=c(brewer.pal(n=6,"Set1")[5],brewer.pal(n=6,"Set1")[6],brewer.pal(n=6,"Set1")[1],brewer.pal(n=6,"Set1")[2]),bty="n",cex=1.1,text.font=2)
+
+
+
 plot(completemammals_gaussian,colors=gg_color_hue(3)[2],plot.function.additional=function(i,j) {
      points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col="red",pch=19) 
      })
@@ -1122,6 +1133,11 @@ pruned_birdtree1<-pruned_birdtree1$tree
 #Reptiles
 #Zheng and Wiens tree
 squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/zhengwienstree.txt")
+#taxonomic resolution
+squamatetree$tip.label[squamatetree$tip.label=="Agama_sankaranica"]<-"Agama_boensis"
+squamatetree$tip.label[squamatetree$tip.label=="Gallotia_gomerana"]<-"Gallotia_bravoana"
+squamatetree$tip.label[squamatetree$tip.label=="Phrynosoma_douglassii"]<-"Phrynosoma_douglasii"
+
 #pruning squamates
 bmvec_reptile<-completecase_species$adult_body_mass_g[completecase_species$class=="Reptilia"]
 names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class=="Reptilia"]
@@ -1129,10 +1145,6 @@ pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
 pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
 
-#Pyron et al. tree
-pyrontree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/pyronetaltree.txt")
-pruned_pyrontree<-prune.missing(x=bmvec_reptile, phylo=pyrontree)
-pruned_pyrontree<-pruned_pyrontree$tree
 
 #make Zheng and Wiens tree ultrametric
 #function from Liam Revell's page
@@ -1165,6 +1177,11 @@ turtletree$tip.label[81]<-"Gopherus_berlandieri"
 turtletree$tip.label[26]<-"Testudo_graeca"
 #fix red-footed tortoise
 turtletree$tip.label[60]<-"Chelonoidis_carbonarius"
+#get rid of common box turtle subspecies
+turtletree$tip.label[turtletree$tip.label=="Terrapene_carolina_triunguis"]<-"Terrapene_carolina"
+#picking a subspecies for yellow-bellied slider
+turtletree$tip.label[turtletree$tip.label=="Trachemys_scripta_elegans"]<-"Trachemys_scripta"
+
 #pruning turtles
 pruned_turtletree<-prune.missing(x=bmvec_reptile, phylo=turtletree)
 pruned_turtletree<-pruned_turtletree$tree
@@ -1175,9 +1192,13 @@ croctree<-Oaks2011
 croctree$tip.label[11]<-"Crocodylus_johnsoni"
 #rename one of Nile crocodiles
 croctree$tip.label[13]<-"Crocodylus_niloticus"
+#rename one of the dwarf crocodiles
+croctree$tip.label[croctree$tip.label=="Osteolaemus_tetraspis_1"]<-"Osteolaemus_tetraspis"
 #pruning crocs
 pruned_croctree<-prune.missing(x=bmvec_reptile,phylo = croctree)
 pruned_croctree<-pruned_croctree$tree
+
+#binding reptile tree
 
 
 #adding traits to mammal tree
@@ -1571,7 +1592,7 @@ summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_squamatetr
 
 
 
-plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
+plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(C*E)")
 points(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
 points(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
 
