@@ -10,7 +10,6 @@ library(picante)
 library(maptools)
 library(mapproj)
 library(rgeos)
-library(rgdal)
 library(sp)
 library(raster)
 library(phytools)
@@ -27,6 +26,25 @@ my.settings <- list(
   strip.background=list(col=myColours[6]),
   strip.border=list(col="black")
 )
+
+#Import AmphiBIO database
+AmphiBIO_v1 <- read.csv("C:/Users/Cecina/Desktop/AmphiBIO/AmphiBIO_v1.csv")
+
+#Calculate average clutch size
+AmphiBIO_v1$Litter_size_avg_n<-(AmphiBIO_v1$Litter_size_max_n+AmphiBIO_v1$Litter_size_min_n)/2
+#Calculate average age at maturity
+AmphiBIO_v1$Age_at_maturity_avg_y<-(AmphiBIO_v1$Age_at_maturity_max_y+AmphiBIO_v1$Age_at_maturity_min_y)/2
+
+#Use allometry equations to calculate mass at independence
+AmphiBIO_v1$Offspring_size_min_g<-NA
+AmphiBIO_v1$Offspring_size_max_g<-NA
+#For Anura
+AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$Order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$Order=="Anura"])^3.189
+AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$Order=="Anura"])^3.189
+#For Caudata
+AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
+AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
+
 
 
 #Import amniote database
@@ -889,13 +907,13 @@ plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
        points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="red",pch=19) 
      })
 #View all three orders
-plot(completereptiles_gaussian,point.dark.factor=1,color=gg_color_hue(3)[3],
-     plot.function.additional=function(i,j) {
-       points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col="red",pch=19)
-       points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col="purple",pch=19)
-       points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col="darkgreen",pch=19)
-     })
-
+plot(completereptiles_gaussian,point.dark.factor=1,num.points.max.random=6000,contour.lwd=1.5,color=brewer.pal(n=3,"Set1")[3],show.legend=FALSE,
+           plot.function.additional=function(i,j) {
+               points(x=complete_data[complete_data$order=="Squamata",i],y=complete_data[complete_data$order=="Squamata",j],col=brewer.pal(n=7,"Set1")[4],pch=19)
+               points(x=complete_data[complete_data$order=="Testudines",i],y=complete_data[complete_data$order=="Testudines",j],col=brewer.pal(n=6,"Accent")[5],pch=19)
+               points(x=complete_data[complete_data$order=="Crocodilia",i],y=complete_data[complete_data$order=="Crocodilia",j],col=brewer.pal(n=6,"Accent")[6],pch=19)
+             })
+legend("bottomleft",legend = c("Crocodilia","Squamata","Testudines"),text.col=c(brewer.pal(n=6,"Accent")[6],brewer.pal(n=7,"Set1")[4],brewer.pal(n=6,"Accent")[5]),bty="n",cex=1.1,text.font=2)
 
 
 #Plotting all three hypervolumes together
@@ -1070,25 +1088,25 @@ for(i in 1:length(mammal_orderover40)){
      arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],mammal_orderover40[i],cex=0.85)
 }
 
-primate<-readPNG("primate.png")
+#primate<-readPNG("primate.png")
 rasterImage(primate,-210,60,-170,100)
 
-artiodactyla<-readPNG("artiodactyla.png")
+#artiodactyla<-readPNG("artiodactyla.png")
 rasterImage(artiodactyla,-220,-70,-180,-45)
 
-soricomorpha<-readPNG("soricomorpha.png")
+#soricomorpha<-readPNG("soricomorpha.png")
 rasterImage(soricomorpha,60,-185,100,-164)
 
-carnivora<-readPNG("carnivora.png")
+#carnivora<-readPNG("carnivora.png")
 rasterImage(carnivora,-140,-165,-100,-146)
 
-chiroptera<-readPNG("chiroptera.png")
+#chiroptera<-readPNG("chiroptera.png")
 #rasterImage(chiroptera,-60,-210,0,-174)
 
-diprotodontia<-readPNG("diprotodontia.png")
+#diprotodontia<-readPNG("diprotodontia.png")
 rasterImage(diprotodontia,150,-120,190,-74)
 
-rodentia<-readPNG("rodentia.png")
+#rodentia<-readPNG("rodentia.png")
 rasterImage(rodentia,110,140,150,180)
 
 
@@ -1512,6 +1530,20 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
                                                          mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
 }
 
+plot(pruned_mammaltree_best,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(mammal_I_m_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(mammal_log_I_m_tiporder),max(mammal_log_I_m_tiporder))))
+tiplabels(pch=19,col=color.scale(mammal_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-255,-125,-155,-115,legend=c(-3.77,0.68),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+for(i in 1:length(mammal_orderover40)){  arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>40][i],
+                                                         mammal_orderover40[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE,cex=0.85)
+}
+rasterImage(primate,-210,60,-170,100)
+rasterImage(artiodactyla,-220,-70,-180,-45)
+rasterImage(soricomorpha,60,-185,100,-164)
+rasterImage(carnivora,-140,-165,-100,-146)
+rasterImage(diprotodontia,150,-120,190,-74)
+rasterImage(rodentia,110,140,150,180)
+
 #fastAnc ancestral reconstructions for squamates
 
 # #Body mass
@@ -1628,7 +1660,7 @@ summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix[rown
 summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
-plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2])
+plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(E/alpha)")
 points(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
 points(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
 
@@ -1664,7 +1696,7 @@ summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames
 summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
 
 
-plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2])
+plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(I/m)")
 points(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
 points(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
 
