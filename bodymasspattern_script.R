@@ -29,6 +29,14 @@ my.settings <- list(
 
 #Import AmphiBIO database
 AmphiBIO_v1 <- read.csv("C:/Users/Cecina/Desktop/AmphiBIO/AmphiBIO_v1.csv")
+AmphiBIO_v1$class<-"Amphibia"
+AmphiBIO_v1$species<-NA
+AmphiBIO_v1$subspecies<-NA
+AmphiBIO_v1$common_name<-NA
+colnames(AmphiBIO_v1)[2]<-"order"
+colnames(AmphiBIO_v1)[3]<-"family"
+colnames(AmphiBIO_v1)[4]<-"genus"
+AmphiBIO_v1$taxaname<-gsub(" ","_",AmphiBIO_v1$Species)
 
 #Calculate average clutch size
 AmphiBIO_v1$Litter_size_avg_n<-(AmphiBIO_v1$Litter_size_max_n+AmphiBIO_v1$Litter_size_min_n)/2
@@ -44,6 +52,33 @@ AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Anura"]<-10^-4.324*(AmphiBI
 #For Caudata
 AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
 AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
+
+#Calculate average mass at independence
+AmphiBIO_v1$Offspring_size_avg_g<-(AmphiBIO_v1$Offspring_size_min_g+AmphiBIO_v1$Offspring_size_max_g)/2
+
+#Create columns for invariant traits
+
+#R=average reproductive allocation per unit time
+#For amphibians:
+##R=Litter_size_avg_n*Reproductive_output_y*Offspring_size_avg_g
+AmphiBIO_v1$R<-AmphiBIO_v1$Litter_size_avg_n*AmphiBIO_v1$Reproductive_output_y*AmphiBIO_v1$Offspring_size_avg_g
+
+#C=reproductive effort
+#C=R/m
+AmphiBIO_v1$C<-AmphiBIO_v1$R/AmphiBIO_v1$Body_mass_g
+
+#Calculate C*E
+AmphiBIO_v1$C_E<-AmphiBIO_v1$C*AmphiBIO_v1$Longevity_max_y
+
+#Calculate E/alpha
+AmphiBIO_v1$E_alpha<-AmphiBIO_v1$Longevity_max_y/AmphiBIO_v1$Age_at_maturity_avg_y
+
+#Calculate I/m
+AmphiBIO_v1$I_m<-AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$Body_mass_g
+
+#How many amphibian complete cases?
+sum(complete.cases(AmphiBIO_v1[,46:48]))
+
 
 
 
@@ -787,6 +822,18 @@ completecase_species$scale_log_C_E<-scale(completecase_species$log_C_E)
 completecase_species$scale_log_I_m<-scale(completecase_species$log_I_m)
 completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
 
+#complete case amphibians
+desiredcolumns_amph<-c(49,2:4,50:52,23,46:48,53)
+completecase_amph<-AmphiBIO_v1[complete.cases(AmphiBIO_v1$Body_mass_g,AmphiBIO_v1$C_E,AmphiBIO_v1$I_m,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
+colnames(completecase_amph)[8]<-"adult_body_mass_g"
+completecase_amph$log_body_mass<-log(completecase_amph$adult_body_mass_g)
+completecase_amph$log_C_E<-log(completecase_amph$C_E)
+completecase_amph$log_I_m<-log(completecase_amph$I_m)
+completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
+
+#complete cases of amniotes and amphibians
+completecase_am<-rbind(completecase_species,completecase_amph)
+
 #Create hypervolumes for each class of amniotes
 
 
@@ -916,7 +963,19 @@ plot(completereptiles_gaussian,point.dark.factor=1,num.points.max.random=6000,co
 legend("bottomleft",legend = c("Crocodilia","Squamata","Testudines"),text.col=c(brewer.pal(n=6,"Accent")[6],brewer.pal(n=7,"Set1")[4],brewer.pal(n=6,"Accent")[5]),bty="n",cex=1.1,text.font=2)
 
 
-#Plotting all three hypervolumes together
+#Amphibian hypervolume
+completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Amphibia",13:16],
+                                             name = "completeamphib_gaussian")
+completeamph_gaussian@Volume
+
+#Plot amphibian hypervolume
+#Log transform amphibian hypervolume
+plot(completeamph_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
+plot(completeamph_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
+     show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+
+
+#Plotting all three amniote hypervolumes together
 #Log transformed hypervolumes
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),show.legend=FALSE)
 legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),bty="n",cex=1.1,text.font=2)
@@ -924,6 +983,12 @@ legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.p
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian),
      show.3d=TRUE,plot.3d.axes.id=2:4,
      colors = c(gg_color_hue(3)[1],gg_color_hue(3)[2],gg_color_hue(3)[3]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
+
+#Plotting all four hypervolumes together
+#Log transformed hypervolumes
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),show.legend=FALSE)
+legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),bty="n",cex=1.1,text.font=2)
+
 
 #Overlap statistics
 #Birds and mammals:
