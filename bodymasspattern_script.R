@@ -19,20 +19,21 @@ library(mosaic)
 library(PhyloOrchard)
 library(phangorn)
 
-myColours <- brewer.pal(6,"Set2")
-
-my.settings <- list(
-  superpose.polygon=list(col=myColours[1:4], border="transparent"),
-  strip.background=list(col=myColours[6]),
-  strip.border=list(col="black")
-)
+# myColours <- brewer.pal(6,"Set2")
+# 
+# my.settings <- list(
+#   superpose.polygon=list(col=myColours[1:4], border="transparent"),
+#   strip.background=list(col=myColours[6]),
+#   strip.border=list(col="black")
+# )
 
 #Import AmphiBIO database
-AmphiBIO_v1 <- read.csv("C:/Users/Cecina/Desktop/AmphiBIO/AmphiBIO_v1.csv")
+#Downloaded from https://doi.org/10.6084/m9.figshare.4644424
+AmphiBIO_v1 <- read.csv("C:/Users/cecin/Desktop/AmphiBIO_v1/AmphiBIO_v1.csv")
 AmphiBIO_v1$class<-"Amphibia"
-AmphiBIO_v1$species<-NA
-AmphiBIO_v1$subspecies<-NA
-AmphiBIO_v1$common_name<-NA
+# AmphiBIO_v1$species<-NA
+# AmphiBIO_v1$subspecies<-NA
+# AmphiBIO_v1$common_name<-NA
 colnames(AmphiBIO_v1)[2]<-"order"
 colnames(AmphiBIO_v1)[3]<-"family"
 colnames(AmphiBIO_v1)[4]<-"genus"
@@ -47,11 +48,11 @@ AmphiBIO_v1$Age_at_maturity_avg_y<-(AmphiBIO_v1$Age_at_maturity_max_y+AmphiBIO_v
 AmphiBIO_v1$Offspring_size_min_g<-NA
 AmphiBIO_v1$Offspring_size_max_g<-NA
 #For Anura
-AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$Order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$Order=="Anura"])^3.189
-AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$Order=="Anura"])^3.189
+AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$order=="Anura"])^3.189
+AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$order=="Anura"]<-10^-4.324*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$order=="Anura"])^3.189
 #For Caudata
-AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
-AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$Order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$Order=="Caudata"])^2.644
+AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$order=="Caudata"])^2.644
+AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$order=="Caudata"])^2.644
 
 #Calculate average mass at independence
 AmphiBIO_v1$Offspring_size_avg_g<-(AmphiBIO_v1$Offspring_size_min_g+AmphiBIO_v1$Offspring_size_max_g)/2
@@ -78,13 +79,13 @@ AmphiBIO_v1$I_m<-AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$Body_mass_g
 
 #How many amphibian complete cases?
 sum(complete.cases(AmphiBIO_v1[,46:48]))
-
-
+#132 complete cases
 
 
 #Import amniote database
+#Downloaded from http://esapubs.org/archive/ecol/E096/269/#data
 #(Replaced -999 with NA in the .csv document itself prior to importing)
-Amniote_Database_Aug_2015 <- read_csv("C:/Users/Cecina/Desktop/Amniote_Database_Aug_2015.csv")
+Amniote_Database_Aug_2015 <- read_csv("C:/Users/cecin/Desktop/Amniote/Amniote_Database_Aug_2015.csv")
 Amniote_Database_Aug_2015$weaning_weight_g<-as.numeric(Amniote_Database_Aug_2015$weaning_weight_g)
 
 #Create columns for invariant traits
@@ -988,6 +989,9 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completere
 #Log transformed hypervolumes
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),show.legend=FALSE)
 legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),bty="n",cex=1.1,text.font=2)
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
+     show.3d=TRUE,plot.3d.axes.id=2:4,
+     colors = c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
 
 
 #Overlap statistics
