@@ -683,25 +683,25 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],ae
 
 #Make histograms of body mass and three invariants for all 4 classes:
 #body mass
-ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class))+
+ggplot(data=completecase_am,aes(x=log(adult_body_mass_g), ..density.., colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   labs(x = "Log(Adult Body Mass (g))")
 #C*E
-ggplot(data=completecase_am,aes(x=log_C_E,colour=class))+
+ggplot(data=completecase_am,aes(x=log_C_E,..density..,colour=class))+
   geom_freqpoly(binwidth=0.2,lwd=1.3)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   labs(x = "Log(C*E)")
 #E/alpha
-ggplot(data=completecase_am,aes(x=log_E_alpha,colour=class))+
+ggplot(data=completecase_am,aes(x=log_E_alpha,..density..,colour=class))+
   geom_freqpoly(binwidth=0.2,lwd=1.3)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   labs(x = "Log(E/alpha)")
 #I/m
-ggplot(data=completecase_am,aes(x=log_I_m,colour=class))+
+ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   geom_freqpoly(binwidth=0.2,lwd=1.3)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
