@@ -847,7 +847,7 @@ write.csv(I_m_over1,"I_m_over1.csv")
 
 
 #Subset of database including only species for all of the invariants
-desiredcolumns<-c(1:7,11,39,40,42,43)
+desiredcolumns<-c(1:8,11,12,38,39,40,41,42,43)
 completecase_species<-augmented_amniote_database[complete.cases(augmented_amniote_database$adult_body_mass_g,augmented_amniote_database$C_E,augmented_amniote_database$I_m,augmented_amniote_database$E_alpha),desiredcolumns]
 #remove otter
 completecase_species<-completecase_species[completecase_species$taxaname!="Enhydra_lutris",]
@@ -858,23 +858,22 @@ completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
 completecase_species$log_I_m<-log(completecase_species$I_m)
 completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
-#Scale the log transformed traits
-completecase_species$scale_log_bodymass<-scale(completecase_species$log_bodymass)
-completecase_species$scale_log_C_E<-scale(completecase_species$log_C_E)
-completecase_species$scale_log_I_m<-scale(completecase_species$log_I_m)
-completecase_species$scale_log_E_alpha<-scale(completecase_species$log_E_alpha)
+
 
 #complete case amphibians
-desiredcolumns_amph<-c(49,2:4,50:52,23,46:48,53)
+desiredcolumns_amph<-c(39,2:5,42,23,29,47:49,45,40,50)
 completecase_amph<-AmphiBIO_v1[complete.cases(AmphiBIO_v1$Body_mass_g,AmphiBIO_v1$C_E,AmphiBIO_v1$I_m,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
-colnames(completecase_amph)[8]<-"adult_body_mass_g"
-completecase_amph$log_body_mass<-log(completecase_amph$adult_body_mass_g)
+colnames(completecase_amph)[7]<-"adult_body_mass_g"
+colnames(completecase_amph)[8]<-"maximum_longevity_y"
+colnames(completecase_amph)[12]<-"I"
+completecase_amph$female_maturity_d<-completecase_amph$Age_at_maturity_avg_y*365
+completecase_amph$log_bodymass<-log(completecase_amph$adult_body_mass_g)
 completecase_amph$log_C_E<-log(completecase_amph$C_E)
 completecase_amph$log_I_m<-log(completecase_amph$I_m)
 completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
 
 #complete cases of amniotes and amphibians
-completecase_am<-rbind(completecase_species,completecase_amph)
+completecase_am<-rbind.fill(completecase_species,completecase_amph)
 
 #Create hypervolumes for each class of amniotes
 
@@ -882,12 +881,10 @@ completecase_am<-rbind(completecase_species,completecase_amph)
 #Bird Gaussian hypervolume
 
 #Log transform bird hypervolume
-completebirds_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Aves",13:16],
+completebirds_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Aves",17:20],
                                              name = "completebirds_gaussian")
 completebirds_gaussian@Volume
-
 #Plot bird hypervolume
-#Log transform bird hypervolume
 plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1])
 plot(completebirds_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
@@ -951,7 +948,7 @@ plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
 #Mammal Gaussian hypervolume
 
 #Log transform mammal hypervolume
-completemammals_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Mammalia",13:16],
+completemammals_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Mammalia",17:20],
                                              name = "completemammals_gaussian")
 completemammals_gaussian@Volume
 
@@ -966,7 +963,7 @@ plot(completemammals_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.
 #Reptile Gaussian hypervolume
 
 #Log transform reptile hypervolume
-completereptiles_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_species$class=="Reptilia",13:16],
+completereptiles_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Reptilia",17:20],
                                                name = "completereptiles_gaussian")
 completereptiles_gaussian@Volume
 
@@ -1006,8 +1003,8 @@ legend("bottomleft",legend = c("Crocodilia","Squamata","Testudines"),text.col=c(
 
 
 #Amphibian hypervolume
-completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Amphibia",13:16],
-                                             name = "completeamphib_gaussian")
+completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Amphibia",17:20],
+                                             name = "completeamph_gaussian")
 completeamph_gaussian@Volume
 
 #Plot amphibian hypervolume
@@ -1815,6 +1812,72 @@ abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brew
 abline(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
 abline(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
 
+
+#TABLE 1
+#C*E:
+#Linear model
+summary(lm(log_C_E~log_bodymass, data = completecase_am))
+summary(lm(log_C_E~log_bodymass,data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log_C_E~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log_C_E~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log_C_E~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
+#Ratio of variances
+var(completecase_am$log_C_E)/var(completecase_am$log_bodymass)
+var(completecase_am[completecase_am$class=="Amphibia",]$log_C_E)/var(completecase_am[completecase_am$class=="Amphibia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Reptilia",]$log_C_E)/var(completecase_am[completecase_am$class=="Reptilia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Mammalia",]$log_C_E)/var(completecase_am[completecase_am$class=="Mammalia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Aves",]$log_C_E)/var(completecase_am[completecase_am$class=="Aves",]$log_bodymass)
+#Isometric Variation
+plot(log(C)~log(1/maximum_longevity_y),data=completecase_am)
+summary(lm(log(C)~log(1/maximum_longevity_y),data=completecase_am))
+summary(lm(log(C)~log(1/maximum_longevity_y),data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log(C)~log(1/maximum_longevity_y),data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log(C)~log(1/maximum_longevity_y),data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log(C)~log(1/maximum_longevity_y),data=completecase_am[completecase_am$class=="Aves",]))
+
+#E/alpha:
+#Linear model
+summary(lm(log_E_alpha~log_bodymass,data=completecase_am))
+summary(lm(log_E_alpha~log_bodymass,data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log_E_alpha~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log_E_alpha~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log_E_alpha~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
+#Ratio of variances
+var(completecase_am$log_E_alpha)/var(completecase_am$log_bodymass)
+var(completecase_am[completecase_am$class=="Amphibia",]$log_E_alpha)/var(completecase_am[completecase_am$class=="Amphibia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Reptilia",]$log_E_alpha)/var(completecase_am[completecase_am$class=="Reptilia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Mammalia",]$log_E_alpha)/var(completecase_am[completecase_am$class=="Mammalia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Aves",]$log_E_alpha)/var(completecase_am[completecase_am$class=="Aves",]$log_bodymass)
+#Isometric variation
+plot(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am)
+summary(lm(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am))
+summary(lm(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log(maximum_longevity_y*365)~log(female_maturity_d),data=completecase_am[completecase_am$class=="Aves",]))
+
+#I/m:
+#Linear model
+summary(lm(log_I_m~log_bodymass,data=completecase_am))
+summary(lm(log_I_m~log_bodymass,data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log_I_m~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log_I_m~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log_I_m~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
+#Ratio of variances
+var(completecase_am$log_I_m)/var(completecase_am$log_bodymass)
+var(completecase_am[completecase_am$class=="Amphibia",]$log_I_m)/var(completecase_am[completecase_am$class=="Amphibia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Reptilia",]$log_I_m)/var(completecase_am[completecase_am$class=="Reptilia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Mammalia",]$log_I_m)/var(completecase_am[completecase_am$class=="Mammalia",]$log_bodymass)
+var(completecase_am[completecase_am$class=="Aves",]$log_I_m)/var(completecase_am[completecase_am$class=="Aves",]$log_bodymass)
+#Isometric variation
+plot(log(I)~log_bodymass,data=completecase_am)
+points(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",],col="red")
+points(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Amphibia",],col="green")
+summary(lm(log(I)~log_bodymass,data=completecase_am))
+summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Amphibia",]))
+summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
+summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
+summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
 
 #C and E
 
