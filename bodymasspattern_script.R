@@ -1,4 +1,6 @@
 library(readr)
+library(plyr)
+library(dplyr)
 library(lattice)
 library(RColorBrewer)
 library(ggplot2)
@@ -622,18 +624,13 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$adult_bod
 ggplot(data=augmented_amniote_database[!is.na(augmented_amniote_database$adult_body_mass_g),],aes(x=log(adult_body_mass_g),colour=class))+
   geom_freqpoly(binwidth = 0.1)
 #with the whole shebang
-ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class))+
+ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..,))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
-  scale_color_brewer(palette="Set1")+
+  scale_color_brewer(name="Class",palette="Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(x = "Log(Adult Body Mass (g))")
-
-ggplot(data=augmented_amniote_database)+
-  geom_histogram(aes(x=log(adult_body_mass_g),fill=class,alpha=0.2),data=subset(augmented_amniote_database,class=="Aves"))+
-  geom_histogram(aes(x=log(adult_body_mass_g),fill=class,alpha=0.2),data=subset(augmented_amniote_database,class=="Mammalia"))+
-  geom_histogram(aes(x=log(adult_body_mass_g),fill=class,alpha=0.2),data=subset(augmented_amniote_database,class=="Reptilia"))+
-  geom_histogram(aes(x=log(adult_body_mass_g),fill=class,alpha=0.2),data=subset(augmented_amniote_database,class=="Amp"))
+  theme(legend.text=element_text(size=18), legend.title = element_text(size=18))+
+  labs(x = "Log(Body Mass (g) )", y="Density")
 
 
 
@@ -875,6 +872,10 @@ completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
 
 #complete cases of amniotes and amphibians
 completecase_am<-rbind.fill(completecase_species,completecase_amph)
+#Make class a factor
+completecase_am$class<-as.factor(completecase_am$class)
+#Reorder factor in reverse evolutionary order (birds, mammals, reptiles, amphibians)
+completecase_am$class = factor(completecase_am$class,levels(completecase_am$class)[c(2:4,1)])
 
 #Create hypervolumes for each class of amniotes
 
