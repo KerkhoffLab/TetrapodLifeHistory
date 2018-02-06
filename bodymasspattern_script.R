@@ -607,23 +607,7 @@ augmented_amniote_database<-rbind(augmented_amniote_database,combined_reptiledat
 
 #Histograms of traits -- relies on completecase_am which is created later in the code so you'll have to fix that
 
-#Histogram of body mass
-hist(log(Amniote_Database_Aug_2015$adult_body_mass_g[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g)]),breaks=200,xlab="Log(Body Mass)",main="",col = myColours[6])
-#with Allen et al. reptiles
-hist(log(augmented_amniote_database$adult_body_mass_g[!is.na(augmented_amniote_database$adult_body_mass_g)]),breaks=200,xlab="Log(Body Mass)",main="",col = myColours[6])
-
-ggplot(data=Amniote_Database_Aug_2015,aes(x=log(adult_body_mass_g)))+
-  geom_histogram(binwidth = 0.1)
-#with Allen et al. reptiles
-ggplot(data=augmented_amniote_database,aes(x=log(adult_body_mass_g)))+
-  geom_histogram(binwidth = 0.1)
-#Stacked histogram by class
-ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$adult_body_mass_g),],aes(x=log(adult_body_mass_g),colour=class))+
-  geom_freqpoly(binwidth = 0.1)
-#with Allen et al. reptiles
-ggplot(data=augmented_amniote_database[!is.na(augmented_amniote_database$adult_body_mass_g),],aes(x=log(adult_body_mass_g),colour=class))+
-  geom_freqpoly(binwidth = 0.1)
-#with the whole shebang
+#Body mass
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..,))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
   scale_color_brewer(name="Class",palette="Set1")+
@@ -632,9 +616,7 @@ ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density
   theme(legend.text=element_text(size=18), legend.title = element_text(size=18))+
   labs(x = "Log(Body Mass (g) )", y="Density")
 
-
-
-#Histogram of C*E
+#C*E
 hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),xlab="Log(C*E)",main="")
 hist(log(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)]),breaks=200,xlab="Log(C*E)",main="",col = myColours[2])
 
@@ -681,29 +663,38 @@ ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],ae
 
 #Make histograms of body mass and three invariants for all 4 classes:
 #body mass
-ggplot(data=completecase_am,aes(x=log(adult_body_mass_g), ..density.., colour=class))+
+ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
+  scale_color_brewer(name="Class",palette="Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(x = "Log(Adult Body Mass (g))")
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  theme(legend.text=element_text(size=18), legend.title = element_text(size=18),legend.position = c(0.8,0.5))+
+  labs(x = "Log(Body Mass (g) )", y="Density")
 #C*E
 ggplot(data=completecase_am,aes(x=log_C_E,..density..,colour=class))+
-  geom_freqpoly(binwidth=0.2,lwd=1.3)+
+  geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
+  scale_color_brewer(palette = "Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(x = "Log(C*E)")
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  labs(x = "Log(C*E)", y="Density")
 #E/alpha
 ggplot(data=completecase_am,aes(x=log_E_alpha,..density..,colour=class))+
-  geom_freqpoly(binwidth=0.2,lwd=1.3)+
+  geom_freqpoly(binwidth=0.4,lwd=1.3,show.legend = F)+
+  scale_color_brewer(palette="Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(x = "Log(E/alpha)")
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  labs(x = "Log(E/alpha)",y="Density")
 #I/m
 ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
-  geom_freqpoly(binwidth=0.2,lwd=1.3)+
+  geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
+  scale_color_brewer(palette = "Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
-  labs(x = "Log(I/m)")
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  labs(x = "Log(I/m)",y="Density")
 
 
 
