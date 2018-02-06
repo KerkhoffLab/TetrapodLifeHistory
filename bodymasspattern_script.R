@@ -624,6 +624,7 @@ ggplot(data=augmented_amniote_database[!is.na(augmented_amniote_database$adult_b
 #with the whole shebang
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
+  scale_color_brewer(palette="Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   labs(x = "Log(Adult Body Mass (g))")
@@ -881,7 +882,7 @@ completecase_am<-rbind.fill(completecase_species,completecase_amph)
 #Bird Gaussian hypervolume
 
 #Log transform bird hypervolume
-completebirds_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Aves",17:20],
+completebirds_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Aves",c(18:20,17)],
                                              name = "completebirds_gaussian")
 completebirds_gaussian@Volume
 #Plot bird hypervolume
@@ -948,7 +949,7 @@ plot(completebirds_gaussian,point.dark.factor=1,color=gg_color_hue(3)[1],
 #Mammal Gaussian hypervolume
 
 #Log transform mammal hypervolume
-completemammals_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Mammalia",17:20],
+completemammals_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Mammalia",c(18:20,17)],
                                              name = "completemammals_gaussian")
 completemammals_gaussian@Volume
 
@@ -963,7 +964,7 @@ plot(completemammals_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.
 #Reptile Gaussian hypervolume
 
 #Log transform reptile hypervolume
-completereptiles_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Reptilia",17:20],
+completereptiles_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Reptilia",c(18:20,17)],
                                                name = "completereptiles_gaussian")
 completereptiles_gaussian@Volume
 
@@ -1003,8 +1004,8 @@ legend("bottomleft",legend = c("Crocodilia","Squamata","Testudines"),text.col=c(
 
 
 #Amphibian hypervolume
-completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Amphibia",17:20],
-                                             name = "completeamph_gaussian")
+completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_am$class=="Amphibia",c(18:20,17)],
+                                                name = "completeamph_gaussian")
 completeamph_gaussian@Volume
 
 #Plot amphibian hypervolume
@@ -1026,7 +1027,7 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completere
 #Plotting all four hypervolumes together
 #Log transformed hypervolumes
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),show.legend=FALSE)
-legend("bottomleft",legend = c("Birds","Mammals","Reptiles"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3]),bty="n",cex=1.1,text.font=2)
+legend("bottomleft",legend = c("Birds","Mammals","Reptiles", "Amphibians"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),bty="n",cex=1.1,text.font=2)
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
      show.3d=TRUE,plot.3d.axes.id=2:4,
      colors = c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
