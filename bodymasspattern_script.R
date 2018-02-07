@@ -1135,21 +1135,18 @@ mammaltrees<-read.nexus("fritztree2009.txt")
 mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
 #want to prune to just the mammals with trait data
 #named vector including all the mammal species with complete trait data
-#bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia"]
-#removing the sea otter
-bmvec_mammal<-completecase_species$adult_body_mass_g[completecase_species$class=="Mammalia" & completecase_species$taxaname!="Enhydra_lutris"]
-
-names(bmvec_mammal)<-completecase_species$taxaname[completecase_species$class=="Mammalia" & completecase_species$taxaname!="Enhydra_lutris"]
+bmvec_mammal<-completecase_am$adult_body_mass_g[completecase_am$class=="Mammalia"]
+names(bmvec_mammal)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
 
 #Create a table of the node labels for each order
-mammal_ordernodes<-data.frame(Order=as.character(unique(completecase_species$order[completecase_species$class=="Mammalia"])),num.species=as.numeric(0),node.num=as.numeric(0))
+mammal_ordernodes<-data.frame(Order=as.character(unique(completecase_am$order[completecase_am$class=="Mammalia"])),num.species=as.numeric(0),node.num=as.numeric(0))
 #add number of species per order
 for(i in 1:nrow(mammal_ordernodes)){
-  mammal_ordernodes$num.species[i]<-sum(pruned_mammaltree_best$tip.label%in%completecase_species$taxaname[completecase_species$order==mammal_ordernodes$Order[i]])
+  mammal_ordernodes$num.species[i]<-sum(pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[completecase_am$order==mammal_ordernodes$Order[i]])
   if(mammal_ordernodes$num.species[i]>1)
-    mammal_ordernodes$node.num[i]<-getMRCA(pruned_mammaltree_best,pruned_mammaltree_best$tip.label[pruned_mammaltree_best$tip.label%in%completecase_species$taxaname[completecase_species$order==mammal_ordernodes$Order[i]]])
+    mammal_ordernodes$node.num[i]<-getMRCA(pruned_mammaltree_best,pruned_mammaltree_best$tip.label[pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[completecase_am$order==mammal_ordernodes$Order[i]]])
   else
     mammal_ordernodes$node.num[i]<-NA
 }
@@ -1240,10 +1237,8 @@ birdtree1$tip.label[9332]<-"Thalassarche_melanophris"
 
 
 #pruning birds
-#removing Acanthis hornemanni
-bmvec_bird<-completecase_species$adult_body_mass_g[completecase_species$class=="Aves" & completecase_species$taxaname!="Acanthis_hornemanni"]
-
-names(bmvec_bird)<-completecase_species$taxaname[completecase_species$class=="Aves" & completecase_species$taxaname!="Acanthis_hornemanni"]
+bmvec_bird<-completecase_am$adult_body_mass_g[completecase_am$class=="Aves"]
+names(bmvec_bird)<-completecase_am$taxaname[completecase_am$class=="Aves"]
 pruned_birdtree1<-prune.missing(x=bmvec_bird, phylo=birdtree1)
 pruned_birdtree1<-pruned_birdtree1$tree
 
@@ -1257,8 +1252,8 @@ squamatetree$tip.label[squamatetree$tip.label=="Gallotia_gomerana"]<-"Gallotia_b
 squamatetree$tip.label[squamatetree$tip.label=="Phrynosoma_douglassii"]<-"Phrynosoma_douglasii"
 
 #pruning squamates
-bmvec_reptile<-completecase_species$adult_body_mass_g[completecase_species$class=="Reptilia"]
-names(bmvec_reptile)<-completecase_species$taxaname[completecase_species$class=="Reptilia"]
+bmvec_reptile<-completecase_am$adult_body_mass_g[completecase_am$class=="Reptilia"]
+names(bmvec_reptile)<-completecase_am$taxaname[completecase_am$class=="Reptilia"]
 pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
 pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
@@ -1321,8 +1316,8 @@ pruned_croctree<-pruned_croctree$tree
 
 #adding traits to mammal tree
 #Body mass
-mammal_log_bodymass<-completecase_species$log_bodymass[completecase_species$class=="Mammalia"]
-names(mammal_log_bodymass)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_bodymass<-completecase_am$log_bodymass[completecase_am$class=="Mammalia"]
+names(mammal_log_bodymass)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 mammal_log_bodymass_tiporder<-mammal_log_bodymass[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
@@ -1334,8 +1329,8 @@ for(i in 1:length(mammal_orderover50)){
    }
 
 #C*E
-mammal_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Mammalia"]
-names(mammal_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_C_E<-completecase_am$log_C_E[completecase_am$class=="Mammalia"]
+names(mammal_log_C_E)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 mammal_log_C_E_tiporder<-mammal_log_C_E[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
@@ -1347,8 +1342,8 @@ for(i in 1:length(mammal_orderover50)){
 }
 
 #I/m
-mammal_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Mammalia"]
-names(mammal_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_I_m<-completecase_am$log_I_m[completecase_am$class=="Mammalia"]
+names(mammal_log_I_m)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 mammal_log_I_m_tiporder<-mammal_log_I_m[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
@@ -1360,8 +1355,8 @@ for(i in 1:length(mammal_orderover50)){
 }
 
 #E/alpha
-mammal_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Mammalia"]
-names(mammal_log_E_alpha)<-completecase_species$taxaname[completecase_species$class=="Mammalia"]
+mammal_log_E_alpha<-completecase_am$log_E_alpha[completecase_am$class=="Mammalia"]
+names(mammal_log_E_alpha)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 mammal_log_E_alpha_tiporder<-mammal_log_E_alpha[pruned_mammaltree_best$tip.label]
 
 plot(pruned_mammaltree_best,no.margin = TRUE,type="fan",show.tip.label = FALSE)
@@ -1371,6 +1366,19 @@ for(i in 1:length(mammal_orderover50)){
   arc.cladelabels(tree=pruned_mammaltree_best,text=mammal_ordernodes$Order[mammal_ordernodes$num.species>50][i],
                   mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
 }
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+mammal_phylo_order_traits<-cbind(mammal_log_bodymass_tiporder,mammal_log_C_E_tiporder,mammal_log_I_m_tiporder, mammal_log_E_alpha_tiporder)
+mammal_phylo_order_traits<-as.data.frame(mammal_phylo_order_traits)
+mammal_phylo_order_traits<-add_rownames(mammal_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plot
+mammal_bodymass_C_E_matrix<-as.matrix(mammal_phylo_order_traits[,2:3])
+colnames(mammal_bodymass_C_E_matrix)<-NULL
+rownames(mammal_bodymass_C_E_matrix)<-mammal_phylo_order_traits$taxaname
+View(mammal_bodymass_C_E_matrix)
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix)
+
 
 #adding traits to squamate tree
 #Body mass
