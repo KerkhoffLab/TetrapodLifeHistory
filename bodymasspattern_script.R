@@ -1424,6 +1424,14 @@ squamate_phylo_order_traits<-cbind(squamate_log_bodymass_tiporder,squamate_log_C
 squamate_phylo_order_traits<-as.data.frame(squamate_phylo_order_traits)
 squamate_phylo_order_traits<-add_rownames(squamate_phylo_order_traits,"taxaname")
 
+#Make phylomorphospace 3d plot
+squamate_bodymass_C_E_matrix<-as.matrix(squamate_phylo_order_traits[,2:3])
+colnames(squamate_bodymass_C_E_matrix)<-NULL
+rownames(squamate_bodymass_C_E_matrix)<-squamate_phylo_order_traits$taxaname
+View(squamate_bodymass_C_E_matrix)
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep("green",nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+
 
 
 #Adding traits to bird tree
@@ -1467,6 +1475,14 @@ color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,
 bird_phylo_order_traits<-cbind(bird_log_bodymass_tiporder,bird_log_C_E_tiporder,bird_log_I_m_tiporder, bird_log_E_alpha_tiporder)
 bird_phylo_order_traits<-as.data.frame(bird_phylo_order_traits)
 bird_phylo_order_traits<-add_rownames(bird_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plot
+bird_bodymass_C_E_matrix<-as.matrix(bird_phylo_order_traits[,2:3])
+colnames(bird_bodymass_C_E_matrix)<-NULL
+rownames(bird_bodymass_C_E_matrix)<-bird_phylo_order_traits$taxaname
+View(bird_bodymass_C_E_matrix)
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off"))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
 
 
 #Create Brownian motion, OU, etc. models
