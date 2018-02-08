@@ -1794,15 +1794,18 @@ summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation
 
 
 
-plot(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(C*E)")
-points(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
-points(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+plot(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
+     xlab="Log(Body Mass)",ylab="Log(C*E)",xlim=c(-0.5,20),ylim=c(-8,6))
+points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
+points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
+points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
 
+abline(lm(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",]),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Aves",]),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",]),col=brewer.pal(n=3,"Set1")[3])
+abline(lm(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",]),col=brewer.pal(n=4,"Set1")[4])
 
-abline(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
-abline(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
-abline(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
-
+legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,"Set1"),pch=19,"bottomright")
 
 
 #E/alpha and body mass
@@ -1831,14 +1834,18 @@ summary(gls(squamate_log_E_alpha_tiporder~squamate_log_bodymass_tiporder,correla
 
 
 
-plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(E/alpha)")
-points(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
-points(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+plot(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
+     xlab="Log(Body Mass)",ylab="Log(E/alpha)",xlim=c(-0.5,20),ylim=c(-2,5.5))
+points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
+points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
+points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
 
+abline(lm(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",]),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Aves",]),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",]),col=brewer.pal(n=3,"Set1")[3])
+abline(lm(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",]),col=brewer.pal(n=4,"Set1")[4])
 
-abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
-abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
-abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
+legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,"Set1"),pch=19,"bottomright")
 
 
 
@@ -1867,14 +1874,18 @@ summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames
 summary(gls(squamate_log_I_m_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
 
 
-plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(I/m)")
-points(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix),col=brewer.pal(n=3,"Set1")[1])
-points(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix),col=brewer.pal(n=3,"Set1")[3])
+plot(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
+     xlab="Log(Body Mass)",ylab="Log(I/m)",xlim=c(-0.5,20),ylim=c(-15.5,0.5))
+points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
+points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
+points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
 
+abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",]),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Aves",]),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",]),col=brewer.pal(n=3,"Set1")[3])
+abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",]),col=brewer.pal(n=4,"Set1")[4])
 
-abline(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)),col=brewer.pal(n=3,"Set1")[2])
-abline(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)),col=brewer.pal(n=3,"Set1")[1])
-abline(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=brewer.pal(n=3,"Set1")[3])
+legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,"Set1"),pch=19,"bottomright")
 
 
 #TABLE 1
