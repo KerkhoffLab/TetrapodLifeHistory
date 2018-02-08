@@ -1278,40 +1278,8 @@ force.ultrametric<-function(tree,method=c("nnls","extend")){
 
 ult_pruned_squamatetree<-force.ultrametric(pruned_squamatetree,method = "nnls")
 
-
-
-
-
-data(JaffeEtAl2011)
-turtletree<-JaffeEtAl2011
-#fix spelling of Texas tortoise
-turtletree$tip.label[81]<-"Gopherus_berlandieri"
-#Get rid of Greek tortoise subspecies
-turtletree$tip.label[26]<-"Testudo_graeca"
-#fix red-footed tortoise
-turtletree$tip.label[60]<-"Chelonoidis_carbonarius"
-#get rid of common box turtle subspecies
-turtletree$tip.label[turtletree$tip.label=="Terrapene_carolina_triunguis"]<-"Terrapene_carolina"
-#picking a subspecies for yellow-bellied slider
-turtletree$tip.label[turtletree$tip.label=="Trachemys_scripta_elegans"]<-"Trachemys_scripta"
-
-#pruning turtles
-pruned_turtletree<-prune.missing(x=bmvec_reptile, phylo=turtletree)
-pruned_turtletree<-pruned_turtletree$tree
-
-data("Oaks2011")
-croctree<-Oaks2011
-#rename freshwater croc to match amniote taxonomy
-croctree$tip.label[11]<-"Crocodylus_johnsoni"
-#rename one of Nile crocodiles
-croctree$tip.label[13]<-"Crocodylus_niloticus"
-#rename one of the dwarf crocodiles
-croctree$tip.label[croctree$tip.label=="Osteolaemus_tetraspis_1"]<-"Osteolaemus_tetraspis"
-#pruning crocs
-pruned_croctree<-prune.missing(x=bmvec_reptile,phylo = croctree)
-pruned_croctree<-pruned_croctree$tree
-
-#binding reptile tree
+#Amphibians
+amphibiantree<-read.nexus(file="C:/Users/cecin/Desktop/HonorsPhylogenies/amphibians.nex")
 
 
 #adding traits to mammal tree
