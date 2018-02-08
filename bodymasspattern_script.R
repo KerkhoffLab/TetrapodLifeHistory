@@ -1256,7 +1256,7 @@ bmvec_reptile<-completecase_am$adult_body_mass_g[completecase_am$class=="Reptili
 names(bmvec_reptile)<-completecase_am$taxaname[completecase_am$class=="Reptilia"]
 pruned_squamatetree<-prune.missing(x=bmvec_reptile, phylo=squamatetree)
 pruned_squamatetree<-pruned_squamatetree$tree
-pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis"))
+pruned_squamatetree<-drop.tip(pruned_squamatetree,c("Crocodylus_porosus","Alligator_mississippiensis","Chelydra_serpentina"))
 
 
 #make Zheng and Wiens tree ultrametric
@@ -1382,8 +1382,8 @@ fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix
 
 #adding traits to squamate tree
 #Body mass
-squamate_log_bodymass<-completecase_species$log_bodymass[completecase_species$order=="Squamata"]
-names(squamate_log_bodymass)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_bodymass<-completecase_am$log_bodymass[completecase_am$order=="Squamata"]
+names(squamate_log_bodymass)<-completecase_am$taxaname[completecase_am$order=="Squamata"]
 squamate_log_bodymass_tiporder<-squamate_log_bodymass[pruned_squamatetree$tip.label]
 
 plot(pruned_squamatetree,cex=0.65,no.margin=TRUE)
@@ -1392,8 +1392,8 @@ color.legend(0,60,40,61,legend=c(0.90,10.62),rect.col=color.gradient(c(0,1),0,c(
 
 
 #C*E
-squamate_log_C_E<-completecase_species$log_C_E[completecase_species$order=="Squamata"]
-names(squamate_log_C_E)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_C_E<-completecase_am$log_C_E[completecase_am$order=="Squamata"]
+names(squamate_log_C_E)<-completecase_am$taxaname[completecase_am$order=="Squamata"]
 squamate_log_C_E_tiporder<-squamate_log_C_E[pruned_squamatetree$tip.label]
 
 plot(pruned_squamatetree,cex=0.65)
@@ -1402,8 +1402,8 @@ color.legend(0,60,40,61,legend=c(-2.44,2.42),rect.col=color.gradient(c(0,1),0,c(
 
 
 #I/m
-squamate_log_I_m<-completecase_species$log_I_m[completecase_species$order=="Squamata"]
-names(squamate_log_I_m)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_I_m<-completecase_am$log_I_m[completecase_am$order=="Squamata"]
+names(squamate_log_I_m)<-completecase_am$taxaname[completecase_am$order=="Squamata"]
 squamate_log_I_m_tiporder<-squamate_log_I_m[pruned_squamatetree$tip.label]
 
 plot(pruned_squamatetree,cex=0.65)
@@ -1411,55 +1411,144 @@ tiplabels(pch=19,col=color.scale(squamate_log_I_m_tiporder,extremes=c("blue","re
 color.legend(0,60,40,61,legend=c(-6.30,-1.95),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 #E/alpha
-squamate_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$order=="Squamata"]
-names(squamate_log_E_alpha)<-completecase_species$taxaname[completecase_species$order=="Squamata"]
+squamate_log_E_alpha<-completecase_am$log_E_alpha[completecase_am$order=="Squamata"]
+names(squamate_log_E_alpha)<-completecase_am$taxaname[completecase_am$order=="Squamata"]
 squamate_log_E_alpha_tiporder<-squamate_log_E_alpha[pruned_squamatetree$tip.label]
 
 plot(pruned_squamatetree,cex=0.65)
 tiplabels(pch=19,col=color.scale(squamate_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+squamate_phylo_order_traits<-cbind(squamate_log_bodymass_tiporder,squamate_log_C_E_tiporder,squamate_log_I_m_tiporder, squamate_log_E_alpha_tiporder)
+squamate_phylo_order_traits<-as.data.frame(squamate_phylo_order_traits)
+squamate_phylo_order_traits<-add_rownames(squamate_phylo_order_traits,"taxaname")
 
 
 
-#adding traits to croc tree
+#Adding traits to bird tree
 #Body mass
-croc_log_bodymass<-completecase_species$log_bodymass[completecase_species$order=="Crocodilia"]
-names(croc_log_bodymass)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
-croc_log_bodymass_tiporder<-croc_log_bodymass[pruned_croctree$tip.label]
+bird_log_bodymass<-completecase_am$log_bodymass[completecase_am$class=="Aves"]
+names(bird_log_bodymass)<-completecase_am$taxaname[completecase_am$class=="Aves"]
+bird_log_bodymass_tiporder<-bird_log_bodymass[pruned_birdtree1$tip.label]
 
-plot(pruned_croctree)
-tiplabels(pch=19,col=color.scale(croc_log_bodymass_tiporder,extremes=c("blue","red")))
-color.legend(0,0,20,0.4,legend=c(9.30,12.20),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+plot(pruned_birdtree1,no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(bird_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(1.15,8.99),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#C*E
+bird_log_C_E<-completecase_am$log_C_E[completecase_am$class=="Aves"]
+names(bird_log_C_E)<-completecase_am$taxaname[completecase_am$class=="Aves"]
+bird_log_C_E_tiporder<-bird_log_C_E[pruned_birdtree1$tip.label]
+
+plot(pruned_birdtree1,no.margin = TRUE,show.tip.label = FALSE,type="fan")
+tiplabels(pch=19,col=color.scale(bird_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(1.51,5.36),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#I/m
+bird_log_I_m<-completecase_am$log_I_m[completecase_am$class=="Aves"]
+names(bird_log_I_m)<-completecase_am$taxaname[completecase_am$class=="Aves"]
+bird_log_I_m_tiporder<-bird_log_I_m[pruned_birdtree1$tip.label]
+
+plot(pruned_birdtree1,no.margin = TRUE,show.tip.label = FALSE,type="fan")
+tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-1.94,0.43),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+bird_log_E_alpha<-completecase_am$log_E_alpha[completecase_am$class=="Aves"]
+names(bird_log_E_alpha)<-completecase_am$taxaname[completecase_am$class=="Aves"]
+bird_log_E_alpha_tiporder<-bird_log_E_alpha[pruned_birdtree1$tip.label]
+
+plot(pruned_birdtree1,type="fan",no.margin = TRUE,show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+bird_phylo_order_traits<-cbind(bird_log_bodymass_tiporder,bird_log_C_E_tiporder,bird_log_I_m_tiporder, bird_log_E_alpha_tiporder)
+bird_phylo_order_traits<-as.data.frame(bird_phylo_order_traits)
+bird_phylo_order_traits<-add_rownames(bird_phylo_order_traits,"taxaname")
+
+
+#Create Brownian motion, OU, etc. models
+#For body mass
+bird_bodymass_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="OU")
+bird_bodymass_fit.ou
+bird_bodymass_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="BM")
+bird_bodymass_fit.bm
+bird_bodymass_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="lambda")
+bird_bodymass_fit.lambda
+bird_bodymass_fit.white<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="white")
+bird_bodymass_fit.white
+#For C*E
+bird_C_E_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="OU")
+bird_C_E_fit.ou
+bird_C_E_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="BM")
+bird_C_E_fit.bm
+bird_C_E_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="lambda")
+bird_C_E_fit.lambda
+bird_C_E_fit.white<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="white")
+bird_C_E_fit.white
+#For I/m
+bird_I_m_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="OU")
+bird_I_m_fit.ou
+bird_I_m_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="BM")
+bird_I_m_fit.bm
+bird_I_m_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="lambda")
+bird_I_m_fit.lambda
+bird_I_m_fit.white<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="white")
+bird_I_m_fit.white
+#For E/alpha
+bird_E_alpha_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="OU")
+bird_E_alpha_fit.ou
+bird_E_alpha_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="BM")
+bird_E_alpha_fit.bm
+bird_E_alpha_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="lambda")
+bird_E_alpha_fit.lambda
+bird_E_alpha_fit.white<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="white")
+bird_E_alpha_fit.white
+
+#fast anc reconstructions for birds
+#Body mass
+bird_bodymass_bm_tree<-geiger::rescale(pruned_birdtree1,model="BM", bird_bodymass_fit.bm$opt$sigsq)
+bird_bodymass_bm_fastAnc<-fastAnc(bird_bodymass_bm_tree, bird_log_bodymass_tiporder)
+
+#Color node labels based on lambda model
+plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(bird_bodymass_bm_fastAnc,extremes=c("blue","red"),xrange = c(min(bird_log_bodymass_tiporder),max(bird_log_bodymass_tiporder))))
+tiplabels(pch=19,col=color.scale(bird_log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(1.15,8.99),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 #C*E
-croc_log_C_E<-completecase_species$log_C_E[completecase_species$order=="Crocodilia"]
-names(croc_log_C_E)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
-croc_log_C_E_tiporder<-croc_log_C_E[pruned_croctree$tip.label]
+bird_C_E_lam_tree<-geiger::rescale(pruned_birdtree1,model="lambda", bird_C_E_fit.lambda$opt$lambda)
+bird_C_E_lam_fastAnc<-fastAnc(bird_C_E_lam_tree, bird_log_C_E_tiporder)
 
-plot(pruned_croctree)
-tiplabels(pch=19,col=color.scale(croc_log_C_E_tiporder,extremes=c("blue","red")))
-color.legend(0,0,20,0.4,legend=c(-0.60,0.16),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+#Color node labels based on lambda model
+plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(bird_C_E_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(bird_log_C_E_tiporder),max(bird_log_C_E_tiporder))))
+tiplabels(pch=19,col=color.scale(bird_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-1.51,5.36),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+bird_E_alpha_lam_tree<-geiger::rescale(pruned_birdtree1,model="lambda", bird_E_alpha_fit.lambda$opt$lambda)
+bird_E_alpha_lam_fastAnc<-fastAnc(bird_E_alpha_lam_tree, bird_log_E_alpha_tiporder)
+
+#Color node labels based on lambda model
+plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(bird_E_alpha_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(bird_log_E_alpha_tiporder),max(bird_log_E_alpha_tiporder))))
+tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 #I/m
-croc_log_I_m<-completecase_species$log_I_m[completecase_species$order=="Crocodilia"]
-names(croc_log_I_m)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
-croc_log_I_m_tiporder<-croc_log_I_m[pruned_croctree$tip.label]
+bird_I_m_bm_tree<-geiger::rescale(pruned_birdtree1,model="BM", mammal_I_m_fit.bm$opt$sigsq)
+bird_I_m_bm_fastAnc<-fastAnc(bird_I_m_bm_tree, bird_log_I_m_tiporder)
 
-plot(pruned_croctree)
-tiplabels(pch=19,col=color.scale(croc_log_I_m_tiporder,extremes=c("blue","red")))
-color.legend(0,0,20,0.4,legend=c(-7.90,-5.63),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#E/alpha
-croc_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$order=="Crocodilia"]
-names(croc_log_E_alpha)<-completecase_species$taxaname[completecase_species$order=="Crocodilia"]
-croc_log_E_alpha_tiporder<-croc_log_E_alpha[pruned_croctree$tip.label]
-
-plot(pruned_croctree)
-tiplabels(pch=19,col=color.scale(croc_log_E_alpha_tiporder,extremes=c("blue","red")))
-color.legend(0,0,20,0.4,legend=c(0.47,2.31),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+#Color node labels based on lambda model
+plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
+nodelabels(pch=19,col=color.scale(bird_I_m_bm_fastAnc,extremes=c("blue","red"),xrange = c(min(bird_log_I_m_tiporder),max(bird_log_I_m_tiporder))))
+tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-1.94,0.43),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 
@@ -1541,48 +1630,6 @@ squamate_E_alpha_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_
 squamate_E_alpha_fit.lambda
 squamate_E_alpha_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="white")
 squamate_E_alpha_fit.white
-
-#Create Brownian motion, OU, etc. models for Crocodilia
-#For body mass
-croc_bodymass_fit.ou<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="OU")
-croc_bodymass_fit.ou
-croc_bodymass_fit.bm<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="BM")
-croc_bodymass_fit.bm
-croc_bodymass_fit.lambda<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="lambda")
-croc_bodymass_fit.lambda
-croc_bodymass_fit.white<-fitContinuous(pruned_croctree,croc_log_bodymass_tiporder,model="white")
-croc_bodymass_fit.white
-#For C*E
-croc_C_E_fit.ou<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="OU")
-croc_C_E_fit.ou
-croc_C_E_fit.bm<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="BM")
-croc_C_E_fit.bm
-croc_C_E_fit.lambda<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="lambda")
-croc_C_E_fit.lambda
-croc_C_E_fit.white<-fitContinuous(pruned_croctree,croc_log_C_E_tiporder,model="white")
-croc_C_E_fit.white
-#For I/m
-croc_I_m_fit.ou<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="OU")
-croc_I_m_fit.ou
-croc_I_m_fit.bm<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="BM")
-croc_I_m_fit.bm
-croc_I_m_fit.lambda<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="lambda")
-croc_I_m_fit.lambda
-croc_I_m_fit.white<-fitContinuous(pruned_croctree,croc_log_I_m_tiporder,model="white")
-croc_I_m_fit.white
-#For E/alpha
-croc_E_alpha_fit.ou<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="OU")
-croc_E_alpha_fit.ou
-croc_E_alpha_fit.bm<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="BM")
-croc_E_alpha_fit.bm
-croc_E_alpha_fit.lambda<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="lambda")
-croc_E_alpha_fit.lambda
-croc_E_alpha_fit.white<-fitContinuous(pruned_croctree,croc_log_E_alpha_tiporder,model="white")
-croc_E_alpha_fit.white
-
-
-
-
 #fastAnc ancestral reconstructions for mammals
 
 #Body mass
@@ -1711,14 +1758,13 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
-summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
-summary(gls(log_C_E~log_bodymass,correlation = corPagel(1,phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
 
 #Birds
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)))
 #PGLS
-summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
+summary(gls(bird_log_C_E_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data=bird_phylo_order_traits,method="ML"))
 
 #Reptiles
 #linear model
@@ -1728,7 +1774,7 @@ summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
-summary(gls(log_C_E~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
+summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
 
 
 
@@ -1749,13 +1795,13 @@ abline(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col=bre
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
-summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+summary(gls(mammal_log_E_alpha_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
 
 #Birds
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)))
 #PGLS
-summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
+summary(gls(bird_log_E_alpha_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data = bird_phylo_order_traits,method = "ML"))
 
 
 #Reptiles
@@ -1765,7 +1811,8 @@ summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
-summary(gls(log_E_alpha~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
+summary(gls(squamate_log_E_alpha_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
+
 
 
 plot(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(E/alpha)")
@@ -1784,14 +1831,14 @@ abline(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)),col
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
-summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_mammaltree_di),data = as.data.frame(mammaltraitmatrix),method = "ML"))
+summary(gls(mammal_log_I_m_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+
 
 #Birds
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(birdtraitmatrix)))
 #PGLS
-summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_birdtree1),data=as.data.frame(birdtraitmatrix),method="ML"))
-
+summary(gls(bird_log_I_m_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data = bird_phylo_order_traits,method = "ML"))
 
 
 #Reptiles
@@ -1801,7 +1848,7 @@ summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 #linear model
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
-summary(gls(log_I_m~log_bodymass,correlation = corBrownian(phy=pruned_squamatetree),data=as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,]),method="ML"))
+summary(gls(squamate_log_I_m_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
 
 
 plot(log_I_m~log_bodymass,data = as.data.frame(mammaltraitmatrix),ylim=c(-9,1),xlim=c(1,18),col=brewer.pal(n=3,"Set1")[2],xlab="Log(Body Mass)",ylab="Log(I/m)")
@@ -2150,124 +2197,6 @@ reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
 rownames(reptilecompmatrix)<-reptiletraits$taxaname
 
 
-#Adding traits to bird tree
-#Body mass
-bird_log_bodymass<-completecase_species$log_bodymass[completecase_species$class=="Aves"]
-names(bird_log_bodymass)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-bird_log_bodymass_tiporder<-bird_log_bodymass[pruned_birdtree1$tip.label]
-
-plot(pruned_birdtree1,no.margin = TRUE,type="fan",show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(bird_log_bodymass_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(1.15,8.99),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#C*E
-bird_log_C_E<-completecase_species$log_C_E[completecase_species$class=="Aves"]
-names(bird_log_C_E)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-bird_log_C_E_tiporder<-bird_log_C_E[pruned_birdtree1$tip.label]
-
-plot(pruned_birdtree1,no.margin = TRUE,show.tip.label = FALSE,type="fan")
-tiplabels(pch=19,col=color.scale(bird_log_C_E_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(1.51,5.36),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#I/m
-bird_log_I_m<-completecase_species$log_I_m[completecase_species$class=="Aves"]
-names(bird_log_I_m)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-bird_log_I_m_tiporder<-bird_log_I_m[pruned_birdtree1$tip.label]
-
-plot(pruned_birdtree1,no.margin = TRUE,show.tip.label = FALSE,type="fan")
-tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(-1.94,0.43),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#E/alpha
-bird_log_E_alpha<-completecase_species$log_E_alpha[completecase_species$class=="Aves"]
-names(bird_log_E_alpha)<-completecase_species$taxaname[completecase_species$class=="Aves"]
-bird_log_E_alpha_tiporder<-bird_log_E_alpha[pruned_birdtree1$tip.label]
-
-plot(pruned_birdtree1,type="fan",no.margin = TRUE,show.tip.label = FALSE)
-tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-
-#Create Brownian motion, OU, etc. models
-#For body mass
-bird_bodymass_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="OU")
-bird_bodymass_fit.ou
-bird_bodymass_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="BM")
-bird_bodymass_fit.bm
-bird_bodymass_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="lambda")
-bird_bodymass_fit.lambda
-bird_bodymass_fit.white<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="white")
-bird_bodymass_fit.white
-#For C*E
-bird_C_E_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="OU")
-bird_C_E_fit.ou
-bird_C_E_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="BM")
-bird_C_E_fit.bm
-bird_C_E_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="lambda")
-bird_C_E_fit.lambda
-bird_C_E_fit.white<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="white")
-bird_C_E_fit.white
-#For I/m
-bird_I_m_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="OU")
-bird_I_m_fit.ou
-bird_I_m_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="BM")
-bird_I_m_fit.bm
-bird_I_m_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="lambda")
-bird_I_m_fit.lambda
-bird_I_m_fit.white<-fitContinuous(pruned_birdtree1,bird_log_I_m_tiporder,model="white")
-bird_I_m_fit.white
-#For E/alpha
-bird_E_alpha_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="OU")
-bird_E_alpha_fit.ou
-bird_E_alpha_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="BM")
-bird_E_alpha_fit.bm
-bird_E_alpha_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="lambda")
-bird_E_alpha_fit.lambda
-bird_E_alpha_fit.white<-fitContinuous(pruned_birdtree1,bird_log_E_alpha_tiporder,model="white")
-bird_E_alpha_fit.white
-
-#fast anc reconstructions for birds
-#Body mass
-bird_bodymass_bm_tree<-geiger::rescale(pruned_birdtree1,model="BM", bird_bodymass_fit.bm$opt$sigsq)
-bird_bodymass_bm_fastAnc<-fastAnc(bird_bodymass_bm_tree, bird_log_bodymass_tiporder)
-
-#Color node labels based on lambda model
-plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(bird_bodymass_bm_fastAnc,extremes=c("blue","red"),xrange = c(min(bird_log_bodymass_tiporder),max(bird_log_bodymass_tiporder))))
-tiplabels(pch=19,col=color.scale(bird_log_bodymass_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(1.15,8.99),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-
-#C*E
-bird_C_E_lam_tree<-geiger::rescale(pruned_birdtree1,model="lambda", bird_C_E_fit.lambda$opt$lambda)
-bird_C_E_lam_fastAnc<-fastAnc(bird_C_E_lam_tree, bird_log_C_E_tiporder)
-
-#Color node labels based on lambda model
-plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(bird_C_E_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(bird_log_C_E_tiporder),max(bird_log_C_E_tiporder))))
-tiplabels(pch=19,col=color.scale(bird_log_C_E_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(-1.51,5.36),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-#E/alpha
-bird_E_alpha_lam_tree<-geiger::rescale(pruned_birdtree1,model="lambda", bird_E_alpha_fit.lambda$opt$lambda)
-bird_E_alpha_lam_fastAnc<-fastAnc(bird_E_alpha_lam_tree, bird_log_E_alpha_tiporder)
-
-#Color node labels based on lambda model
-plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(bird_E_alpha_lam_fastAnc,extremes=c("blue","red"),xrange=c(min(bird_log_E_alpha_tiporder),max(bird_log_E_alpha_tiporder))))
-tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
-
-
-#I/m
-bird_I_m_bm_tree<-geiger::rescale(pruned_birdtree1,model="BM", mammal_I_m_fit.bm$opt$sigsq)
-bird_I_m_bm_fastAnc<-fastAnc(bird_I_m_bm_tree, bird_log_I_m_tiporder)
-
-#Color node labels based on lambda model
-plot(pruned_birdtree1,no.margin=TRUE,show.tip.label=FALSE,type="fan")
-nodelabels(pch=19,col=color.scale(bird_I_m_bm_fastAnc,extremes=c("blue","red"),xrange = c(min(bird_log_I_m_tiporder),max(bird_log_I_m_tiporder))))
-tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
-color.legend(-150,-100,-100,-90,legend=c(-1.94,0.43),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 
