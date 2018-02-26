@@ -696,7 +696,7 @@ ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
   labs(x = "Log(I/m)",y="Density")
 
-
+anova(lm(log_C_E~class, data = completecase_am))
 
 
 #Histograms with bats
@@ -1030,8 +1030,14 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completere
 hypervolume_overlap_statistics(hypervolume_set(completebirds_gaussian,completemammals_gaussian,check.memory = FALSE))
 #Birds and reptiles:
 hypervolume_overlap_statistics(hypervolume_set(completebirds_gaussian,completereptiles_gaussian,check.memory = FALSE))
+#Birds and amphibians:
+hypervolume_overlap_statistics(hypervolume_set(completebirds_gaussian,completeamph_gaussian,check.memory = FALSE))
 #Mammals and reptiles:
 hypervolume_overlap_statistics(hypervolume_set(completemammals_gaussian,completereptiles_gaussian,check.memory = FALSE))
+#Mammals and amphibians:
+hypervolume_overlap_statistics(hypervolume_set(completemammals_gaussian,completeamph_gaussian,check.memory = FALSE))
+#Reptiles and amphibians:
+hypervolume_overlap_statistics(hypervolume_set(completereptiles_gaussian,completeamph_gaussian,check.memory = FALSE))
 
 
 
@@ -1279,7 +1285,52 @@ force.ultrametric<-function(tree,method=c("nnls","extend")){
 ult_pruned_squamatetree<-force.ultrametric(pruned_squamatetree,method = "nnls")
 
 #Amphibians
-amphibiantree<-read.nexus(file="C:/Users/cecin/Desktop/HonorsPhylogenies/amphibians.nex")
+data("PyronWiens2011")
+amphibiantree<-PyronWiens2011
+#taxonomic resolution
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_americanus"]<-"Anaxyrus_americanus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_baxteri"]<-"Anaxyrus_baxteri"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_californicus"]<-"Anaxyrus_californicus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_cognatus"]<-"Anaxyrus_cognatus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_fowleri"]<-"Anaxyrus_fowleri"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_punctatus"]<-"Anaxyrus_punctatus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_woodhousii"]<-"Anaxyrus_woodhousii"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_calamita"]<-"Epidalea_calamita"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_calamita"]<-"Epidalea_calamita"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_alvarius"]<-"Incilius_alvarius"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_nebulifer"]<-"Incilius_nebulifer"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_viridis"]<-"Pseudepidalea_viridis"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_marinus"]<-"Rhinella_marina"
+amphibiantree$tip.label[amphibiantree$tip.label=="Bufo_viridis"]<-"Pseudepidalea_viridis"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_pleuraden"]<-"Babina_pleuraden"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_rugosa"]<-"Glandirana_rugosa"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_guentheri"]<-"Hylarana_guentheri"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_nigrovittata"]<-"Hylarana_nigrovittata"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_taipehensis"]<-"Hylarana_taipehensis"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_guentheri"]<-"Hylarana_guentheri"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_catesbeiana"]<-"Lithobates_catesbeianus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_clamitans"]<-"Lithobates_clamitans"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_pipiens"]<-"Lithobates_pipiens"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_septentrionalis"]<-"Lithobates_septentrionalis"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_sylvatica"]<-"Lithobates_sylvaticus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_pipiens"]<-"Lithobates_pipiens"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_grahami"]<-"Odorrana_grahami"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_epeirotica"]<-"Pelophylax_epeiroticus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_lessonae"]<-"Pelophylax_lessonae"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_nigromaculata"]<-"Pelophylax_nigromaculatus"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_perezi"]<-"Pelophylax_perezi"
+amphibiantree$tip.label[amphibiantree$tip.label=="Rana_ridibunda"]<-"Pelophylax_ridibundus"
+
+ult_pruned_amphibiantree<-force.ultrametric(pruned_amphibiantree,method = "nnls")
+
+
+
+#pruning amphibians
+bmvec_amphibian<-completecase_am$adult_body_mass_g[completecase_am$class=="Amphibia"]
+names(bmvec_amphibian)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
+pruned_amphibiantree<-prune.missing(x=bmvec_amphibian, phylo=amphibiantree)
+pruned_amphibiantree<-pruned_amphibiantree$tree
+
 
 
 #adding traits to mammal tree
@@ -1340,12 +1391,28 @@ mammal_phylo_order_traits<-cbind(mammal_log_bodymass_tiporder,mammal_log_C_E_tip
 mammal_phylo_order_traits<-as.data.frame(mammal_phylo_order_traits)
 mammal_phylo_order_traits<-add_rownames(mammal_phylo_order_traits,"taxaname")
 
-#Make phylomorphospace 3d plot
+#Make phylomorphospace 3d plots
+#C*E:
 mammal_bodymass_C_E_matrix<-as.matrix(mammal_phylo_order_traits[,2:3])
 colnames(mammal_bodymass_C_E_matrix)<-NULL
 rownames(mammal_bodymass_C_E_matrix)<-mammal_phylo_order_traits$taxaname
 View(mammal_bodymass_C_E_matrix)
-fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix)
+#E/alpha:
+mammal_bodymass_E_alpha_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,5)])
+colnames(mammal_bodymass_E_alpha_matrix)<-NULL
+rownames(mammal_bodymass_E_alpha_matrix)<-mammal_phylo_order_traits$taxaname
+#View(mammal_bodymass_E_alpha_matrix)
+#I/m:
+mammal_bodymass_I_m_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,4)])
+colnames(mammal_bodymass_I_m_matrix)<-NULL
+rownames(mammal_bodymass_I_m_matrix)<-mammal_phylo_order_traits$taxaname
+#View(mammal_bodymass_I_m_matrix)
+
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+
+
 
 
 #adding traits to squamate tree
@@ -1393,12 +1460,106 @@ squamate_phylo_order_traits<-as.data.frame(squamate_phylo_order_traits)
 squamate_phylo_order_traits<-add_rownames(squamate_phylo_order_traits,"taxaname")
 
 #Make phylomorphospace 3d plot
+#C*E
 squamate_bodymass_C_E_matrix<-as.matrix(squamate_phylo_order_traits[,2:3])
 colnames(squamate_bodymass_C_E_matrix)<-NULL
 rownames(squamate_bodymass_C_E_matrix)<-squamate_phylo_order_traits$taxaname
 View(squamate_bodymass_C_E_matrix)
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep("green",nrow(pruned_birdtree1$edge))))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+#E/alpha:
+squamate_bodymass_E_alpha_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,5)])
+colnames(squamate_bodymass_E_alpha_matrix)<-NULL
+rownames(squamate_bodymass_E_alpha_matrix)<-squamate_phylo_order_traits$taxaname
+#View(squamate_bodymass_E_alpha_matrix)
+#I/m:
+squamate_bodymass_I_m_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,4)])
+colnames(squamate_bodymass_I_m_matrix)<-NULL
+rownames(squamate_bodymass_I_m_matrix)<-squamate_phylo_order_traits$taxaname
+#View(squamate_bodymass_I_m_matrix)
+
+#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(3,"Set1")[3],nrow(pruned_squamatetree$edge))))
+#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+
+
+matrix_squamate_phylo_order_traits<-as.matrix(squamate_phylo_order_traits[,2:5])
+rownames(matrix_squamate_phylo_order_traits)<-squamate_phylo_order_traits$taxaname
+phylomorphospace3d(pruned_squamatetree,X=as.matrix(matrix_squamate_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
+
+#adding traits to amphibian tree
+#Body mass
+amphibian_log_bodymass<-completecase_am$log_bodymass[completecase_am$class=="Amphibia"]
+names(amphibian_log_bodymass)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
+amphibian_log_bodymass_tiporder<-amphibian_log_bodymass[pruned_amphibiantree$tip.label]
+
+plot(pruned_amphibiantree,cex=0.65,no.margin=TRUE)
+tiplabels(pch=19,col=color.scale(amphibian_log_bodymass_tiporder,extremes=c("blue","red")))
+#color.legend(0,60,40,61,legend=c(0.90,10.62),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#C*E
+amphibian_log_C_E<-completecase_am$log_C_E[completecase_am$class=="Amphibia"]
+names(amphibian_log_C_E)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
+amphibian_log_C_E_tiporder<-amphibian_log_C_E[pruned_amphibiantree$tip.label]
+
+plot(pruned_amphibiantree,cex=0.65)
+tiplabels(pch=19,col=color.scale(amphibian_log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-2.44,2.42),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#I/m
+amphibian_log_I_m<-completecase_am$log_I_m[completecase_am$class=="Amphibia"]
+names(amphibian_log_I_m)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
+amphibian_log_I_m_tiporder<-amphibian_log_I_m[pruned_amphibiantree$tip.label]
+
+plot(pruned_amphibiantree,cex=0.65)
+tiplabels(pch=19,col=color.scale(amphibian_log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-6.30,-1.95),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+amphibian_log_E_alpha<-completecase_am$log_E_alpha[completecase_am$class=="Amphibia"]
+names(amphibian_log_E_alpha)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
+amphibian_log_E_alpha_tiporder<-amphibian_log_E_alpha[pruned_amphibiantree$tip.label]
+
+plot(pruned_amphibiantree,cex=0.65)
+tiplabels(pch=19,col=color.scale(amphibian_log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+amphibian_phylo_order_traits<-cbind(amphibian_log_bodymass_tiporder,amphibian_log_C_E_tiporder,amphibian_log_I_m_tiporder, amphibian_log_E_alpha_tiporder)
+amphibian_phylo_order_traits<-as.data.frame(amphibian_phylo_order_traits)
+amphibian_phylo_order_traits<-add_rownames(amphibian_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plot
+#C*E:
+amphibian_bodymass_C_E_matrix<-as.matrix(amphibian_phylo_order_traits[,2:3])
+colnames(amphibian_bodymass_C_E_matrix)<-NULL
+rownames(amphibian_bodymass_C_E_matrix)<-amphibian_phylo_order_traits$taxaname
+View(amphibian_bodymass_C_E_matrix)
+#E/alpha:
+amphibian_bodymass_E_alpha_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,5)])
+colnames(amphibian_bodymass_E_alpha_matrix)<-NULL
+rownames(amphibian_bodymass_E_alpha_matrix)<-amphibian_phylo_order_traits$taxaname
+#View(amphibian_bodymass_E_alpha_matrix)
+#I/m:
+amphibian_bodymass_I_m_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,4)])
+colnames(amphibian_bodymass_I_m_matrix)<-NULL
+rownames(amphibian_bodymass_I_m_matrix)<-amphibian_phylo_order_traits$taxaname
+#View(amphibian_bodymass_I_m_matrix)
+
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+
+
+# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,method="static",control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+
+matrix_amphibian_phylo_order_traits<-as.matrix(amphibian_phylo_order_traits[,2:5])
+rownames(matrix_amphibian_phylo_order_traits)<-amphibian_phylo_order_traits$taxaname
+phylomorphospace3d(pruned_amphibiantree,X=as.matrix(matrix_amphibian_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
 
 
 
@@ -1445,12 +1606,29 @@ bird_phylo_order_traits<-as.data.frame(bird_phylo_order_traits)
 bird_phylo_order_traits<-add_rownames(bird_phylo_order_traits,"taxaname")
 
 #Make phylomorphospace 3d plot
+#C*E
 bird_bodymass_C_E_matrix<-as.matrix(bird_phylo_order_traits[,2:3])
 colnames(bird_bodymass_C_E_matrix)<-NULL
 rownames(bird_bodymass_C_E_matrix)<-bird_phylo_order_traits$taxaname
 View(bird_bodymass_C_E_matrix)
-fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off"))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+#E/alpha:
+bird_bodymass_E_alpha_matrix<-as.matrix(bird_phylo_order_traits[,c(2,5)])
+colnames(bird_bodymass_E_alpha_matrix)<-NULL
+rownames(bird_bodymass_E_alpha_matrix)<-bird_phylo_order_traits$taxaname
+#View(bird_bodymass_E_alpha_matrix)
+#I/m:
+bird_bodymass_I_m_matrix<-as.matrix(bird_phylo_order_traits[,c(2,4)])
+colnames(bird_bodymass_I_m_matrix)<-NULL
+rownames(bird_bodymass_I_m_matrix)<-bird_phylo_order_traits$taxaname
+#View(bird_bodymass_I_m_matrix)
+
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+
+
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
 
 
 #Create Brownian motion, OU, etc. models
@@ -1760,6 +1938,8 @@ summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames
 #PGLS
 summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
 
+#Amphibians
+summary(gls(amphibian_log_C_E_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
 
 
 plot(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
@@ -1799,6 +1979,9 @@ summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
 summary(gls(squamate_log_E_alpha_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
+
+#Amphibians
+summary(gls(amphibian_log_E_alpha_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
 
 
 
@@ -1840,6 +2023,10 @@ summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 summary(lm(log_I_m~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
 summary(gls(squamate_log_I_m_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
+
+#Amphibians
+summary(gls(amphibian_log_I_m_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
+
 
 
 plot(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
