@@ -22,13 +22,8 @@ library(mosaic)
 library(PhyloOrchard)
 library(phangorn)
 
-# myColours <- brewer.pal(6,"Set2")
-# 
-# my.settings <- list(
-#   superpose.polygon=list(col=myColours[1:4], border="transparent"),
-#   strip.background=list(col=myColours[6]),
-#   strip.border=list(col="black")
-# )
+
+# Amphibian Data ----------------------------------------------------------
 
 #Import AmphiBIO database
 #Downloaded from https://doi.org/10.6084/m9.figshare.4644424
@@ -85,6 +80,8 @@ sum(complete.cases(AmphiBIO_v1[,46:48]))
 #132 complete cases
 
 
+# Amniote Data ------------------------------------------------------------
+
 #Import amniote database
 #Downloaded from http://esapubs.org/archive/ecol/E096/269/#data
 #Metadata available at http://esapubs.org/archive/ecol/E096/269/metadata.php
@@ -115,16 +112,6 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
   }
 }
 
-#How many non-NA values for R?
-length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R)])
-#How many birds?
-length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$R[!is.na(Amniote_Database_Aug_2015$R) & Amniote_Database_Aug_2015$class=="Reptilia"])
-
-
 #C=reproductive effort
 #C=R/m
 
@@ -138,29 +125,9 @@ length(Amniote_Database_Aug_2015$C[!is.na(Amniote_Database_Aug_2015$C)])
 #using E=maximum longevity
 Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$maximum_longevity_y
 
-#How many non-NA values for C*E?
-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E)])
-#How many birds?
-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class=="Reptilia"])
-
-
-
 #Calculate E/alpha
 
 Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$maximum_longevity_y*365/Amniote_Database_Aug_2015$female_maturity_d
-
-#How many non-NA values for E/alpha?
-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha)])
-#How many birds?
-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class=="Reptilia"])
 
 
 #Calculate I/m
@@ -186,265 +153,13 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
   }
 }
 
-#How many non-NA values for I?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I)])
-#How many birds?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$I[!is.na(Amniote_Database_Aug_2015$I) & Amniote_Database_Aug_2015$class=="Reptilia"])
-
 #Add taxaname column
 Amniote_Database_Aug_2015$taxaname<-paste(Amniote_Database_Aug_2015$genus,Amniote_Database_Aug_2015$species,sep="_")
 
 Amniote_Database_Aug_2015$I_m<-Amniote_Database_Aug_2015$I/Amniote_Database_Aug_2015$adult_body_mass_g
 
-#How many non-NA values for I/m?
-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)])
-#How many birds?
-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class=="Reptilia"])
 
-
-#How many species have values for E/alpha, C*E, and I/m?
-sum(complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]))
-#How many birds?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Aves"])
-#How many mammals?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Mammalia"])
-#How many reptiles?
-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class=="Reptilia"])
-
-# #Create bargraph with the number of species with values for each of the traits
-# traitcoverage<-data.frame(Class=c("Aves","Mammalia","Reptilia"),C_E=numeric(3),E_alpha=numeric(3),I_m=numeric(3),All=numeric(3))
-# for(i in 1:3){
-#   traitcoverage$C_E[i]<-length(Amniote_Database_Aug_2015$C_E[!is.na(Amniote_Database_Aug_2015$C_E) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
-# }
-# for(i in 1:3){
-#   traitcoverage$E_alpha[i]<-length(Amniote_Database_Aug_2015$E_alpha[!is.na(Amniote_Database_Aug_2015$E_alpha) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
-# }
-# for(i in 1:3){
-#   traitcoverage$I_m[i]<-length(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
-# }
-# for(i in 1:3){
-#   traitcoverage$All[i]<-length(Amniote_Database_Aug_2015$species[complete.cases(Amniote_Database_Aug_2015[,c(39,41,42)]) & Amniote_Database_Aug_2015$class==traitcoverage$Class[i]])
-# }
-
-# traitcoverage$C_E<-as.numeric(traitcoverage$C_E)
-# traitcoverage$E_alpha<-as.numeric(traitcoverage$E_alpha)
-# traitcoverage$I_m<-as.numeric(traitcoverage$I_m)
-# traitcoverage$All<-as.numeric(traitcoverage$All)
-# 
-# traitcoverage$Class<-as.character(traitcoverage$Class)
-# #Add a row of totals
-# traitcoverage<-rbind(traitcoverage,c("Total",colSums(traitcoverage[,2:5])))
-# traitcoverage[4,1]<-"Total"
-# 
-# speciesperinvariant<-gather(traitcoverage,key = Class)
-# colnames(speciesperinvariant)<-c("Class","Trait","Count")
-# 
-# #Grouped bargraph of the number of species with values for each invariant
-# barchart(Count~Class,data=speciesperinvariant,groups=Trait,ylab="Number of Species",auto.key=list(space="top",columns=4),par.settings=my.settings)
-
-
-#Determine how many non-NA values there are for each trait:
-availabletraits=NULL
-for (i in 8:36) {
-  availabletraits$Trait[i]<-colnames(Amniote_Database_Aug_2015)[i]
-  availabletraits$Available[i]<-length(which(!is.na(Amniote_Database_Aug_2015[,i])))
-}
-availabletraits<-as.data.frame(availabletraits)
-availabletraits<-availabletraits[8:36,]
-#order by the number of non-NA values
-availabletraits<-availabletraits[order(-availabletraits$Available),]
-View(availabletraits)
-
-# #Import bird data from Sol et al. 2012
-# Sol_etal_birddata <- read_csv("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Sol_etal_birddata.csv")
-# 
-# #Data cleaning
-# #Alopochen_aegyptiaca
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Alopochen_aegyptiacus"]<-"Alopochen_aegyptiaca"
-# #Chen_caerulescens
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Anser_caerulescens"]<-"Chen_caerulescens"
-# #Collocalia_vanikorensis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Aerodramus_vanikorensis"]<-"Collocalia"
-# #Columbina_inca
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Scardafella_inca"]<-"Columbina_inca"
-# #Spilopelia_chinensis
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Streptopelia_chinensis"]<-"Spilopelia_chinensis"
-# #Spilopelia_senegalensis
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Streptopelia_senegalensis"]<-"Spilopelia_senegalensis"
-# #Bambusicola_thoracicus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Bambusicola_thoracica"]<-"Bambusicola_thoracicus"
-# #Tetrastes_bonasia
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Bonasa_bonasia"]<-"Tetrastes_bonasia"
-# birdtree1$tip.label[birdtree1$tip.label=="Bonasa_bonasia"]<-"Tetrastes_bonasia"
-# #Coturnix_chinensis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Excalfactoria_chinensis"]<-"Coturnix"
-# #Dendragapus_canadensis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Falcipennis_canadensis"]<-"Dendragapus"
-# #Francolinus_erckelii
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_erckelii"]<-"Francolinus"
-# #Francolinus_icterorhynchus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_icterorhynchus"]<-"Francolinus"
-# #Francolinus_leucoscepus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_leucoscepus"]<-"Francolinus"
-# #Francolinus_afer
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_afer"]<-"Francolinus"
-# #Francolinus_capensis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_capensis"]<-"Francolinus"
-# #Francolinus_adspersus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_adspersus"]<-"Francolinus"
-# #Francolinus_clappertoni
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Pternistis_clappertoni"]<-"Francolinus"
-# #Lagopus_muta
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagopus_mutus"]<-"Lagopus_muta"
-# #Lagopus_leucura
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagopus_leucurus"]<-"Lagopus_leucura"
-# #Tetrao_tetrix
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Lyrurus_tetrix"]<-"Tetrao"
-# #Cyanopica_cyanus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Cyanopica_cyana"]<-"Cyanopica_cyanus"
-# #Carduelis_tristis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_tristis"]<-"Carduelis"
-# #Carduelis_cannabina
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Linaria_cannabina"]<-"Carduelis"
-# #Carduelis_chloris
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Chloris_chloris"]<-"Carduelis"
-# #Carduelis_cucullata
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_cucullata"]<-"Carduelis"
-# #Acanthis_flammea
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Carduelis_flammea"]<-"Acanthis_flammea"
-# #Carduelis_flavirostris
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Linaria_flavirostris"]<-"Carduelis"
-# #Carduelis_spinus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_spinus"]<-"Carduelis"
-# #Carduelis_psaltria
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Spinus_psaltria"]<-"Carduelis"
-# #Haemorhous_mexicanus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Carpodacus_mexicanus"]<-"Haemorhous_mexicanus"
-# #Serinus_atrogularis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_atrogularis"]<-"Serinus"
-# #Serinus_mozambicus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_mozambica"]<-"Serinus"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Crithagra_mozambica"]<-"mozambicus"
-# #Serinus_leucopygius
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_leucopygia"]<-"Serinus"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Crithagra_leucopygia"]<-"leucopygius"
-# #Serinus_flaviventris
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Crithagra_flaviventris"]<-"Serinus"
-# #Tiaris_canorus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Tiaris_canora"]<-"Tiaris_canorus"
-# #Tiaris_olivaceus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Tiaris_olivacea"]<-"Tiaris_olivaceus"
-# #Erithacus_akahige
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Larvivora_akahige"]<-"Erithacus"
-# #Erithacus_komadori
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Larvivora_komadori"]<-"Erithacus"
-# #Parus_caeruleus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Cyanistes_caeruleus"]<-"Parus"
-# #Parus_varius
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Sittiparus_varius"]<-"Parus"
-# #Erythrura_gouldiae
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Chloebia_gouldiae"]<-"Erythrura_gouldiae"
-# #Estrilda_melanotis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Coccopygia_melanotis"]<-"Estrilda"
-# #Lagonosticta_rubricata
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Lagonistica_rubricata"]<-"Lagonosticta_rubricata"
-# #Lonchura_malabarica
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Euodice_malabarica"]<-"Lonchura"
-# #Lonchura_cantans
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Euodice_cantans"]<-"Lonchura"
-# #Padda_oryzivora
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Lonchura_oryzivora"]<-"Padda"
-# #Uraeginthus_granatinus
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Uraeginthus_granatina"]<-"Uraeginthus_granatinus"
-# #Vidua_paradisaea
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Vidua_paradisea"]<-"Vidua_paradisaea"
-# #Sturnus_melanopterus
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Acridotheres_melanopterus"]<-"Sturnus"
-# #Sturnus_contra
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Gracupica_contra"]<-"Sturnus"
-# #Cettia_diphone
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Horornis_diphone"]<-"Cettia"
-# #Ara_severa
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Ara_severa"]<-"Ara_severus"
-# #Aratinga_canicularis
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Eupsittula_canicularis"]<-"Aratinga"
-# #Aratinga_pertinax
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Eupsittula_pertinax"]<-"Aratinga"
-# #Aratinga_mitrata
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_mitratus"]<-"Aratinga"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_mitratus"]<-"mitrata"
-# #Aratinga_holochlora
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_holochlorus"]<-"Aratinga"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_holochlorus"]<-"holochlora"
-# #Aratinga_acuticaudata
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Thectocercus_acuticaudatus"]<-"Aratinga"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Thectocercus_acuticaudatus"]<-"acuticaudata"
-# #Aratinga_chloroptera
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_chloropterus"]<-"Aratinga"
-# Amniote_Database_Aug_2015$species[Amniote_Database_Aug_2015$taxaname=="Psittacara_chloropterus"]<-"chloroptera"
-# #Aratinga_erythrogenys
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Psittacara_erythrogenys"]<-"Aratinga"
-# #Cacatua_goffini
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Cacatua_goffini"]<-"Cacatua_goffiniana"
-# #Eolophus_roseicapilla
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Eolophus_roseicapillus"]<-"Eolophus_roseicapilla"
-# #Nandayus_nenday
-# Amniote_Database_Aug_2015$genus[Amniote_Database_Aug_2015$taxaname=="Aratinga_nenday"]<-"Nandayus"
-# #Turnix_varius
-# Sol_etal_birddata$Species[Sol_etal_birddata$Species=="Turnix_varia"]<-"Turnix_varius"
-# 
-# #redo taxaname column for amniote
-# Amniote_Database_Aug_2015$taxaname<-paste(Amniote_Database_Aug_2015$genus,Amniote_Database_Aug_2015$species,sep="_")
-# 
-# 
-# #create dataframe of just the birds from the amniote database
-# amniote_birddata<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$class=="Aves",]
-# 
-# #Convert age at first breeding to years
-# Sol_etal_birddata$AgeFirstBreeding<-Sol_etal_birddata$AgeFirstBreeding/12
-# #Convert age at first breeding to days
-# Sol_etal_birddata$AgeFirstBreeding<-Sol_etal_birddata$AgeFirstBreeding*365
-# 
-# #Calculate longevity from Sol et al data
-# Sol_etal_birddata$longevity_y<-Sol_etal_birddata$Lifespan+(Sol_etal_birddata$AgeFirstBreeding/365)
-# 
-# #remove duplicate observations in Sol et al data
-# Sol_etal_birddata<-distinct(Sol_etal_birddata,Species, .keep_all=TRUE)
-# 
-# #combined bird data
-# combined_birddata<-amniote_birddata[,-c(37:42)]
-# 
-# #fill in possible missing trait values for the species in the amniote database
-# for(i in 1:nrow(combined_birddata)){
-#   species_i<-combined_birddata$taxaname[i]
-#   if(species_i%in%Sol_etal_birddata$Species){
-#     if(is.na(combined_birddata$female_maturity_d[i])){
-#       combined_birddata$female_maturity_d[i]<-Sol_etal_birddata$AgeFirstBreeding[Sol_etal_birddata$Species==species_i]
-#     }
-#     if(is.na(combined_birddata$litter_or_clutch_size_n[i])){
-#       combined_birddata$litter_or_clutch_size_n[i]<-Sol_etal_birddata$Clutch_size[Sol_etal_birddata$Species==species_i]
-#     }
-#     if(is.na(combined_birddata$litters_or_clutches_per_y[i])){
-#       combined_birddata$litters_or_clutches_per_y[i]<-Sol_etal_birddata$Broods[Sol_etal_birddata$Species==species_i]
-#     }
-#     if(is.na(combined_birddata$adult_body_mass_g[i])){
-#       combined_birddata$adult_body_mass_g[i]<-Sol_etal_birddata$Body_mass[Sol_etal_birddata$Species==species_i]
-#     }
-#     if(is.na(combined_birddata$longevity_y[i])){
-#       combined_birddata$longevity_y[i]<-Sol_etal_birddata$longevity_y[Sol_etal_birddata$Species==species_i]
-#     }
-#   }
-# }
-
-
+# Allen et al. Reptile Data -----------------------------------------------
 
 #Import reptile data from Allen et al. 2017
 #Downloaded from http://datadryad.org/resource/doi:10.5061/dryad.2d7b0
@@ -606,7 +321,100 @@ augmented_amniote_database<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$
 augmented_amniote_database<-rbind(augmented_amniote_database,combined_reptiledata)
 
 
-#Histograms of traits -- relies on completecase_am which is created later in the code so you'll have to fix that
+# Complete Case Data ------------------------------------------------------
+
+#Subset of database including only species for all of the invariants
+desiredcolumns<-c(1:8,11,12,38,39,40,41,42,43)
+completecase_species<-augmented_amniote_database[complete.cases(augmented_amniote_database$adult_body_mass_g,augmented_amniote_database$C_E,augmented_amniote_database$I_m,augmented_amniote_database$E_alpha),desiredcolumns]
+#remove otter
+completecase_species<-completecase_species[completecase_species$taxaname!="Enhydra_lutris",]
+#remove Acanthis hornemani
+completecase_species<-completecase_species[completecase_species$taxaname!="Acanthis_hornemanni",]
+#Log transform
+completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
+completecase_species$log_C_E<-log(completecase_species$C_E)
+completecase_species$log_I_m<-log(completecase_species$I_m)
+completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
+
+
+#complete case amphibians
+desiredcolumns_amph<-c(39,2:5,42,23,29,47:49,45,40,50)
+completecase_amph<-AmphiBIO_v1[complete.cases(AmphiBIO_v1$Body_mass_g,AmphiBIO_v1$C_E,AmphiBIO_v1$I_m,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
+colnames(completecase_amph)[7]<-"adult_body_mass_g"
+colnames(completecase_amph)[8]<-"maximum_longevity_y"
+colnames(completecase_amph)[12]<-"I"
+completecase_amph$female_maturity_d<-completecase_amph$Age_at_maturity_avg_y*365
+completecase_amph$log_bodymass<-log(completecase_amph$adult_body_mass_g)
+completecase_amph$log_C_E<-log(completecase_amph$C_E)
+completecase_amph$log_I_m<-log(completecase_amph$I_m)
+completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
+
+#complete cases of amniotes and amphibians
+completecase_am<-rbind.fill(completecase_species,completecase_amph)
+#Make class a factor
+completecase_am$class<-as.factor(completecase_am$class)
+#Reorder factor in reverse evolutionary order (birds, mammals, reptiles, amphibians)
+completecase_am$class = factor(completecase_am$class,levels(completecase_am$class)[c(2:4,1)])
+
+
+# Trait Datasets by Class -------------------------------------------------
+
+#Mammals
+mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
+mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
+mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+
+
+mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
+mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
+rownames(mammaltraitmatrix)<-mammaltraits$taxaname
+
+
+#matrix with components of invariants
+mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
+rownames(mammalcompmatrix)<-mammaltraits$taxaname
+#remove otter
+mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
+
+#Birds
+birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
+birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
+birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+
+
+birdtraitmatrix<-as.matrix(birdtraits[,2:5])
+rownames(birdtraitmatrix)<-birdtraits$taxaname
+
+#Reptiles
+reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
+reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
+reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+
+
+reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
+rownames(reptiletraitmatrix)<-reptiletraits$taxaname
+
+
+#matrix with components of invariants
+birdcompmatrix<-as.matrix(birdtraits[,6:11])
+rownames(birdcompmatrix)<-birdtraits$taxaname
+
+reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
+rownames(reptilecompmatrix)<-reptiletraits$taxaname
+
+# Histograms of Traits ----------------------------------------------------
 
 #Body mass
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..,))+
@@ -827,50 +635,9 @@ ggplot(data=Amniote_Database_Aug_2015)+
   geom_histogram(aes(x=log(I_m),fill=order,alpha=0.9),data = subset(Amniote_Database_Aug_2015,order=="Primates"))
 
 
-#Some species have values of I/m greater than 1 (juvenile larger than adult)
-which(log(Amniote_Database_Aug_2015$I_m)>0)
-
-I_m_over1<-Amniote_Database_Aug_2015[which(log(Amniote_Database_Aug_2015$I_m)>0),c(1,4,5,7,11,23:25,40,41)]
-View(I_m_over1)
-write.csv(I_m_over1,"I_m_over1.csv")
 
 
-
-#Subset of database including only species for all of the invariants
-desiredcolumns<-c(1:8,11,12,38,39,40,41,42,43)
-completecase_species<-augmented_amniote_database[complete.cases(augmented_amniote_database$adult_body_mass_g,augmented_amniote_database$C_E,augmented_amniote_database$I_m,augmented_amniote_database$E_alpha),desiredcolumns]
-#remove otter
-completecase_species<-completecase_species[completecase_species$taxaname!="Enhydra_lutris",]
-#remove Acanthis hornemani
-completecase_species<-completecase_species[completecase_species$taxaname!="Acanthis_hornemanni",]
-#Log transform
-completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
-completecase_species$log_C_E<-log(completecase_species$C_E)
-completecase_species$log_I_m<-log(completecase_species$I_m)
-completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
-
-
-#complete case amphibians
-desiredcolumns_amph<-c(39,2:5,42,23,29,47:49,45,40,50)
-completecase_amph<-AmphiBIO_v1[complete.cases(AmphiBIO_v1$Body_mass_g,AmphiBIO_v1$C_E,AmphiBIO_v1$I_m,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
-colnames(completecase_amph)[7]<-"adult_body_mass_g"
-colnames(completecase_amph)[8]<-"maximum_longevity_y"
-colnames(completecase_amph)[12]<-"I"
-completecase_amph$female_maturity_d<-completecase_amph$Age_at_maturity_avg_y*365
-completecase_amph$log_bodymass<-log(completecase_amph$adult_body_mass_g)
-completecase_amph$log_C_E<-log(completecase_amph$C_E)
-completecase_amph$log_I_m<-log(completecase_amph$I_m)
-completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
-
-#complete cases of amniotes and amphibians
-completecase_am<-rbind.fill(completecase_species,completecase_amph)
-#Make class a factor
-completecase_am$class<-as.factor(completecase_am$class)
-#Reorder factor in reverse evolutionary order (birds, mammals, reptiles, amphibians)
-completecase_am$class = factor(completecase_am$class,levels(completecase_am$class)[c(2:4,1)])
-
-#Create hypervolumes for each class of amniotes
-
+# Hypervolumes ------------------------------------------------------------
 
 #Bird Gaussian hypervolume
 
@@ -1111,6 +878,9 @@ pairs(completecase_species[completecase_species$class=="Mammalia",12:15],lower.p
 splom(~completecase_species[completecase_species$class=="Mammalia",12:15] | order, completecase_species[completecase_species$class=="Mammalia",12:15])
 
 
+
+# Estimating A for Mammals ------------------------------------------------
+
 #Estimating A for mammals as in Charnov book table 5.2
 A_mammals<-Amniote_Database_Aug_2015[which(!is.na(Amniote_Database_Aug_2015$female_maturity_d) & !is.na(Amniote_Database_Aug_2015$adult_body_mass_g) & Amniote_Database_Aug_2015$class=="Mammalia"),]
 plot(log(A_mammals$female_maturity_d)~log(A_mammals$adult_body_mass_g),ylab="Ln(Female Maturity)",xlab="Ln(Adult Body Mass)")
@@ -1133,8 +903,7 @@ abline(A_model)
 
 
 
-
-#Phylogenetic analyses
+# Importing and Pruning Trees ---------------------------------------------------
 
 #Mammals
 mammaltrees<-read.nexus("fritztree2009.txt")
@@ -1146,6 +915,9 @@ bmvec_mammal<-completecase_am$adult_body_mass_g[completecase_am$class=="Mammalia
 names(bmvec_mammal)<-completecase_am$taxaname[completecase_am$class=="Mammalia"]
 pruned_mammaltree_best<-prune.missing(x=bmvec_mammal, phylo=mammaltree_best)
 pruned_mammaltree_best<-pruned_mammaltree_best$tree
+
+#make mammal tree dichotomous
+pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
 
 #Create a table of the node labels for each order
 mammal_ordernodes<-data.frame(Order=as.character(unique(completecase_am$order[completecase_am$class=="Mammalia"])),num.species=as.numeric(0),node.num=as.numeric(0))
@@ -1334,6 +1106,8 @@ pruned_amphibiantree<-pruned_amphibiantree$tree
 
 
 
+# Adding Traits to Trees --------------------------------------------------
+
 #adding traits to mammal tree
 #Body mass
 mammal_log_bodymass<-completecase_am$log_bodymass[completecase_am$class=="Mammalia"]
@@ -1387,33 +1161,6 @@ for(i in 1:length(mammal_orderover50)){
                   mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07)
 }
 
-#Create a dataframe of body mass and the three dimensionless metrics in tip order
-mammal_phylo_order_traits<-cbind(mammal_log_bodymass_tiporder,mammal_log_C_E_tiporder,mammal_log_I_m_tiporder, mammal_log_E_alpha_tiporder)
-mammal_phylo_order_traits<-as.data.frame(mammal_phylo_order_traits)
-mammal_phylo_order_traits<-add_rownames(mammal_phylo_order_traits,"taxaname")
-
-#Make phylomorphospace 3d plots
-#C*E:
-mammal_bodymass_C_E_matrix<-as.matrix(mammal_phylo_order_traits[,2:3])
-colnames(mammal_bodymass_C_E_matrix)<-NULL
-rownames(mammal_bodymass_C_E_matrix)<-mammal_phylo_order_traits$taxaname
-View(mammal_bodymass_C_E_matrix)
-#E/alpha:
-mammal_bodymass_E_alpha_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,5)])
-colnames(mammal_bodymass_E_alpha_matrix)<-NULL
-rownames(mammal_bodymass_E_alpha_matrix)<-mammal_phylo_order_traits$taxaname
-#View(mammal_bodymass_E_alpha_matrix)
-#I/m:
-mammal_bodymass_I_m_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,4)])
-colnames(mammal_bodymass_I_m_matrix)<-NULL
-rownames(mammal_bodymass_I_m_matrix)<-mammal_phylo_order_traits$taxaname
-#View(mammal_bodymass_I_m_matrix)
-
-fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
-fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
-fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
-
-
 
 
 #adding traits to squamate tree
@@ -1455,40 +1202,6 @@ plot(pruned_squamatetree,cex=0.65)
 tiplabels(pch=19,col=color.scale(squamate_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
-#Create a dataframe of body mass and the three dimensionless metrics in tip order
-squamate_phylo_order_traits<-cbind(squamate_log_bodymass_tiporder,squamate_log_C_E_tiporder,squamate_log_I_m_tiporder, squamate_log_E_alpha_tiporder)
-squamate_phylo_order_traits<-as.data.frame(squamate_phylo_order_traits)
-squamate_phylo_order_traits<-add_rownames(squamate_phylo_order_traits,"taxaname")
-
-#Make phylomorphospace 3d plot
-#C*E
-squamate_bodymass_C_E_matrix<-as.matrix(squamate_phylo_order_traits[,2:3])
-colnames(squamate_bodymass_C_E_matrix)<-NULL
-rownames(squamate_bodymass_C_E_matrix)<-squamate_phylo_order_traits$taxaname
-View(squamate_bodymass_C_E_matrix)
-#E/alpha:
-squamate_bodymass_E_alpha_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,5)])
-colnames(squamate_bodymass_E_alpha_matrix)<-NULL
-rownames(squamate_bodymass_E_alpha_matrix)<-squamate_phylo_order_traits$taxaname
-#View(squamate_bodymass_E_alpha_matrix)
-#I/m:
-squamate_bodymass_I_m_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,4)])
-colnames(squamate_bodymass_I_m_matrix)<-NULL
-rownames(squamate_bodymass_I_m_matrix)<-squamate_phylo_order_traits$taxaname
-#View(squamate_bodymass_I_m_matrix)
-
-#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(3,"Set1")[3],nrow(pruned_squamatetree$edge))))
-#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
-
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
-
-
-matrix_squamate_phylo_order_traits<-as.matrix(squamate_phylo_order_traits[,2:5])
-rownames(matrix_squamate_phylo_order_traits)<-squamate_phylo_order_traits$taxaname
-phylomorphospace3d(pruned_squamatetree,X=as.matrix(matrix_squamate_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
-
 #adding traits to amphibian tree
 #Body mass
 amphibian_log_bodymass<-completecase_am$log_bodymass[completecase_am$class=="Amphibia"]
@@ -1528,41 +1241,6 @@ plot(pruned_amphibiantree,cex=0.65)
 tiplabels(pch=19,col=color.scale(amphibian_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(0,60,40,61,legend=c(-0.32,3.26),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
-#Create a dataframe of body mass and the three dimensionless metrics in tip order
-amphibian_phylo_order_traits<-cbind(amphibian_log_bodymass_tiporder,amphibian_log_C_E_tiporder,amphibian_log_I_m_tiporder, amphibian_log_E_alpha_tiporder)
-amphibian_phylo_order_traits<-as.data.frame(amphibian_phylo_order_traits)
-amphibian_phylo_order_traits<-add_rownames(amphibian_phylo_order_traits,"taxaname")
-
-#Make phylomorphospace 3d plot
-#C*E:
-amphibian_bodymass_C_E_matrix<-as.matrix(amphibian_phylo_order_traits[,2:3])
-colnames(amphibian_bodymass_C_E_matrix)<-NULL
-rownames(amphibian_bodymass_C_E_matrix)<-amphibian_phylo_order_traits$taxaname
-View(amphibian_bodymass_C_E_matrix)
-#E/alpha:
-amphibian_bodymass_E_alpha_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,5)])
-colnames(amphibian_bodymass_E_alpha_matrix)<-NULL
-rownames(amphibian_bodymass_E_alpha_matrix)<-amphibian_phylo_order_traits$taxaname
-#View(amphibian_bodymass_E_alpha_matrix)
-#I/m:
-amphibian_bodymass_I_m_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,4)])
-colnames(amphibian_bodymass_I_m_matrix)<-NULL
-rownames(amphibian_bodymass_I_m_matrix)<-amphibian_phylo_order_traits$taxaname
-#View(amphibian_bodymass_I_m_matrix)
-
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-
-
-# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,method="static",control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-
-matrix_amphibian_phylo_order_traits<-as.matrix(amphibian_phylo_order_traits[,2:5])
-rownames(matrix_amphibian_phylo_order_traits)<-amphibian_phylo_order_traits$taxaname
-phylomorphospace3d(pruned_amphibiantree,X=as.matrix(matrix_amphibian_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
-
-
 
 #Adding traits to bird tree
 #Body mass
@@ -1601,6 +1279,107 @@ plot(pruned_birdtree1,type="fan",no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
+
+# Making Phylomorphospace Plots -------------------------------------------
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+mammal_phylo_order_traits<-cbind(mammal_log_bodymass_tiporder,mammal_log_C_E_tiporder,mammal_log_I_m_tiporder, mammal_log_E_alpha_tiporder)
+mammal_phylo_order_traits<-as.data.frame(mammal_phylo_order_traits)
+mammal_phylo_order_traits<-add_rownames(mammal_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plots
+#C*E:
+mammal_bodymass_C_E_matrix<-as.matrix(mammal_phylo_order_traits[,2:3])
+colnames(mammal_bodymass_C_E_matrix)<-NULL
+rownames(mammal_bodymass_C_E_matrix)<-mammal_phylo_order_traits$taxaname
+View(mammal_bodymass_C_E_matrix)
+#E/alpha:
+mammal_bodymass_E_alpha_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,5)])
+colnames(mammal_bodymass_E_alpha_matrix)<-NULL
+rownames(mammal_bodymass_E_alpha_matrix)<-mammal_phylo_order_traits$taxaname
+#View(mammal_bodymass_E_alpha_matrix)
+#I/m:
+mammal_bodymass_I_m_matrix<-as.matrix(mammal_phylo_order_traits[,c(2,4)])
+colnames(mammal_bodymass_I_m_matrix)<-NULL
+rownames(mammal_bodymass_I_m_matrix)<-mammal_phylo_order_traits$taxaname
+#View(mammal_bodymass_I_m_matrix)
+
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+fancyTree(pruned_mammaltree_best,type="traitgram3d",X=mammal_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[2],nrow(pruned_mammaltree_best$edge))))
+
+
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+squamate_phylo_order_traits<-cbind(squamate_log_bodymass_tiporder,squamate_log_C_E_tiporder,squamate_log_I_m_tiporder, squamate_log_E_alpha_tiporder)
+squamate_phylo_order_traits<-as.data.frame(squamate_phylo_order_traits)
+squamate_phylo_order_traits<-add_rownames(squamate_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plot
+#C*E
+squamate_bodymass_C_E_matrix<-as.matrix(squamate_phylo_order_traits[,2:3])
+colnames(squamate_bodymass_C_E_matrix)<-NULL
+rownames(squamate_bodymass_C_E_matrix)<-squamate_phylo_order_traits$taxaname
+View(squamate_bodymass_C_E_matrix)
+#E/alpha:
+squamate_bodymass_E_alpha_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,5)])
+colnames(squamate_bodymass_E_alpha_matrix)<-NULL
+rownames(squamate_bodymass_E_alpha_matrix)<-squamate_phylo_order_traits$taxaname
+#View(squamate_bodymass_E_alpha_matrix)
+#I/m:
+squamate_bodymass_I_m_matrix<-as.matrix(squamate_phylo_order_traits[,c(2,4)])
+colnames(squamate_bodymass_I_m_matrix)<-NULL
+rownames(squamate_bodymass_I_m_matrix)<-squamate_phylo_order_traits$taxaname
+#View(squamate_bodymass_I_m_matrix)
+
+#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(3,"Set1")[3],nrow(pruned_squamatetree$edge))))
+#fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+
+
+matrix_squamate_phylo_order_traits<-as.matrix(squamate_phylo_order_traits[,2:5])
+rownames(matrix_squamate_phylo_order_traits)<-squamate_phylo_order_traits$taxaname
+phylomorphospace3d(pruned_squamatetree,X=as.matrix(matrix_squamate_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
+
+#Create a dataframe of body mass and the three dimensionless metrics in tip order
+amphibian_phylo_order_traits<-cbind(amphibian_log_bodymass_tiporder,amphibian_log_C_E_tiporder,amphibian_log_I_m_tiporder, amphibian_log_E_alpha_tiporder)
+amphibian_phylo_order_traits<-as.data.frame(amphibian_phylo_order_traits)
+amphibian_phylo_order_traits<-add_rownames(amphibian_phylo_order_traits,"taxaname")
+
+#Make phylomorphospace 3d plot
+#C*E:
+amphibian_bodymass_C_E_matrix<-as.matrix(amphibian_phylo_order_traits[,2:3])
+colnames(amphibian_bodymass_C_E_matrix)<-NULL
+rownames(amphibian_bodymass_C_E_matrix)<-amphibian_phylo_order_traits$taxaname
+View(amphibian_bodymass_C_E_matrix)
+#E/alpha:
+amphibian_bodymass_E_alpha_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,5)])
+colnames(amphibian_bodymass_E_alpha_matrix)<-NULL
+rownames(amphibian_bodymass_E_alpha_matrix)<-amphibian_phylo_order_traits$taxaname
+#View(amphibian_bodymass_E_alpha_matrix)
+#I/m:
+amphibian_bodymass_I_m_matrix<-as.matrix(amphibian_phylo_order_traits[,c(2,4)])
+colnames(amphibian_bodymass_I_m_matrix)<-NULL
+rownames(amphibian_bodymass_I_m_matrix)<-amphibian_phylo_order_traits$taxaname
+#View(amphibian_bodymass_I_m_matrix)
+
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+
+
+# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+# fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,method="static",control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+
+matrix_amphibian_phylo_order_traits<-as.matrix(amphibian_phylo_order_traits[,2:5])
+rownames(matrix_amphibian_phylo_order_traits)<-amphibian_phylo_order_traits$taxaname
+phylomorphospace3d(pruned_amphibiantree,X=as.matrix(matrix_amphibian_phylo_order_traits[,2:4]),method="static",control=list(ftype="off"))
+
+
+
 #Create a dataframe of body mass and the three dimensionless metrics in tip order
 bird_phylo_order_traits<-cbind(bird_log_bodymass_tiporder,bird_log_C_E_tiporder,bird_log_I_m_tiporder, bird_log_E_alpha_tiporder)
 bird_phylo_order_traits<-as.data.frame(bird_phylo_order_traits)
@@ -1630,6 +1409,9 @@ fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_I_m_matrix,control
 
 fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
 fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
+
+
+# Ancestral Reconstruction Models -----------------------------------------
 
 
 #Create Brownian motion, OU, etc. models
@@ -1713,10 +1495,6 @@ nodelabels(pch=19,col=color.scale(bird_I_m_bm_fastAnc,extremes=c("blue","red"),x
 tiplabels(pch=19,col=color.scale(bird_log_I_m_tiporder,extremes=c("blue","red")))
 color.legend(-150,-100,-100,-90,legend=c(-1.94,0.43),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
-
-
-#make mammal tree dichotomous
-pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
 
 #Create Brownian motion, OU, etc. models
 #For body mass
@@ -1915,6 +1693,9 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 
 
 
+# Invariance Assessment and PGLS ------------------------------------------
+
+
 #C*E and body mass
 
 #Mammals
@@ -2044,7 +1825,9 @@ abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Am
 legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,"Set1"),pch=19,"bottomright")
 
 
-#TABLE 1
+
+# Invariance Calculations -------------------------------------------------
+
 #C*E:
 #Linear model
 summary(lm(log_C_E~log_bodymass, data = completecase_am))
@@ -2109,6 +1892,9 @@ summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Amph
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
+
+
+# Pairwise Components of Invariants ---------------------------------------
 
 #C and E
 
@@ -2215,6 +2001,8 @@ abline(lm(log(I)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3
 abline(lm(log(I)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
 
 
+# Components of Invariance vs. Mass ---------------------------------------
+
 #C and m
 
 #Mammals
@@ -2318,71 +2106,7 @@ abline(lm(log(E)~log(m),data = as.data.frame(birdcompmatrix)),col=brewer.pal(n=3
 abline(lm(log(E)~log(m),data = as.data.frame(reptilecompmatrix)),col=brewer.pal(n=3,"Set1")[3])
 
 
-
-#tree with mapped continuous character
-mammalcont_C_E<-contMap(pruned_mammaltree_best,mammal_log_C_E_tiporder,plot = FALSE)
-plot(mammalcont_C_E,type="fan",no.margin=TRUE,show.tip.label=FALSE)
-
-#Trait datasets by class
-#Mammals
-mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
-mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
-mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-
-
-mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
-mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
-rownames(mammaltraitmatrix)<-mammaltraits$taxaname
-
-
-#matrix with components of invariants
-mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
-rownames(mammalcompmatrix)<-mammaltraits$taxaname
-#remove otter
-mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
-
-#Birds
-birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
-birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
-birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-
-
-birdtraitmatrix<-as.matrix(birdtraits[,2:5])
-rownames(birdtraitmatrix)<-birdtraits$taxaname
-
-#Reptiles
-reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
-reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
-reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-
-
-reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
-rownames(reptiletraitmatrix)<-reptiletraits$taxaname
-
-
-#matrix with components of invariants
-birdcompmatrix<-as.matrix(birdtraits[,6:11])
-rownames(birdcompmatrix)<-birdtraits$taxaname
-
-reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
-rownames(reptilecompmatrix)<-reptiletraits$taxaname
-
-
-
-
-
+# Mammal Trophic Level ----------------------------------------------------
 
 #Add trophic level for mammals
 MammalDIET_v1_0$taxaname<-paste(MammalDIET_v1_0$Genus,MammalDIET_v1_0$Species,sep="_")
@@ -2418,24 +2142,4 @@ carnherb_set<-hypervolume_set(mammalcarnivore_gaussian,mammalherbivore_gaussian,
 carnherb_int<-carnherb_set@HVList$Intersection
 #overlap of omnivores with this intersection
 hypervolume_overlap_statistics(hypervolume_set(mammalomnivore_gaussian,carnherb_int,check.memory = FALSE))
-
-
-#GIS code
-
-#save an object containing the coordinate reference system of wgs84
-P4S.latlon <- CRS("+proj=longlat +datum=WGS84")  
-#This CRS needs to be supplied when loading in a shapefile(or else added later).  If you don't supply this you can't transform to a new crs
-#Note that some shapefiles contain added metadata containing the CRS.
-
-#Import shape polygons from IUCN range maps
-mammal_polys<-readShapePoly("C:/Users/Cecina/Desktop/HypervolumeFiles/TERRESTRIAL_MAMMALS/TERRESTRIAL_MAMMALS.shp",proj4string = P4S.latlon)
-#Taxonomic information as well as information on whether a shapefile corresponds to native vs invader range, and whether the species is there seasonally vs constantly:
-mammal_data<-mammal_polys@data
-
-#change to an equal area projection
-ea_tf<-CRS("+proj=cea +units=m")
-mammals_ea<-spTransform(x = mammal_polys,CRSobj = ea_tf)
-
-#create a raster: specify extent and resolution (size of grid cells) in meters
-r<-raster(ext= extent(mammals_ea),resolution=100000)
 
