@@ -75,11 +75,6 @@ AmphiBIO_v1$E_alpha<-AmphiBIO_v1$Longevity_max_y/AmphiBIO_v1$Age_at_maturity_avg
 #Calculate I/m
 AmphiBIO_v1$I_m<-AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$Body_mass_g
 
-#How many amphibian complete cases?
-sum(complete.cases(AmphiBIO_v1[,46:48]))
-#132 complete cases
-
-
 # Amniote Data ------------------------------------------------------------
 
 #Import amniote database
@@ -117,16 +112,12 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
 
 Amniote_Database_Aug_2015$C<-Amniote_Database_Aug_2015$R/Amniote_Database_Aug_2015$adult_body_mass_g
 
-#How many non-NA values for C?
-length(Amniote_Database_Aug_2015$C[!is.na(Amniote_Database_Aug_2015$C)])
-
 
 #Calculate C*E
 #using E=maximum longevity
 Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$maximum_longevity_y
 
 #Calculate E/alpha
-
 Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$maximum_longevity_y*365/Amniote_Database_Aug_2015$female_maturity_d
 
 
@@ -163,7 +154,7 @@ Amniote_Database_Aug_2015$I_m<-Amniote_Database_Aug_2015$I/Amniote_Database_Aug_
 
 #Import reptile data from Allen et al. 2017
 #Downloaded from http://datadryad.org/resource/doi:10.5061/dryad.2d7b0
-Allen_etal_reptiledata <- read_csv("C:/Users/cecin/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Allen_etal_reptiledata.csv")
+Allen_etal_reptiledata <- read_csv("C:/Users/cecin/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/data/Allen_etal_reptiledata.csv")
 
 #Data cleaning
 #Crocodylus_johnsoni
@@ -320,6 +311,9 @@ combined_reptiledata$I_m<-combined_reptiledata$I/combined_reptiledata$adult_body
 augmented_amniote_database<-Amniote_Database_Aug_2015[Amniote_Database_Aug_2015$class!="Reptilia",]
 augmented_amniote_database<-rbind(augmented_amniote_database,combined_reptiledata)
 
+# write.csv(augmented_amniote_database, file = "./data/augmented_amniote_database.csv")
+# augmented_amniote_database<-read.csv(file = "./data/augmented_amniote_database.csv")
+
 
 # Complete Case Data ------------------------------------------------------
 
@@ -356,63 +350,9 @@ completecase_am$class<-as.factor(completecase_am$class)
 #Reorder factor in reverse evolutionary order (birds, mammals, reptiles, amphibians)
 completecase_am$class = factor(completecase_am$class,levels(completecase_am$class)[c(2:4,1)])
 
+# write.csv(completecase_am, file = "./data/completecase_am.csv")
+# completecase_am<-read.csv(file = "./data/completecase_am.csv")
 
-# Trait Datasets by Class -------------------------------------------------
-
-#Mammals
-mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
-mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
-mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-
-
-mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
-mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
-rownames(mammaltraitmatrix)<-mammaltraits$taxaname
-
-
-#matrix with components of invariants
-mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
-rownames(mammalcompmatrix)<-mammaltraits$taxaname
-#remove otter
-mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
-
-#Birds
-birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
-birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
-birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-
-
-birdtraitmatrix<-as.matrix(birdtraits[,2:5])
-rownames(birdtraitmatrix)<-birdtraits$taxaname
-
-#Reptiles
-reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
-reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
-reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-
-
-reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
-rownames(reptiletraitmatrix)<-reptiletraits$taxaname
-
-
-#matrix with components of invariants
-birdcompmatrix<-as.matrix(birdtraits[,6:11])
-rownames(birdcompmatrix)<-birdtraits$taxaname
-
-reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
-rownames(reptilecompmatrix)<-reptiletraits$taxaname
 
 # Histograms of Traits ----------------------------------------------------
 
@@ -906,7 +846,7 @@ abline(A_model)
 # Importing and Pruning Trees ---------------------------------------------------
 
 #Mammals
-mammaltrees<-read.nexus("fritztree2009.txt")
+mammaltrees<-read.nexus("C:/Users/cecin/Desktop/HonorsPhylogenies/fritztree2009.txt")
 #Pick just the tree with the best date estimate
 mammaltree_best<-mammaltrees$mammalST_MSW05_bestDates
 #want to prune to just the mammals with trait data
@@ -923,9 +863,9 @@ pruned_mammaltree_di<-multi2di(pruned_mammaltree_best,random=FALSE)
 mammal_ordernodes<-data.frame(Order=as.character(unique(completecase_am$order[completecase_am$class=="Mammalia"])),num.species=as.numeric(0),node.num=as.numeric(0))
 #add number of species per order
 for(i in 1:nrow(mammal_ordernodes)){
-  mammal_ordernodes$num.species[i]<-sum(pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[completecase_am$order==mammal_ordernodes$Order[i]])
+  mammal_ordernodes$num.species[i]<-sum(pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[as.character(completecase_am$order)==as.character(mammal_ordernodes$Order[i])])
   if(mammal_ordernodes$num.species[i]>1)
-    mammal_ordernodes$node.num[i]<-getMRCA(pruned_mammaltree_best,pruned_mammaltree_best$tip.label[pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[completecase_am$order==mammal_ordernodes$Order[i]]])
+    mammal_ordernodes$node.num[i]<-getMRCA(pruned_mammaltree_best,pruned_mammaltree_best$tip.label[pruned_mammaltree_best$tip.label%in%completecase_am$taxaname[as.character(completecase_am$order)==as.character(mammal_ordernodes$Order[i])]])
   else
     mammal_ordernodes$node.num[i]<-NA
 }
@@ -987,8 +927,7 @@ rasterImage(rodentia,110,140,150,180)
 
 
 #Birdtree.org tree
-multbirdtree<-read.newick("C:/Users/Cecina/Desktop/HackettStage2_0001_1000/mnt/data/projects/birdphylo/Tree_sets/Stage2_full_data/CombinedTrees/AllBirdsHackett1.tre")
-birdtree1<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/Hacketttree1.txt")
+birdtree1<-read.newick("C:/Users/cecin/Desktop/HonorsPhylogenies/Hacketttree1.txt")
 plot(birdtree1)
 birdtree1$tip.label[1017]<-"Antrostomus_vociferus"
 birdtree1$tip.label[1107]<-"Hydroprogne_caspia"
@@ -1012,9 +951,6 @@ birdtree1$tip.label[7084]<-"Setophaga_striata"
 birdtree1$tip.label[7070]<-"Setophaga_virens"
 birdtree1$tip.label[9332]<-"Thalassarche_melanophris"
 
-
-
-
 #pruning birds
 bmvec_bird<-completecase_am$adult_body_mass_g[completecase_am$class=="Aves"]
 names(bmvec_bird)<-completecase_am$taxaname[completecase_am$class=="Aves"]
@@ -1024,7 +960,7 @@ pruned_birdtree1<-pruned_birdtree1$tree
 
 #Reptiles
 #Zheng and Wiens tree
-squamatetree<-read.newick("C:/Users/Cecina/OneDrive/Documents/Kenyon College/Kerkhoff Lab/Summer Science 2017/bodymasspatterns/zhengwienstree.txt")
+squamatetree<-read.newick("C:/Users/cecin/Desktop/HonorsPhylogenies/zhengwienstree.txt")
 #taxonomic resolution
 squamatetree$tip.label[squamatetree$tip.label=="Agama_sankaranica"]<-"Agama_boensis"
 squamatetree$tip.label[squamatetree$tip.label=="Gallotia_gomerana"]<-"Gallotia_bravoana"
@@ -1104,6 +1040,63 @@ names(bmvec_amphibian)<-completecase_am$taxaname[completecase_am$class=="Amphibi
 pruned_amphibiantree<-prune.missing(x=bmvec_amphibian, phylo=amphibiantree)
 pruned_amphibiantree<-pruned_amphibiantree$tree
 
+
+# Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
+
+#Mammals
+mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
+mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
+mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
+
+
+mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
+mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
+rownames(mammaltraitmatrix)<-mammaltraits$taxaname
+
+
+#matrix with components of invariants
+mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
+rownames(mammalcompmatrix)<-mammaltraits$taxaname
+#remove otter
+mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
+
+#Birds
+birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
+birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
+birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+
+
+birdtraitmatrix<-as.matrix(birdtraits[,2:5])
+rownames(birdtraitmatrix)<-birdtraits$taxaname
+
+#Reptiles
+reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
+reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
+reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
+
+
+reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
+rownames(reptiletraitmatrix)<-reptiletraits$taxaname
+
+
+#matrix with components of invariants
+birdcompmatrix<-as.matrix(birdtraits[,6:11])
+rownames(birdcompmatrix)<-birdtraits$taxaname
+
+reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
+rownames(reptilecompmatrix)<-reptiletraits$taxaname
 
 
 # Adding Traits to Trees --------------------------------------------------
