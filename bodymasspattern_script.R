@@ -1892,6 +1892,10 @@ confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Aves",
 confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammalia",]))
 confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Reptilia",]))
 confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Amphibia",]))
+#for endotherm and ectotherm models
+confint(lm(log_C_E~log_I_m, data = completecase_am[completecase_am$class=="Amphibia" | completecase_am$class=="Reptilia",]),col="green")
+confint(lm(log_C_E~log_I_m, data = completecase_am[completecase_am$class=="Mammalia" | completecase_am$class=="Aves",]),col="red")
+
 
 
 plot(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
@@ -1904,6 +1908,10 @@ abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammali
 abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Aves",]),col=brewer.pal(n=3,"Set1")[1])
 abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Reptilia",]),col=brewer.pal(n=3,"Set1")[3])
 abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Amphibia",]),col=brewer.pal(n=4,"Set1")[4])
+
+abline(lm(log_C_E~log_I_m, data = completecase_am[completecase_am$class=="Amphibia" | completecase_am$class=="Reptilia",]),col="green")
+abline(lm(log_C_E~log_I_m, data = completecase_am[completecase_am$class=="Mammalia" | completecase_am$class=="Aves",]),col="red")
+
 
 
 # Pairwise Components of Invariants ---------------------------------------
