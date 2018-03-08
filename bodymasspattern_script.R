@@ -1044,38 +1044,30 @@ pruned_amphibiantree<-pruned_amphibiantree$tree
 # Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
 
 #Mammals
-mammaltraits<-completecase_species[completecase_species$taxaname%in%pruned_mammaltree_best$tip.label,c(20,12:15)]
-mammaltraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%mammaltraits$taxaname])*365
-mammaltraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-mammaltraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%mammaltraits$taxaname]
-
-
-mammaltraitmatrix<-as.matrix(mammaltraits[,2:5])
-mammaltraitmatrix<-mammaltraitmatrix[pruned_mammaltree_best$tip.label,]
-rownames(mammaltraitmatrix)<-mammaltraits$taxaname
-
+mammaltraits<-completecase_am[completecase_am$taxaname%in%pruned_mammaltree_best$tip.label,c(15,17:20,11,10,8,14,9)]
+mammaltraitmatrix<-as.matrix(mammaltraits[,1:5])
+#order based on the phylogeny tip labels
+mammaltraitmatrix<-mammaltraitmatrix[match(pruned_mammaltree_best$tip.label,mammaltraitmatrix[,1]),]
+rownames(mammaltraitmatrix)<-mammaltraitmatrix[,1]
+mammaltraitmatrix<-mammaltraitmatrix[,-1]
 
 #matrix with components of invariants
-mammalcompmatrix<-as.matrix(mammaltraits[,6:11])
-rownames(mammalcompmatrix)<-mammaltraits$taxaname
-#remove otter
-mammalcompmatrix<-mammalcompmatrix[rownames(mammalcompmatrix)!="Enhydra_lutris"]
+mammalcompmatrix<-as.matrix(mammaltraits[,c(1,6:10)])
+#order based on the phylogeny tip labels
+mammalcompmatrix<-mammalcompmatrix[match(pruned_mammaltree_best$tip.label,mammalcompmatrix[,1]),]
+rownames(mammaltraitmatrix)<-mammaltraitmatrix[,1]
+mammaltraitmatrix<-mammaltraitmatrix[,-1]
+
 
 #Birds
-birdtraits<-completecase_species[completecase_species$taxaname%in%pruned_birdtree1$tip.label,c(20,12:15)]
-birdtraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%birdtraits$taxaname])*365
-birdtraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
-birdtraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%birdtraits$taxaname]
+birdtraits<-completecase_am[completecase_am$taxaname%in%pruned_birdtree1$tip.label,c(15,17:20,11,10,8,14,9)]
+birdtraitmatrix<-as.matrix(birdtraits[,1:5])
 
-
-birdtraitmatrix<-as.matrix(birdtraits[,2:5])
 rownames(birdtraitmatrix)<-birdtraits$taxaname
+
+#matrix with components of invariants
+birdcompmatrix<-as.matrix(birdtraits[,6:11])
+rownames(birdcompmatrix)<-birdtraits$taxaname
 
 #Reptiles
 reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
@@ -1090,10 +1082,6 @@ reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_
 reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
 rownames(reptiletraitmatrix)<-reptiletraits$taxaname
 
-
-#matrix with components of invariants
-birdcompmatrix<-as.matrix(birdtraits[,6:11])
-rownames(birdcompmatrix)<-birdtraits$taxaname
 
 reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
 rownames(reptilecompmatrix)<-reptiletraits$taxaname
@@ -1885,6 +1873,37 @@ summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Amph
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Reptilia",]))
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Mammalia",]))
 summary(lm(log(I)~log_bodymass,data=completecase_am[completecase_am$class=="Aves",]))
+
+
+# C*E vs. I/m -------------------------------------------------------------
+
+xyplot(log_C_E~log_I_m,data = completecase_am, type = c("p","r"))
+summary(lm(log_C_E~log_I_m,data = completecase_am))
+
+#Mammals
+#linear model
+summary(lm(log_C_E~log_I_m,data = as.data.frame(mammaltraitmatrix)))
+#PGLS
+summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+
+
+#95% confidence intervals for linear models
+confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Aves",]))
+confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammalia",]))
+confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Reptilia",]))
+confint(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Amphibia",]))
+
+
+plot(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
+     xlab="Log(I/m)",ylab="Log(C*E)",xlim=c(-16,1),ylim=c(-7,7))
+points(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
+points(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
+points(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
+
+abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Mammalia",]),col=brewer.pal(n=3,"Set1")[2])
+abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Aves",]),col=brewer.pal(n=3,"Set1")[1])
+abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Reptilia",]),col=brewer.pal(n=3,"Set1")[3])
+abline(lm(log_C_E~log_I_m,data = completecase_am[completecase_am$class=="Amphibia",]),col=brewer.pal(n=4,"Set1")[4])
 
 
 # Pairwise Components of Invariants ---------------------------------------
