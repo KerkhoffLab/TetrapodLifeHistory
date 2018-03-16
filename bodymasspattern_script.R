@@ -315,35 +315,6 @@ augmented_amniote_database<-rbind(augmented_amniote_database,combined_reptiledat
 # augmented_amniote_database<-read.csv(file = "./data/augmented_amniote_database.csv")
 
 
-# Lislevand et al. Bird Data ----------------------------------------------
-
-#Import bird data from Lislevand et al. 2007
-#Downloaded from http://www.esapubs.org/archive/ecol/E088/096/default.htm#data
-Lislevand_et_al_Data <- read_csv("C:/Users/cecin/Desktop/Lislevand_et_al_Data.csv")
-
-#adding _ to species name column
-Lislevand_et_al_Data$Species_name<-gsub(" ","_",Lislevand_et_al_Data$Species_name)
-
-#create dataframe of just the birds from the amniote database
-amniote_birddata<-augmented_amniote_database[augmented_amniote_database$class=="Aves",]
-
-#combined reptile data
-combined_birddata<-amniote_birddata[,-c(37:41)]
-combined_birddata<-combined_birddata[,-c(38)]
-
-#fill in possible missing trait values for the species in the amniote database
-for(i in 1:nrow(combined_birddata)){
-  species_i<-combined_birddata$taxaname[i]
-  if(species_i%in%Lislevand_et_al_Data$Species_name){ #if the species is present in the Lislevand data
-    if(is.na(combined_birddata$litter_or_clutch_size_n[i])){
-      combined_birddata$litter_or_clutch_size_n[i]<-Lislevand_et_al_Data$Clutch_size[Lislevand_et_al_Data$Species_name==species_i]
-      print(i)
-      print(is.na(Lislevand_et_al_Data$Clutch_size[Lislevand_et_al_Data$Species_name==species_i]))
-    }
-  }
-}
-
-
 # Complete Case Data ------------------------------------------------------
 
 #Subset of database including only species for all of the invariants
