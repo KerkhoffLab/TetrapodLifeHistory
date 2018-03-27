@@ -67,10 +67,11 @@ AmphiBIO_v1$R<-AmphiBIO_v1$Litter_size_avg_n*AmphiBIO_v1$Reproductive_output_y*A
 AmphiBIO_v1$C<-AmphiBIO_v1$R/AmphiBIO_v1$Body_mass_g
 
 #Calculate C*E
-AmphiBIO_v1$C_E<-AmphiBIO_v1$C*AmphiBIO_v1$Longevity_max_y
+#E=max longevity-avg. age at maturity
+AmphiBIO_v1$C_E<-AmphiBIO_v1$C*(AmphiBIO_v1$Longevity_max_y-AmphiBIO_v1$Age_at_maturity_avg_y)
 
 #Calculate E/alpha
-AmphiBIO_v1$E_alpha<-AmphiBIO_v1$Longevity_max_y/AmphiBIO_v1$Age_at_maturity_avg_y
+AmphiBIO_v1$E_alpha<-(AmphiBIO_v1$Longevity_max_y-AmphiBIO_v1$Age_at_maturity_avg_y)/AmphiBIO_v1$Age_at_maturity_avg_y
 
 #Calculate I/m
 AmphiBIO_v1$I_m<-AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$Body_mass_g
@@ -95,7 +96,6 @@ Amniote_Database_Aug_2015$weaning_weight_g<-as.numeric(Amniote_Database_Aug_2015
 ##R=litter_or_clutch_size_n*litters_or_clutches_y*egg_mass_g
 
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
-  print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
     Amniote_Database_Aug_2015[i, 'R'] <- Amniote_Database_Aug_2015[i,"litter_or_clutch_size_n"]*Amniote_Database_Aug_2015[i,"litters_or_clutches_per_y"]*Amniote_Database_Aug_2015[i,"weaning_weight_g"]
   }
@@ -109,16 +109,15 @@ for (i in 1:nrow(Amniote_Database_Aug_2015)) {
 
 #C=reproductive effort
 #C=R/m
-
 Amniote_Database_Aug_2015$C<-Amniote_Database_Aug_2015$R/Amniote_Database_Aug_2015$adult_body_mass_g
 
 
 #Calculate C*E
 #using E=maximum longevity
-Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*Amniote_Database_Aug_2015$maximum_longevity_y
+Amniote_Database_Aug_2015$C_E<-Amniote_Database_Aug_2015$C*(Amniote_Database_Aug_2015$maximum_longevity_y-(Amniote_Database_Aug_2015$female_maturity_d/365))
 
 #Calculate E/alpha
-Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$maximum_longevity_y*365/Amniote_Database_Aug_2015$female_maturity_d
+Amniote_Database_Aug_2015$E_alpha<-(Amniote_Database_Aug_2015$maximum_longevity_y*365-Amniote_Database_Aug_2015$female_maturity_d)/Amniote_Database_Aug_2015$female_maturity_d
 
 
 #Calculate I/m
@@ -132,7 +131,6 @@ Amniote_Database_Aug_2015$E_alpha<-Amniote_Database_Aug_2015$maximum_longevity_y
 ##I=birth_or_hatching_weight_g
 
 for (i in 1:nrow(Amniote_Database_Aug_2015)) {
-  print(i)
   if(Amniote_Database_Aug_2015$class[i]=='Mammalia') {
     Amniote_Database_Aug_2015[i, 'I'] <- Amniote_Database_Aug_2015[i,"weaning_weight_g"]
   }
@@ -297,10 +295,10 @@ combined_reptiledata$R<-combined_reptiledata$litter_or_clutch_size_n*combined_re
 #C
 combined_reptiledata$C<-combined_reptiledata$R/combined_reptiledata$adult_body_mass_g
 #C*E
-combined_reptiledata$C_E<-combined_reptiledata$C*combined_reptiledata$longevity_y
+combined_reptiledata$C_E<-combined_reptiledata$C*(combined_reptiledata$maximum_longevity_y-(combined_reptiledata$female_maturity_d/365))
 
 #E/alpha
-combined_reptiledata$E_alpha<-combined_reptiledata$longevity_y*365/combined_reptiledata$female_maturity_d
+combined_reptiledata$E_alpha<-(combined_reptiledata$maximum_longevity_y*365-combined_reptiledata$female_maturity_d)/combined_reptiledata$female_maturity_d
 
 #I
 combined_reptiledata$I<-combined_reptiledata$birth_or_hatching_weight_g
@@ -327,6 +325,9 @@ completecase_species<-completecase_species[completecase_species$taxaname!="Acant
 #Log transform
 completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
+#removing species with negative values for C*E:
+completecase_species<-completecase_species[!is.na(completecase_species$log_C_E),]
+
 completecase_species$log_I_m<-log(completecase_species$I_m)
 completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
 
@@ -340,6 +341,9 @@ colnames(completecase_amph)[12]<-"I"
 completecase_amph$female_maturity_d<-completecase_amph$Age_at_maturity_avg_y*365
 completecase_amph$log_bodymass<-log(completecase_amph$adult_body_mass_g)
 completecase_amph$log_C_E<-log(completecase_amph$C_E)
+#removing species with negative values for C*E:
+completecase_amph<-completecase_amph[!is.na(completecase_amph$log_C_E),]
+
 completecase_amph$log_I_m<-log(completecase_amph$I_m)
 completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
 
