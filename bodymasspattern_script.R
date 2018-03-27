@@ -957,6 +957,28 @@ names(bmvec_bird)<-completecase_am$taxaname[completecase_am$class=="Aves"]
 pruned_birdtree1<-prune.missing(x=bmvec_bird, phylo=birdtree1)
 pruned_birdtree1<-pruned_birdtree1$tree
 
+#Create a table of the node labels for each order
+bird_ordernodes<-data.frame(Order=as.character(unique(completecase_am$order[completecase_am$class=="Aves"])),num.species=as.numeric(0),node.num=as.numeric(0))
+#add number of species per order
+for(i in 1:nrow(bird_ordernodes)){
+  bird_ordernodes$num.species[i]<-sum(pruned_birdtree1$tip.label%in%completecase_am$taxaname[as.character(completecase_am$order)==as.character(bird_ordernodes$Order[i])])
+  if(bird_ordernodes$num.species[i]>1)
+    bird_ordernodes$node.num[i]<-getMRCA(pruned_birdtree1,pruned_birdtree1$tip.label[pruned_birdtree1$tip.label%in%completecase_am$taxaname[as.character(completecase_am$order)==as.character(bird_ordernodes$Order[i])]])
+  else
+    bird_ordernodes$node.num[i]<-NA
+}
+
+bird_ordernodes<-as.data.frame(bird_ordernodes)
+bird_ordernodes$Order<-as.character(bird_ordernodes$Order)
+
+#plot tree with clades labeled
+plot(pruned_birdtree1,type="fan",show.tip.label = FALSE,no.margin = TRUE)
+bird_ordernodenumbers<-bird_ordernodes$node.num[!is.na(bird_ordernodes$node.num)]
+for(i in 1:length(bird_ordernodenumbers)){
+  arc.cladelabels(tree=pruned_birdtree1,text=bird_ordernodes$Order[!is.na(bird_ordernodes$node.num)][i],bird_ordernodenumbers[i])
+}
+
+
 
 #Reptiles
 #Zheng and Wiens tree
@@ -1402,9 +1424,12 @@ bird_bodymass_fit.ou
 bird_bodymass_fit.bm<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="BM")
 bird_bodymass_fit.bm
 bird_bodymass_fit.lambda<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="lambda")
-bird_bodymass_fit.lambda
-bird_bodymass_fit.white<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="white")
-bird_bodymass_fit.white
+bird_bodymass_fit.lambda #basically brownian
+bird_bodymass_fit.kappa<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="kappa")
+bird_bodymass_fit.kappa #basically brownian
+bird_bodymass_fit.delta<-fitContinuous(pruned_birdtree1,bird_log_bodymass_tiporder,model="delta")
+bird_bodymass_fit.delta #basically brownian
+
 #For C*E
 bird_C_E_fit.ou<-fitContinuous(pruned_birdtree1,bird_log_C_E_tiporder,model="OU")
 bird_C_E_fit.ou
@@ -1485,8 +1510,8 @@ mammal_bodymass_fit.bm<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_t
 mammal_bodymass_fit.bm
 mammal_bodymass_fit.lambda<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="lambda")
 mammal_bodymass_fit.lambda
-mammal_bodymass_fit.white<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="white")
-mammal_bodymass_fit.white
+mammal_bodymass_fit.kappa<-fitContinuous(pruned_mammaltree_di,mammal_log_bodymass_tiporder,model="kappa")
+mammal_bodymass_fit.kappa
 #For C*E
 mammal_C_E_fit.ou<-fitContinuous(pruned_mammaltree_di,mammal_log_C_E_tiporder,model="OU")
 mammal_C_E_fit.ou
@@ -1517,14 +1542,14 @@ mammal_E_alpha_fit.white
 
 #Create Brownian motion, OU, etc. models for Squamata
 #For body mass
-squamate_bodymass_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="OU")
-squamate_bodymass_fit.ou
 squamate_bodymass_fit.bm<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="BM")
 squamate_bodymass_fit.bm
+squamate_bodymass_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="OU")
+squamate_bodymass_fit.ou
 squamate_bodymass_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="lambda")
 squamate_bodymass_fit.lambda
-squamate_bodymass_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="white")
-squamate_bodymass_fit.white
+squamate_bodymass_fit.kappa<-fitContinuous(ult_pruned_squamatetree,squamate_log_bodymass_tiporder,model="kappa")
+squamate_bodymass_fit.kappa
 #For C*E
 squamate_C_E_fit.ou<-fitContinuous(ult_pruned_squamatetree,squamate_log_C_E_tiporder,model="OU")
 squamate_C_E_fit.ou
@@ -1552,6 +1577,20 @@ squamate_E_alpha_fit.lambda<-fitContinuous(ult_pruned_squamatetree,squamate_log_
 squamate_E_alpha_fit.lambda
 squamate_E_alpha_fit.white<-fitContinuous(ult_pruned_squamatetree,squamate_log_E_alpha_tiporder,model="white")
 squamate_E_alpha_fit.white
+
+#Create Brownian motion, OU, etc. models for Amphibia
+#For body mass
+amph_bodymass_fit.bm<-fitContinuous(ult_pruned_amphibiantree,amphibian_log_bodymass_tiporder,model="BM")
+amph_bodymass_fit.bm
+amph_bodymass_fit.ou<-fitContinuous(ult_pruned_amphibiantree,amphibian_log_bodymass_tiporder,model="OU")
+amph_bodymass_fit.ou
+amph_bodymass_fit.lambda<-fitContinuous(ult_pruned_amphibiantree,amphibian_log_bodymass_tiporder,model="lambda")
+amph_bodymass_fit.lambda
+amph_bodymass_fit.kappa<-fitContinuous(ult_pruned_amphibiantree,amphibian_log_bodymass_tiporder,model="kappa")
+amph_bodymass_fit.kappa
+
+
+
 #fastAnc ancestral reconstructions for mammals
 
 #Body mass
