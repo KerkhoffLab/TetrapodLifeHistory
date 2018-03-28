@@ -327,6 +327,8 @@ completecase_species$log_bodymass<-log(completecase_species$adult_body_mass_g)
 completecase_species$log_C_E<-log(completecase_species$C_E)
 #removing species with negative values for C*E:
 completecase_species<-completecase_species[!is.na(completecase_species$log_C_E),]
+#removing species with zero values for C*E:
+completecase_species<-completecase_species[!is.infinite(completecase_species$log_C_E),]
 
 completecase_species$log_I_m<-log(completecase_species$I_m)
 completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
@@ -431,15 +433,15 @@ ggplot(data=completecase_am,aes(x=log_C_E,..density..,colour=class))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(C*E)", y="Density")
+  labs(x = "Log(Lifetime Reproductive Effort)", y="Density")
 #E/alpha
 ggplot(data=completecase_am,aes(x=log_E_alpha,..density..,colour=class))+
-  geom_freqpoly(binwidth=0.4,lwd=1.3,show.legend = F)+
+  geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
   scale_color_brewer(palette="Set1")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(E/alpha)",y="Density")
+  labs(x = "Log(Relative Reproductive Lifespan)",y="Density")
 #I/m
 ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
@@ -447,7 +449,7 @@ ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(I/m)",y="Density")
+  labs(x = "Log(Relative Offspring Size)",y="Density")
 
 anova(lm(log_C_E~class, data = completecase_am))
 
@@ -730,8 +732,11 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completere
 
 #Plotting all four hypervolumes together
 #Log transformed hypervolumes
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),show.legend=FALSE)
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
+     num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),
+     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass)"),show.legend=FALSE)
 legend("bottomleft",legend = c("Birds","Mammals","Reptiles", "Amphibians"),text.col=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),bty="n",cex=1.1,text.font=2)
+
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
      show.3d=TRUE,plot.3d.axes.id=2:4,
      colors = c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2],brewer.pal(n=3,"Set1")[3],brewer.pal(n=4,"Set1")[4]),point.alpha.min = 0.5,cex.random=3,cex.data=6)
@@ -1056,15 +1061,13 @@ amphibiantree$tip.label[amphibiantree$tip.label=="Rana_nigromaculata"]<-"Pelophy
 amphibiantree$tip.label[amphibiantree$tip.label=="Rana_perezi"]<-"Pelophylax_perezi"
 amphibiantree$tip.label[amphibiantree$tip.label=="Rana_ridibunda"]<-"Pelophylax_ridibundus"
 
-ult_pruned_amphibiantree<-force.ultrametric(pruned_amphibiantree,method = "nnls")
-
-
-
 #pruning amphibians
 bmvec_amphibian<-completecase_am$adult_body_mass_g[completecase_am$class=="Amphibia"]
 names(bmvec_amphibian)<-completecase_am$taxaname[completecase_am$class=="Amphibia"]
 pruned_amphibiantree<-prune.missing(x=bmvec_amphibian, phylo=amphibiantree)
 pruned_amphibiantree<-pruned_amphibiantree$tree
+
+ult_pruned_amphibiantree<-force.ultrametric(pruned_amphibiantree,method = "nnls")
 
 
 # Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
@@ -1095,23 +1098,18 @@ rownames(birdtraitmatrix)<-birdtraits$taxaname
 birdcompmatrix<-as.matrix(birdtraits[,6:11])
 rownames(birdcompmatrix)<-birdtraits$taxaname
 
-#Reptiles
-reptiletraits<-completecase_species[completecase_species$class=="Reptilia",c(20,12:15)]
-reptiletraits$C<-augmented_amniote_database$C[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E<-augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$E_day<-(augmented_amniote_database$longevity_y[augmented_amniote_database$taxaname%in%reptiletraits$taxaname])*365
-reptiletraits$alpha<-augmented_amniote_database$female_maturity_d[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$I<-augmented_amniote_database$I[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-reptiletraits$m<-augmented_amniote_database$adult_body_mass_g[augmented_amniote_database$taxaname%in%reptiletraits$taxaname]
-
-
+##Reptiles
+reptiletraits<-completecase_am[completecase_am$class=="Reptilia",c(15,17:20,11,10,8,14,9)]
 reptiletraitmatrix<-as.matrix(reptiletraits[,2:5])
 rownames(reptiletraitmatrix)<-reptiletraits$taxaname
-
 
 reptilecompmatrix<-as.matrix(reptiletraits[,6:11])
 rownames(reptilecompmatrix)<-reptiletraits$taxaname
 
+##Amphibian
+amphibiantraits<-completecase_am[completecase_am$taxaname%in%pruned_amphibiantree$tip.label,c(15,17:20,11,10,8,14,9)]
+amphibiantraitmatrix<-as.matrix(amphibiantraits[,2:5])
+rownames(amphibiantraitmatrix)<-amphibiantraits$taxaname
 
 # Adding Traits to Trees --------------------------------------------------
 
@@ -1343,8 +1341,8 @@ rownames(squamate_bodymass_I_m_matrix)<-squamate_phylo_order_traits$taxaname
 #fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,method="static",control=list(ftype="off"))
 
 fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
-fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_E_alpha_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
+fancyTree(pruned_squamatetree,type="traitgram3d",X=squamate_bodymass_I_m_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[3],nrow(pruned_squamatetree$edge))))
 
 
 matrix_squamate_phylo_order_traits<-as.matrix(squamate_phylo_order_traits[,2:5])
@@ -1373,9 +1371,9 @@ colnames(amphibian_bodymass_I_m_matrix)<-NULL
 rownames(amphibian_bodymass_I_m_matrix)<-amphibian_phylo_order_traits$taxaname
 #View(amphibian_bodymass_I_m_matrix)
 
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
-fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_E_alpha_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
+fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_I_m_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
 
 
 # fancyTree(pruned_amphibiantree,type="traitgram3d",X=amphibian_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[4],nrow(pruned_amphibiantree$edge))))
@@ -1409,9 +1407,9 @@ colnames(bird_bodymass_I_m_matrix)<-NULL
 rownames(bird_bodymass_I_m_matrix)<-bird_phylo_order_traits$taxaname
 #View(bird_bodymass_I_m_matrix)
 
-fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
-fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_E_alpha_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
-fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_I_m_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_E_alpha_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
+fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_I_m_matrix,control=list(spin=F,ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
 
 
 fancyTree(pruned_birdtree1,type="traitgram3d",X=bird_bodymass_C_E_matrix,control=list(ftype="off",col.edge=rep(brewer.pal(4,"Set1")[1],nrow(pruned_birdtree1$edge))))
@@ -1724,13 +1722,13 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 
 #Mammals
 #linear model
-summary(lm(log_C_E~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
+summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
 
 #Birds
 #linear model
-summary(lm(log_C_E~log_bodymass,data = as.data.frame(birdtraitmatrix)))
+summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(birdtraitmatrix)))
 #PGLS
 summary(gls(bird_log_C_E_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data=bird_phylo_order_traits,method="ML"))
 
@@ -1745,11 +1743,13 @@ summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames
 summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
 
 #Amphibians
+#linear model
+summary(lm(log_C_E~log_bodymass,data = as.data.frame(amphibiantraitmatrix)))
 summary(gls(amphibian_log_C_E_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
 
 
 plot(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
-     xlab="Log(Body Mass)",ylab="Log(C*E)",xlim=c(-0.5,20),ylim=c(-8,6))
+     xlab="Log(Body Mass)",ylab="Log(LRE)",xlim=c(-0.5,20),ylim=c(-8,6))
 points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
 points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
 points(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
@@ -1792,7 +1792,7 @@ summary(gls(amphibian_log_E_alpha_tiporder~amphibian_log_bodymass_tiporder,corre
 
 
 plot(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
-     xlab="Log(Body Mass)",ylab="Log(E/alpha)",xlim=c(-0.5,20),ylim=c(-2,5.5))
+     xlab="Log(Body Mass)",ylab="Log(RRL)",xlim=c(-0.5,20),ylim=c(-3,4.5))
 points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
 points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
 points(log_E_alpha~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
@@ -1836,7 +1836,7 @@ summary(gls(amphibian_log_I_m_tiporder~amphibian_log_bodymass_tiporder,correlati
 
 
 plot(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
-     xlab="Log(Body Mass)",ylab="Log(I/m)",xlim=c(-0.5,20),ylim=c(-15.5,0.5))
+     xlab="Log(Body Mass)",ylab="Log(ROS)",xlim=c(-0.5,20),ylim=c(-16,0.5))
 points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Aves",],col=alpha(brewer.pal(n=3,"Set1")[1],0.7),pch=19)
 points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Reptilia",],col=alpha(brewer.pal(n=3,"Set1")[3],0.7),pch=19)
 points(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Amphibia",],col=alpha(brewer.pal(n=4, "Set1")[4],0.7),pch=19)
