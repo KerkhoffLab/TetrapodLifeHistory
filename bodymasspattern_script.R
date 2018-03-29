@@ -451,7 +451,21 @@ ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
   labs(x = "Log(Relative Offspring Size)",y="Density")
 
+anova(lm(log_bodymass~class, data = completecase_am))
+TukeyHSD(lm(log_bodymass~class, data = completecase_am))
+favstats(log_bodymass~class, data = completecase_am)
+
 anova(lm(log_C_E~class, data = completecase_am))
+TukeyHSD(lm(log_C_E~class, data = completecase_am))
+favstats(log_C_E~class, data = completecase_am)
+
+anova(lm(log_E_alpha~class, data = completecase_am))
+TukeyHSD(lm(log_E_alpha~class, data = completecase_am))
+favstats(log_E_alpha~class, data = completecase_am)
+
+anova(lm(log_I_m~class, data = completecase_am))
+TukeyHSD(lm(log_I_m~class, data = completecase_am))
+favstats(log_I_m~class, data = completecase_am)
 
 
 #Histograms with bats
@@ -1724,12 +1738,16 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
 #linear model
 summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(mammaltraitmatrix)))
 #PGLS
-summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+#Use Pagel's lambda model
+summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,
+            correlation = corPagel(value=0.95,phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+#summary(gls(mammal_log_C_E_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
 
 #Birds
 #linear model
 summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(birdtraitmatrix)))
 #PGLS
+#Use Brownian motion
 summary(gls(bird_log_C_E_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data=bird_phylo_order_traits,method="ML"))
 
 #Reptiles
@@ -1740,12 +1758,22 @@ summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
-summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
+#Use Kappa model
+rownames(squamate_phylo_order_traits)<-squamate_phylo_order_traits$taxaname
+squamate_phylo_order_traits_compdata<-comparative.data(pruned_squamatetree,squamate_phylo_order_traits,names.col = 'taxaname')
+summary(pgls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder, data = squamate_phylo_order_traits_compdata,kappa='ML'))
+
+#summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
 
 #Amphibians
 #linear model
 summary(lm(log_C_E~log_bodymass,data = as.data.frame(amphibiantraitmatrix)))
-summary(gls(amphibian_log_C_E_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
+#PGLS
+#Use OU model
+summary(gls(amphibian_log_C_E_tiporder~amphibian_log_bodymass_tiporder,
+            correlation = corMartins(value = 0.5,phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
+
+#summary(gls(amphibian_log_C_E_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
 
 
 plot(log_C_E~log_bodymass,data = completecase_am[completecase_am$class=="Mammalia",],col=alpha(brewer.pal(n=3,"Set1")[2],0.7),pch=19,
@@ -1768,7 +1796,11 @@ legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,
 #linear model
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(mammaltraitmatrix)))
 #PGLS
-summary(gls(mammal_log_E_alpha_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+#Use Pagel's lambda model
+summary(gls(mammal_log_E_alpha_tiporder~mammal_log_bodymass_tiporder,
+            correlation = corPagel(value=0.95,phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
+
+#summary(gls(mammal_log_E_alpha_tiporder~mammal_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_mammaltree_di),data = mammal_phylo_order_traits,method = "ML"))
 
 #Birds
 #linear model
@@ -1848,6 +1880,88 @@ abline(lm(log_I_m~log_bodymass,data = completecase_am[completecase_am$class=="Am
 
 legend(legend = c("Aves","Mammalia","Reptilia","Amphibia"),col = brewer.pal(n=4,"Set1"),pch=19,"bottomright")
 
+
+# Wright PGLS Code --------------------------------------------------------
+
+##Amphibians
+
+#create correlation matrices for each model of trait evolution 
+amphibian.bm <- corBrownian(phy = pruned_amphibiantree)
+amphibian.ou <- corMartins(0, phy = pruned_amphibiantree)
+amphibian.pa <- corPagel(1, phy = pruned_amphibiantree)
+
+# create a function that runs a null model of the trait of interest evolving along the tree
+f <- function(cs) gls(amphibian_log_bodymass_tiporder ~ 1, data = amphibian_phylo_order_traits, correlation = cs) 
+
+# run the above function on each different correlation structure/model of trait evolution (plus a null model with no correlation structure)
+amphibian.fit <- lapply(list(NULL, amphibian.bm, amphibian.pa, amphibian.ou), f)
+
+# extract the AIC values for each 
+sapply(amphibian.fit, AIC) #OU model fits best
+
+summary(gls(amphibian_log_C_E_tiporder ~ amphibian_log_bodymass_tiporder, correlation=amphibian.ou, data=amphibian_phylo_order_traits))
+summary(gls(amphibian_log_E_alpha_tiporder ~ amphibian_log_bodymass_tiporder, correlation=amphibian.ou, data=amphibian_phylo_order_traits))
+summary(gls(amphibian_log_I_m_tiporder ~ amphibian_log_bodymass_tiporder, correlation=amphibian.ou, data=amphibian_phylo_order_traits))
+
+##Squamates
+
+#create correlation matrices for each model of trait evolution 
+squamate.bm <- corBrownian(phy = pruned_squamatetree)
+squamate.ou <- corMartins(0, phy = pruned_squamatetree)
+squamate.pa <- corPagel(1, phy = pruned_squamatetree)
+
+# create a function that runs a null model of the trait of interest evolving along the tree
+f <- function(cs) gls(squamate_log_bodymass_tiporder ~ 1, data = squamate_phylo_order_traits, correlation = cs) 
+
+# run the above function on each different correlation structure/model of trait evolution (plus a null model with no correlation structure)
+squamate.fit <- lapply(list(NULL, squamate.bm, squamate.pa, squamate.ou), f)
+
+# extract the AIC values for each 
+sapply(squamate.fit, AIC) #OU model fits best
+
+summary(gls(squamate_log_C_E_tiporder ~ squamate_log_bodymass_tiporder, correlation=squamate.ou, data=squamate_phylo_order_traits))
+summary(gls(squamate_log_E_alpha_tiporder ~ squamate_log_bodymass_tiporder, correlation=squamate.ou, data=squamate_phylo_order_traits))
+summary(gls(squamate_log_I_m_tiporder ~ squamate_log_bodymass_tiporder, correlation=squamate.ou, data=squamate_phylo_order_traits))
+
+##Mammals
+
+#create correlation matrices for each model of trait evolution 
+mammal.bm <- corBrownian(phy = pruned_mammaltree_best)
+mammal.ou <- corMartins(0, phy = pruned_mammaltree_best)
+mammal.pa <- corPagel(1, phy = pruned_mammaltree_best)
+
+# create a function that runs a null model of the trait of interest evolving along the tree
+f <- function(cs) gls(mammal_log_bodymass_tiporder ~ 1, data = mammal_phylo_order_traits, correlation = cs) 
+
+# run the above function on each different correlation structure/model of trait evolution (plus a null model with no correlation structure)
+mammal.fit <- lapply(list(NULL, mammal.bm, mammal.pa, mammal.ou), f)
+
+# extract the AIC values for each 
+sapply(mammal.fit, AIC) #Pagel model fits best
+
+summary(gls(mammal_log_C_E_tiporder ~ mammal_log_bodymass_tiporder, correlation=mammal.pa, data=mammal_phylo_order_traits))
+summary(gls(mammal_log_E_alpha_tiporder ~ mammal_log_bodymass_tiporder, correlation=mammal.pa, data=mammal_phylo_order_traits))
+summary(gls(mammal_log_I_m_tiporder ~ mammal_log_bodymass_tiporder, correlation=mammal.pa, data=mammal_phylo_order_traits))
+
+##Birds
+
+#create correlation matrices for each model of trait evolution 
+bird.bm <- corBrownian(phy = pruned_birdtree1)
+bird.ou <- corMartins(0, phy = pruned_birdtree1)
+bird.pa <- corPagel(1, phy = pruned_birdtree1)
+
+# create a function that runs a null model of the trait of interest evolving along the tree
+f <- function(cs) gls(bird_log_bodymass_tiporder ~ 1, data = bird_phylo_order_traits, correlation = cs) 
+
+# run the above function on each different correlation structure/model of trait evolution (plus a null model with no correlation structure)
+bird.fit <- lapply(list(NULL, bird.bm, bird.pa, bird.ou), f)
+
+# extract the AIC values for each 
+sapply(bird.fit, AIC) #Pagel model fits best
+
+summary(gls(bird_log_C_E_tiporder ~ bird_log_bodymass_tiporder, correlation=bird.pa, data=bird_phylo_order_traits))
+summary(gls(bird_log_E_alpha_tiporder ~ bird_log_bodymass_tiporder, correlation=bird.pa, data=bird_phylo_order_traits))
+summary(gls(bird_log_I_m_tiporder ~ bird_log_bodymass_tiporder, correlation=bird.pa, data=bird_phylo_order_traits))
 
 
 # Invariance Calculations -------------------------------------------------
