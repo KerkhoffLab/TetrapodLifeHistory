@@ -1100,6 +1100,22 @@ pruned_amphibiantree<-pruned_amphibiantree$tree
 ult_pruned_amphibiantree<-force.ultrametric(pruned_amphibiantree,method = "nnls")
 
 
+
+# All tetrapods
+
+tetrapod_tree <- read.newick("C:/Users/cecin/Desktop/HonorsPhylogenies/vert_tree.txt")
+bmvec_tetrapod <- completecase_am$adult_body_mass_g
+names(bmvec_tetrapod) <- completecase_am$taxaname
+pruned_tetrapodtree <- prune.missing(x = bmvec_tetrapod, phylo = tetrapod_tree)
+
+sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Aves"])
+sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Mammalia"])
+sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Reptilia"])
+sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Amphibia"])
+
+View(names(bmvec_bird)[!(names(bmvec_bird) %in% pruned_tetrapodtree$tree$tip.label)])
+pruned_birdtree1$tip.label %in% pruned_tetrapodtree$tree$tip.label
+
 # Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
 
 #Mammals
