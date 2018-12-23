@@ -2,8 +2,9 @@
 require(phytools)
 require(geiger)
 
-tree_list <- list(amphib=amphibiantree, birds=birdtree1, squam=squamatetree, mamm=mammaltree_best)
-tree_list <- list(amphib=amphibiantree, birds=birdtree1)
+squamatetree <- drop.tip(phy = squamatetree, tip = c("Gallus_gallus", "Dromaius_novaehollandiae"))
+
+tree_list <- list(amphib=amphibiantree, birds=birdtree1, squam=pruned_squamatetree, mamm=mammaltree_best)
 
 tip.labels <- c("fish", "amphib", "squam", "birds", "mamm")
 edge <- matrix(c(9, 4,
@@ -14,14 +15,14 @@ edge <- matrix(c(9, 4,
                  7, 2,
                  6, 7,
                  6, 1), byrow=TRUE, ncol=2)
-edge.length <- c(274.9, 274.9, 324.5, 324.5-274.9, 382.9-324.5, 382.9, 454.6-382.9 , 454.6)
+edge.length <- c(280, 280, 324.5, 324.5-274.9, 382.9-324.5, 382.9, 454.6-382.9 , 454.6)
+#edge.length <- c(274.9, 274.9, 324.5, 324.5-274.9, 382.9-324.5, 382.9, 454.6-382.9 , 454.6)
 Nnode <- 4
 ordertree <- list(edge=edge, Nnode=Nnode, tip.label=tip.labels, edge.length=edge.length)
 class(ordertree) <- 'phylo'
 ordertree <- reorder(ordertree, "postorder")
 plot(ordertree)
 ordertree <- drop.tip(phy = ordertree, tip = "fish")
-ordertree <- drop.tip(phy = ordertree, tip = c("squam", "mamm"))
 plot(ordertree)
 
 otax <- data.frame("Class"= ordertree$tip.label, "Superclass"=c(rep("Tetrapoda",4)))
@@ -39,4 +40,6 @@ abline(v = max(nodeHeights(tree_list[[4]])), lty = 2)
 
 res <- glomogram.phylo(classtree, tree_list)
 
-plot(res)
+plot(res, type = "fan")
+
+write.tree(res, file = "C:/Users/cecin/Desktop/HonorsPhylogenies/tetrapod_tree.tre")
