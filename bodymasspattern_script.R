@@ -22,7 +22,7 @@ library(mosaic)
 library(PhyloOrchard)
 library(phangorn)
 library(magick)
-
+library(viridis)
 
 # Amphibian Data ----------------------------------------------------------
 
@@ -1377,21 +1377,40 @@ color.legend(-150,-100,-100,-90,legend=c(-3.045,4.650),rect.col=color.gradient(c
 
 #Body mass
 log_bodymass_contMap <- contMap(ult_pruned_tetrapodtree, log_bodymass_tiporder, plot = FALSE)
-plot(log_bodymass_contMap, ftype = "off", outline = FALSE, leg.text = "log(Body Mass)", lwd = 1)
-axis(1)
-title(xlab="Time from root (million years)")
+log_bodymass_contMap <- setMap(log_bodymass_contMap, colors = plasma(1449))
+plot(log_bodymass_contMap, ftype = "off", outline = FALSE, legend = FALSE, lwd = 1, ylim=c(1-0.09*(Ntip(log_bodymass_contMap$tree)-1),Ntip(log_bodymass_contMap$tree)),
+     mar=c(5.1,0.4,0.4,0.4))
+add.color.bar(200,log_bodymass_contMap$cols,title="Log(Body Mass)",
+              lims=log_bodymass_contMap$lims,digits=3,prompt=FALSE,x=0,
+              y=1-0.08*(Ntip(log_bodymass_contMap$tree)-1),lwd=4,fsize=1,subtitle="200 million years")
 
 #C*E
 log_C_E_contMap <- contMap(ult_pruned_tetrapodtree, log_C_E_tiporder, plot = FALSE)
-plot(log_C_E_contMap, ftype = "off", outline = FALSE, leg.text = "log(LRE)", lwd = 1)
+log_C_E_contMap <- setMap(log_C_E_contMap, colors = plasma(1449))
+plot(log_C_E_contMap, ftype = "off", outline = FALSE, legend = FALSE, lwd = 1, ylim=c(1-0.09*(Ntip(log_C_E_contMap$tree)-1),Ntip(log_C_E_contMap$tree)),
+     mar=c(5.1,0.4,0.4,0.4))
+add.color.bar(200,log_C_E_contMap$cols,title="Log(LRE)",
+              lims=log_C_E_contMap$lims,digits=3,prompt=FALSE,x=0,
+              y=1-0.08*(Ntip(log_C_E_contMap$tree)-1),lwd=4,fsize=1,subtitle="200 million years")
+
 
 #I/m
 log_I_m_contMap <- contMap(ult_pruned_tetrapodtree, log_I_m_tiporder, plot = FALSE)
-plot(log_I_m_contMap, ftype = "off", outline = FALSE, leg.text = "log(ROS)", lwd = 1)
+log_I_m_contMap <- setMap(log_I_m_contMap, colors = plasma(1449))
+plot(log_I_m_contMap, ftype = "off", outline = FALSE, legend = FALSE, lwd = 1, ylim=c(1-0.09*(Ntip(log_I_m_contMap$tree)-1),Ntip(log_I_m_contMap$tree)),
+     mar=c(5.1,0.4,0.4,0.4))
+add.color.bar(200,log_I_m_contMap$cols,title="Log(ROS)",
+              lims=log_I_m_contMap$lims,digits=3,prompt=FALSE,x=0,
+              y=1-0.08*(Ntip(log_I_m_contMap$tree)-1),lwd=4,fsize=1,subtitle="200 million years")
 
 #E/alpha
 log_E_alpha_contMap <- contMap(ult_pruned_tetrapodtree, log_E_alpha_tiporder, plot = FALSE)
-plot(log_E_alpha_contMap, ftype = "off", outline = FALSE, leg.text = "log(RRL)", lwd = 1)
+log_E_alpha_contMap <- setMap(log_E_alpha_contMap, colors = viridis(1449))
+plot(log_E_alpha_contMap, ftype = "off", outline = FALSE, legend = FALSE, lwd = 1, ylim=c(1-0.09*(Ntip(log_E_alpha_contMap$tree)-1),Ntip(log_E_alpha_contMap$tree)),
+     mar=c(5.1,0.4,0.4,0.4))
+add.color.bar(200,log_E_alpha_contMap$cols,title="Log(RRL)",
+              lims=log_E_alpha_contMap$lims,digits=3,prompt=FALSE,x=0,
+              y=1-0.08*(Ntip(log_E_alpha_contMap$tree)-1),lwd=4,fsize=1,subtitle="200 million years")
 
 
 
