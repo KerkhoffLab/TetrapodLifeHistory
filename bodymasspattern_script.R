@@ -1115,6 +1115,10 @@ sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecas
 
 pruned_tetrapodtree <- pruned_tetrapodtree$tree
 
+ult_pruned_tetrapodtree<-force.ultrametric(pruned_tetrapodtree,method = "nnls")
+plot(ult_pruned_tetrapodtree, type = "fan")
+
+
 # Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
 
 #Mammals
@@ -1366,6 +1370,29 @@ log_E_alpha_tiporder<-log_E_alpha[pruned_tetrapodtree$tip.label]
 plot(pruned_tetrapodtree,type="fan",no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-150,-100,-100,-90,legend=c(-3.045,4.650),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+
+# Map traits on tetrapod tree ---------------------------------------------
+
+#Body mass
+log_bodymass_contMap <- contMap(ult_pruned_tetrapodtree, log_bodymass_tiporder, plot = FALSE)
+plot(log_bodymass_contMap, ftype = "off", outline = FALSE, leg.text = "log(Body Mass)", lwd = 1)
+axis(1)
+title(xlab="Time from root (million years)")
+
+#C*E
+log_C_E_contMap <- contMap(ult_pruned_tetrapodtree, log_C_E_tiporder, plot = FALSE)
+plot(log_C_E_contMap, ftype = "off", outline = FALSE, leg.text = "log(LRE)", lwd = 1)
+
+#I/m
+log_I_m_contMap <- contMap(ult_pruned_tetrapodtree, log_I_m_tiporder, plot = FALSE)
+plot(log_I_m_contMap, ftype = "off", outline = FALSE, leg.text = "log(ROS)", lwd = 1)
+
+#E/alpha
+log_E_alpha_contMap <- contMap(ult_pruned_tetrapodtree, log_E_alpha_tiporder, plot = FALSE)
+plot(log_E_alpha_contMap, ftype = "off", outline = FALSE, leg.text = "log(RRL)", lwd = 1)
+
 
 
 # Making Phylomorphospace Plots -------------------------------------------
