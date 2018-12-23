@@ -1113,6 +1113,8 @@ sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecas
 sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Reptilia"])
 sum(pruned_tetrapodtree$tree$tip.label %in% completecase_am$taxaname[completecase_am$class == "Amphibia"])
 
+pruned_tetrapodtree <- pruned_tetrapodtree$tree
+
 # Trait Datasets by Class for Species in Phylogeny -------------------------------------------------
 
 #Mammals
@@ -1326,6 +1328,44 @@ bird_log_E_alpha_tiporder<-bird_log_E_alpha[pruned_birdtree1$tip.label]
 plot(pruned_birdtree1,type="fan",no.margin = TRUE,show.tip.label = FALSE)
 tiplabels(pch=19,col=color.scale(bird_log_E_alpha_tiporder,extremes=c("blue","red")))
 color.legend(-150,-100,-100,-90,legend=c(0.54,3.57),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+
+#Adding traits to tetrapod tree
+#Body mass
+log_bodymass<-completecase_am$log_bodymass
+names(log_bodymass)<-completecase_am$taxaname
+log_bodymass_tiporder<-log_bodymass[pruned_tetrapodtree$tip.label]
+
+plot(pruned_tetrapodtree, no.margin = TRUE,type="fan",show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(log_bodymass_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-0.545,18.82),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#C*E
+log_C_E<-completecase_am$log_C_E
+names(log_C_E)<-completecase_am$taxaname
+log_C_E_tiporder<-log_C_E[pruned_tetrapodtree$tip.label]
+
+plot(pruned_tetrapodtree,no.margin = TRUE,show.tip.label = FALSE,type="fan")
+tiplabels(pch=19,col=color.scale(log_C_E_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-7.338,5.762),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#I/m
+log_I_m<-completecase_am$log_I_m
+names(log_I_m)<-completecase_am$taxaname
+log_I_m_tiporder<-log_I_m[pruned_tetrapodtree$tip.label]
+
+plot(pruned_tetrapodtree,no.margin = TRUE,show.tip.label = FALSE,type="fan")
+tiplabels(pch=19,col=color.scale(log_I_m_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-15.66,0.676),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
+
+#E/alpha
+log_E_alpha<-completecase_am$log_E_alpha
+names(log_E_alpha)<-completecase_am$taxaname
+log_E_alpha_tiporder<-log_E_alpha[pruned_tetrapodtree$tip.label]
+
+plot(pruned_tetrapodtree,type="fan",no.margin = TRUE,show.tip.label = FALSE)
+tiplabels(pch=19,col=color.scale(log_E_alpha_tiporder,extremes=c("blue","red")))
+color.legend(-150,-100,-100,-90,legend=c(-3.045,4.650),rect.col=color.gradient(c(0,1),0,c(1,0)),gradient="x")
 
 
 # Making Phylomorphospace Plots -------------------------------------------
