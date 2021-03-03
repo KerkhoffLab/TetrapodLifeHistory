@@ -1,20 +1,23 @@
 # Libraries ---------------------------------------------------------------
 library(readr)
-library(plyr)
 library(dplyr)
 library(lattice)
 library(RColorBrewer)
 library(ggplot2)
 library(hypervolume)
 library(tidyr)
+library(phylosignal)
+# here
 library(taxize)
 library(brranching)
 library(picante)
 library(maptools)
 library(mapproj)
+# through here is missing
 library(rgeos)
 library(sp)
 library(raster)
+# missing
 library(phytools)
 library(geiger)
 library(plotrix)
@@ -23,6 +26,7 @@ library(PhyloOrchard)
 library(phangorn)
 library(magick)
 library(viridis)
+# through here
 
 palette1 <- c("#EA9010", "#013677", "#91C16C", "#BE55C1")
 palette2 <- c( "#E69F00", "#F0E442", "#009E73", "#CC79A7")
@@ -34,9 +38,6 @@ batpalette <- c("#EA9010", "#013677", "#EDD161")
 #Downloaded from https://doi.org/10.6084/m9.figshare.4644424
 AmphiBIO_v1 <- read.csv("C:/Users/cecin/Desktop/AmphiBIO_v1/AmphiBIO_v1.csv")
 AmphiBIO_v1$class<-"Amphibia"
-# AmphiBIO_v1$species<-NA
-# AmphiBIO_v1$subspecies<-NA
-# AmphiBIO_v1$common_name<-NA
 colnames(AmphiBIO_v1)[2]<-"order"
 colnames(AmphiBIO_v1)[3]<-"family"
 colnames(AmphiBIO_v1)[4]<-"genus"
@@ -57,6 +58,16 @@ AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$order=="Anura"]<-10^-4.324*(AmphiBI
 AmphiBIO_v1$Offspring_size_min_g[AmphiBIO_v1$order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_min_mm[AmphiBIO_v1$order=="Caudata"])^2.644
 AmphiBIO_v1$Offspring_size_max_g[AmphiBIO_v1$order=="Caudata"]<-10^-3.98*(AmphiBIO_v1$Offspring_size_max_mm[AmphiBIO_v1$order=="Caudata"])^2.644
 
+# Use allometry equations to convert adult SVL to adult bodymass
+AmphiBIO_v1 <- AmphiBIO_v1 %>% 
+  mutate(adult_size_min_g = case_when(order == "Anura" ~ 10^-4.324*(Size_at_maturity_min_mm)^3.189,
+                                      order == "Caudata" ~ 10^-3.98*(Size_at_maturity_min_mm)^2.644),
+         adult_size_max_g = case_when(order == "Anura" ~ 10^-4.324*(Size_at_maturity_max_mm)^3.189,
+                                      order == "Caudata" ~ 10^-3.98*(Size_at_maturity_max_mm)^2.644)) %>% 
+  rowwise() %>% 
+  mutate(avg_adult_size_g = mean(c(adult_size_min_g, adult_size_max_g))) %>% 
+  mutate(max_minus_avg_g = Body_mass_g - avg_adult_size_g)
+
 #Calculate average mass at independence
 AmphiBIO_v1$Offspring_size_avg_g<-(AmphiBIO_v1$Offspring_size_min_g+AmphiBIO_v1$Offspring_size_max_g)/2
 
@@ -70,16 +81,22 @@ AmphiBIO_v1$R<-AmphiBIO_v1$Litter_size_avg_n*AmphiBIO_v1$Reproductive_output_y*A
 #C=reproductive effort
 #C=R/m
 AmphiBIO_v1$C<-AmphiBIO_v1$R/AmphiBIO_v1$Body_mass_g
+# Calculate C with the average mass
+AmphiBIO_v1$C_avg <- AmphiBIO_v1$R / AmphiBIO_v1$avg_adult_size_g
 
 #Calculate C*E
 #E=max longevity-avg. age at maturity
 AmphiBIO_v1$C_E<-AmphiBIO_v1$C*(AmphiBIO_v1$Longevity_max_y-AmphiBIO_v1$Age_at_maturity_avg_y)
+# Calculate C*E with the average mass
+AmphiBIO_v1$C_E_avg <- AmphiBIO_v1$C_avg*(AmphiBIO_v1$Longevity_max_y-AmphiBIO_v1$Age_at_maturity_avg_y)
 
 #Calculate E/alpha
 AmphiBIO_v1$E_alpha<-(AmphiBIO_v1$Longevity_max_y-AmphiBIO_v1$Age_at_maturity_avg_y)/AmphiBIO_v1$Age_at_maturity_avg_y
 
 #Calculate I/m
 AmphiBIO_v1$I_m<-AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$Body_mass_g
+#Calculate I/m with average mass
+AmphiBIO_v1$I_m_avg <- AmphiBIO_v1$Offspring_size_avg_g/AmphiBIO_v1$avg_adult_size_g
 
 # Amniote Data ------------------------------------------------------------
 
@@ -340,7 +357,26 @@ completecase_species$log_E_alpha<-log(completecase_species$E_alpha)
 
 
 #complete case amphibians
-desiredcolumns_amph<-c(39,2:5,42,23,29,47:49,45,40,50)
+# class, order, family, genus, Species, Age_at_maturity_avg_y
+# desiredcolumns_amph<-c(39,2:5,42,23,29,47:49,45,40,50)
+desiredcolumns_amph <- c("class",
+                         "order",
+                         "family",
+                         "genus",
+                         "Species",
+                         "Age_at_maturity_avg_y",
+                         "Body_mass_g",
+                         "avg_adult_size_g",
+                         'Longevity_max_y',
+                         "C",
+                         "C_avg",
+                         "C_E",
+                         "C_E_avg",
+                         "E_alpha",
+                         "Offspring_size_avg_g",
+                         "taxaname",
+                         "I_m",
+                         "I_m_avg")
 completecase_amph<-AmphiBIO_v1[complete.cases(AmphiBIO_v1$Body_mass_g,AmphiBIO_v1$C_E,AmphiBIO_v1$I_m,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
 colnames(completecase_amph)[7]<-"adult_body_mass_g"
 colnames(completecase_amph)[8]<-"maximum_longevity_y"
@@ -353,6 +389,19 @@ completecase_amph<-completecase_amph[!is.na(completecase_amph$log_C_E),]
 
 completecase_amph$log_I_m<-log(completecase_amph$I_m)
 completecase_amph$log_E_alpha<-log(completecase_amph$E_alpha)
+
+# Using the average mass
+completecase_amph_avg <- AmphiBIO_v1[complete.cases(AmphiBIO_v1$avg_adult_size_g,AmphiBIO_v1$C_E_avg,AmphiBIO_v1$I_m_avg,AmphiBIO_v1$E_alpha),desiredcolumns_amph]
+completecase_amph_avg <- completecase_amph_avg %>% 
+  rename(adult_body_mass_g = avg_adult_size_g,
+         maximum_longevity_y = Longevity_max_y,
+         I = Offspring_size_avg_g) %>% 
+  filter(C_E_avg >= 0) %>% 
+  mutate(female_maturity_d = Age_at_maturity_avg_y*365,
+         log_bodymass = log(adult_body_mass_g),
+         log_C_E = log(C_E_avg),
+         log_I_m = log(I_m_avg),
+         log_E_alpha = log(E_alpha))
 
 #complete cases of amniotes and amphibians
 completecase_am<-rbind.fill(completecase_species,completecase_amph)
@@ -368,14 +417,18 @@ completecase_am$class = factor(completecase_am$class,levels(completecase_am$clas
 # Histograms of Traits ----------------------------------------------------
 
 #Body mass
+# Density plot
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..,))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
   scale_color_manual(name="Class", values = palette2)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks))}) +
+  # scale_x_continuous(trans = "log") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(legend.text=element_text(size=18), legend.title = element_text(size=18))+
-  labs(x = "Log(Body Mass (g) )", y="Density")
+  labs(x = "Body Mass (g)", y="Density")
 
+# Histogram
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..))+
   geom_boxplot(aes(y=log(adult_body_mass_g),x=class))+
   scale_color_brewer(name="Class",palette="Set1")+
@@ -384,77 +437,110 @@ ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density
   theme(legend.text=element_text(size=18), legend.title = element_text(size=18))+
   labs(y = "Log(Body Mass (g)", x = "")
 
+
 #C*E
 #Stacked histogram by class
 #dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$C_E),],aes(x=log(C_E),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
-  geom_vline(aes(xintercept=log(5)),color=gg_color_hue(3)[1],lty=2)+
-  geom_vline(aes(xintercept= log(1.7)),color=gg_color_hue(3)[2],lty=2)
-ggplot(data=Amniote_Database_Aug_2015)+
-  geom_histogram(aes(x=log(C_E),fill=class,alpha=0.2),data=subset(Amniote_Database_Aug_2015,class=="Aves"))+
-  geom_histogram(aes(x=log(C_E),fill=class,alpha=0.2),data=subset(Amniote_Database_Aug_2015,class=="Mammalia"))+
-  geom_histogram(aes(x=log(C_E),fill=class,alpha=0.2),data=subset(Amniote_Database_Aug_2015,class=="Reptilia"))
-
+  geom_vline(aes(xintercept=log(5)),
+             # color=gg_color_hue(3)[1],
+             lty=2)+
+  geom_vline(aes(xintercept= log(1.7)),
+             # color=gg_color_hue(3)[2],
+             lty=2)
 
 #Histogram of E/alpha
-ggplot(data=Amniote_Database_Aug_2015,aes(x=log(E_alpha)))+
-  geom_histogram(binwidth = 0.1)
 #Stacked histogram by class
 #dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$E_alpha),],aes(x=log(E_alpha),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
-  geom_vline(aes(xintercept=log(3)),color=gg_color_hue(3)[1],lty=2)+
-  geom_vline(aes(xintercept= log(1.35)),color=gg_color_hue(3)[2],lty=2)
+  geom_vline(aes(xintercept=log(3)), lty=2)+
+  geom_vline(aes(xintercept= log(1.35)), lty=2)
 
 #Histogram of I/m
-hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),xlab="Log(I/m)",main="")
-hist(log(Amniote_Database_Aug_2015$I_m[!is.na(Amniote_Database_Aug_2015$I_m)]),breaks=200,xlab="Log(I/m)",main="",col = myColours[4])
-
-ggplot(data=Amniote_Database_Aug_2015,aes(x=log(I_m)))+
-  geom_histogram(binwidth = 0.1)
 #Stacked histogram by class
 #dotted lines at predicted approximate locations of (altricial) birds and mammals (Charnov 2002)
 ggplot(data=Amniote_Database_Aug_2015[!is.na(Amniote_Database_Aug_2015$I_m),],aes(x=log(I_m),colour=class))+
   geom_freqpoly(binwidth = 0.1)+
-  geom_vline(aes(xintercept=log(1)),color=gg_color_hue(3)[1],lty=2)+
-  geom_vline(aes(xintercept= log(0.3)),color=gg_color_hue(3)[2],lty=2)
-
+  geom_vline(aes(xintercept=log(1)),lty=2)+
+  geom_vline(aes(xintercept= log(0.3)), lty=2)
 
 #Make histograms of body mass and three invariants for all 4 classes:
 #body mass
 ggplot(data=completecase_am,aes(x=log(adult_body_mass_g),colour=class, ..density..))+
   geom_freqpoly(binwidth=0.5,lwd=1.3)+
   scale_color_manual(name="Class", values = palette1)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks))}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
   theme(legend.text=element_text(size=18), legend.title = element_text(size=18),legend.position = c(0.8,0.5))+
-  labs(x = "Log(Body Mass (g) )", y="Density")
+  labs(x = "Body Mass (g)", y="Density")
 #C*E
 ggplot(data=completecase_am,aes(x=log_C_E,..density..,colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
   scale_color_manual(values = palette1)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Lifetime Reproductive Effort)", y="Density")
+  labs(x = "Lifetime Reproductive Effort", y="Density")
 #E/alpha
 ggplot(data=completecase_am,aes(x=log_E_alpha,..density..,colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
   scale_color_manual(values = palette1)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Relative Reproductive Lifespan)",y="Density")
+  labs(x = "Relative Reproductive Lifespan",y="Density")
 #I/m
 ggplot(data=completecase_am,aes(x=log_I_m,..density..,colour=class))+
   geom_freqpoly(binwidth=0.5,lwd=1.3,show.legend = F)+
   scale_color_manual(values = palette1)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 5)}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Relative Offspring Size)",y="Density")
+  labs(x = "Relative Offspring Size",y="Density")
+
+# Amphibians: comparing the max and calculated average body masses
+ggplot() +
+  geom_freqpoly(data = completecase_amph, aes(x=log(adult_body_mass_g), ..density.., color = "Maximum mass"),
+                binwidth=0.5,lwd=1.3) +
+  geom_freqpoly(data = completecase_amph_avg, aes(x=log(adult_body_mass_g), ..density.., color = "Calculated average mass"),
+                binwidth=0.5,lwd=1.3) +
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks))}) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  theme(legend.text=element_text(size=18), legend.title = element_text(size=18),legend.position = c(0.8,0.5))+
+  labs(x = "Body Mass (g)", y="Density", color = "Mass value used")
+
+ggplot() +
+  geom_freqpoly(data = completecase_amph, aes(x=log_C_E, ..density.., color = "Calculated with maximum mass"),
+                binwidth=0.5,lwd=1.3, show.legend = F) +
+  geom_freqpoly(data = completecase_amph_avg, aes(x=log_C_E, ..density.., color = "Calculated with average mass"),
+                binwidth=0.5,lwd=1.3, show.legend = F) +
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
+  labs(x = "Lifetime Reproductive Effort", y="Density")
+
+ggplot() +
+  geom_freqpoly(data = completecase_amph, aes(x=log_I_m, ..density.., color = "Calculated with maximum mass"),
+                binwidth=0.5,lwd=1.3, show.legend = F) +
+  geom_freqpoly(data = completecase_amph_avg, aes(x=log_I_m, ..density.., color = "Calculated with average mass"),
+                binwidth=0.5,lwd=1.3, show.legend = F) +
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 5)}) +
+  # scale_x_continuous(trans = "log") +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))+
+  theme(legend.text=element_text(size=18), legend.title = element_text(size=18))+
+  labs(x = "Relative Reproductive Lifespan", y="Density")
+
 
 anova(lm(log_bodymass~class, data = completecase_am))
 TukeyHSD(lm(log_bodymass~class, data = completecase_am))
@@ -481,49 +567,53 @@ ggplot()+
   scale_color_manual(values = batpalette[1:2])+
   geom_freqpoly(data=completecase_am[completecase_am$order=="Chiroptera",],aes(x=log_bodymass,..density..),
                 binwidth=0.5, lwd=1.3, show.legend = F,colour=batpalette[3])+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks))}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Body Mass (g))", y="Density")+
+  labs(x = "Body Mass (g)", y="Density")+
   theme(legend.text=element_text(size=18), legend.title = element_text(size=18),legend.position = c(0.8,0.5))
 
-legend("topright",legend=c("Aves","Mammalia","Chiroptera"),lwd=1.9,col=batpalette)
+legend("topright",legend=c("Aves","Mammalia","Chiroptera"),lwd=2.5,col=batpalette)
 
 #C*E
 ggplot()+
   geom_freqpoly(data=completecase_am[completecase_am$class=="Aves"|completecase_am$class=="Mammalia",],aes(x=log_C_E,..density..,colour=class),
                 binwidth=0.5, lwd=1.3,show.legend = F)+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
   scale_color_manual(values = batpalette[1:2])+
   geom_freqpoly(data=completecase_am[completecase_am$order=="Chiroptera",],aes(x=log_C_E,..density..),
                 binwidth=0.5, lwd=1.3, show.legend = F,colour=batpalette[3])+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Lifetime Reproductive Effort)", y="Density")
+  labs(x = "Lifetime Reproductive Effort", y="Density")
   
 #E/alpha
 ggplot()+
   geom_freqpoly(data=completecase_am[completecase_am$class=="Aves"|completecase_am$class=="Mammalia",],aes(x=log_E_alpha,..density..,colour=class),
               binwidth=0.5, lwd=1.3,show.legend = F)+
-  scale_color_brewer(palette="Set1")+
+  scale_color_manual(values = batpalette[1:2])+
   geom_freqpoly(data=completecase_am[completecase_am$order=="Chiroptera",],aes(x=log_E_alpha,..density..),
-                binwidth=0.5, lwd=1.3, show.legend = F,colour=brewer.pal(n=5, "Set1")[5])+
+                binwidth=0.5, lwd=1.3, show.legend = F,colour=batpalette[3])+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Relative Reproductive Lifespan)", y="Density")
+  labs(x = "Relative Reproductive Lifespan", y="Density")
 
 #I/m
 ggplot()+
   geom_freqpoly(data=completecase_am[completecase_am$class=="Aves"|completecase_am$class=="Mammalia",],aes(x=log_I_m,..density..,colour=class),
                 binwidth=0.5, lwd=1.3,show.legend = F)+
-  scale_color_brewer(palette="Set1")+
+  scale_color_manual(values = batpalette[1:2])+
   geom_freqpoly(data=completecase_am[completecase_am$order=="Chiroptera",],aes(x=log_I_m,..density..),
-                binwidth=0.5, lwd=1.3, show.legend = F,colour=brewer.pal(n=5, "Set1")[5])+
+                binwidth=0.5, lwd=1.3, show.legend = F,colour=batpalette[3])+
+  scale_x_continuous(labels = function(breaks) {round(exp(breaks), 2)}) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"))+
   theme(axis.text=element_text(size=12),axis.title = element_text(size=14))+
-  labs(x = "Log(Relative Offspring Size)", y="Density")
+  labs(x = "Relative Offspring Size", y="Density")
 
 #Histograms with primates
 #Body mass
@@ -731,18 +821,31 @@ completeamph_gaussian<-hypervolume_gaussian(data = completecase_am[completecase_
                                                 name = "completeamph_gaussian")
 completeamph_gaussian@Volume
 
+# Using average mass
+complete_amph_gaussian_avg <- hypervolume_gaussian(data = completecase_amph_avg[,c(21:23, 20)],
+                                                   name = "completeamph_gaussian_avg")
+complete_amph_gaussian_avg@Volume
+
 #Plot amphibian hypervolume
 #Log transform amphibian hypervolume
-plot(completeamph_gaussian,point.dark.factor=1,color=gg_color_hue(4)[4])
+plot(completeamph_gaussian,point.dark.factor=1,
+     # color=gg_color_hue(4)[4]
+     )
 plot(completeamph_gaussian,show.3d=TRUE,plot.3d.axes.id=2:4,cex.random=3,cex.data=6,
      show.legend=TRUE,point.alpha.min=0.5,point.dark.factor=1)
+
+# Both amphibian hypervolumes
+plot(hypervolume_join(completeamph_gaussian, complete_amph_gaussian_avg),
+     num.points.max.random=6000, contour.lwd = 1.5, colors = c("#BE55C1", "#F9B641FF"),
+     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass(g))"),show.legend=FALSE)
+legend("bottomleft", legend = c("With maximum body mass", "With calculated average body mass"), text.col = c("#BE55C1", "#F9B641FF"), bty = "n", cex = 1.1, text.font = 2)
 
 
 #Plotting all four hypervolumes together
 #Log transformed hypervolumes
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
      num.points.max.random=6000,contour.lwd=1.5,colors=palette1,
-     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass)"),show.legend=FALSE)
+     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass (g))"),show.legend=FALSE)
 legend("bottomleft",legend = c("Birds","Mammals","Reptiles", "Amphibians"),text.col=palette1,bty="n",cex=1.1,text.font=2)
 
 plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completereptiles_gaussian,completeamph_gaussian),
@@ -773,8 +876,11 @@ hypervolume_overlap_statistics(hypervolume_set(completemammals_gaussian,complete
 #Reptiles and amphibians:
 hypervolume_overlap_statistics(hypervolume_set(completereptiles_gaussian,completeamph_gaussian,check.memory = FALSE))
 
-
-
+# Amphibians: max body mass vs. calculated average
+hypervolume_overlap_statistics(hypervolume_set(completeamph_gaussian, complete_amph_gaussian_avg, check.memory = FALSE))
+hypervolume_overlap_statistics(hypervolume_set(completebirds_gaussian, complete_amph_gaussian_avg, check.memory = FALSE))
+hypervolume_overlap_statistics(hypervolume_set(completemammals_gaussian, complete_amph_gaussian_avg, check.memory = FALSE))
+hypervolume_overlap_statistics(hypervolume_set(completereptiles_gaussian, complete_amph_gaussian_avg, check.memory = FALSE))
 
 #Bat hypervolumes
 completebats_gaussian<-hypervolume_gaussian(data = completecase_species[completecase_am$order=="Chiroptera",c(18:20,17)],
@@ -790,12 +896,12 @@ plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian,completeba
 complete_data<-completecase_am[,c(18:20,17,1:5)]
 complete_data<-as.data.frame(complete_data)
 #Add bat points to mammal hypervolume
-plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=c(brewer.pal(n=3,"Set1")[1],brewer.pal(n=3,"Set1")[2]),
-     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass)"),show.legend=FALSE,
+plot(hypervolume_join(completebirds_gaussian,completemammals_gaussian),num.points.max.random=6000,contour.lwd=1.5,colors=batpalette[1:2],
+     names=c("log(LRE)","log(ROS)", "log(RRL)", "log(Body Mass (g))"),show.legend=FALSE,
      plot.function.additional=function(i,j) {   
-       points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col=brewer.pal(n=5,"Set1")[5],pch=19)
+       points(x=complete_data[complete_data$order=="Chiroptera",i],y=complete_data[complete_data$order=="Chiroptera",j],col=batpalette[3],pch=19)
        })
-legend("bottomleft",legend = c("Bats","Birds","Mammals"),text.col=c(brewer.pal(n=6,"Set1")[5],brewer.pal(n=6,"Set1")[1],brewer.pal(n=6,"Set1")[2]),bty="n",cex=1.1,text.font=2)
+legend("bottomleft",legend = c("Birds","Mammals", "Bats"),text.col=batpalette,bty="n",cex=1.1,text.font=2)
 
 
 
@@ -1857,16 +1963,43 @@ for(i in 1:length(mammal_orderover50)){  arc.cladelabels(tree=pruned_mammaltree_
                                                          mammal_orderover50[i],ln.offset = 1.03,lab.offset = 1.07,mark.node=FALSE)
 }
 
+# mvMORPH ------------------------------------------
 
+# Amphibians
+amphibian_mvmorph <- mvgls(cbind(amphibian_log_C_E_tiporder, amphibian_log_E_alpha_tiporder, amphibian_log_I_m_tiporder) ~ amphibian_log_bodymass_tiporder,
+                           data = amphibian_phylo_order_traits, tree = pruned_amphibiantree, model = "BM", error = TRUE)
+summary(amphibian_mvmorph)
+cov2cor(amphibian_mvmorph$sigma$Pinv)
+
+# Squamates
+squamate_mvmorph <- mvgls(cbind(squamate_log_C_E_tiporder, squamate_log_E_alpha_tiporder, squamate_log_I_m_tiporder) ~ squamate_log_bodymass_tiporder,
+                          data = squamate_phylo_order_traits, tree = pruned_squamatetree, model = "BM", error = TRUE)
+summary(squamate_mvmorph)
+cov2cor(squamate_mvmorph$sigma$Pinv)
+
+# Mammals
+mammal_mvmorph <- mvgls(cbind(mammal_log_C_E_tiporder, mammal_log_E_alpha_tiporder, mammal_log_I_m_tiporder) ~ mammal_log_bodymass_tiporder,
+                        data = mammal_phylo_order_traits, tree = pruned_mammaltree_di, model = "BM")
+summary(mammal_mvmorph)
+
+mammal_mvmorph_err <- mvgls(cbind(mammal_log_C_E_tiporder, mammal_log_E_alpha_tiporder, mammal_log_I_m_tiporder) ~ mammal_log_bodymass_tiporder,
+                            data = mammal_phylo_order_traits, tree = pruned_mammaltree_di, model = "BM", error = TRUE)
+summary(mammal_mvmorph_err)
+cov2cor(mammal_mvmorph_err$sigma$Pinv)
+
+# Birds
+bird_mvmorph <- mvgls(cbind(bird_log_C_E_tiporder, bird_log_E_alpha_tiporder, bird_log_I_m_tiporder) ~ bird_log_bodymass_tiporder,
+                      data = bird_phylo_order_traits, tree = pruned_birdtree1, model = "BM", error = TRUE)
+summary(bird_mvmorph)
+cov2cor(bird_mvmorph$sigma$Pinv)
 
 # Invariance Assessment and PGLS ------------------------------------------
 
-
 #C*E and body mass
+summary(lm(log_C_E~log_bodymass,data=completecase_am))
 
 #Mammals
 #linear model
-summary(lm(log_C_E~log_bodymass,data=completecase_am))
 summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(mammaltraitmatrix)))
 #PGLS
 #Use Pagel's lambda model
@@ -1880,6 +2013,9 @@ summary(lm(as.numeric(log_C_E)~as.numeric(log_bodymass),data = as.data.frame(bir
 #PGLS
 #Use Brownian motion
 summary(gls(bird_log_C_E_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data=bird_phylo_order_traits,method="ML"))
+#Use Pagel's lambda model
+summary(gls(bird_log_C_E_tiporder~bird_log_bodymass_tiporder,
+            correlation = corPagel(value = 0.95,phy=pruned_birdtree1),data=bird_phylo_order_traits,method="ML"))
 
 #Reptiles
 #linear model
@@ -1893,8 +2029,9 @@ summary(lm(log_C_E~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames
 rownames(squamate_phylo_order_traits)<-squamate_phylo_order_traits$taxaname
 squamate_phylo_order_traits_compdata<-comparative.data(pruned_squamatetree,squamate_phylo_order_traits,names.col = 'taxaname')
 summary(pgls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder, data = squamate_phylo_order_traits_compdata,kappa='ML'))
-
-#summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
+# Use OU model
+summary(gls(squamate_log_C_E_tiporder~squamate_log_bodymass_tiporder,
+            correlation = corMartins(value = 0.5, phy=pruned_squamatetree),data=squamate_phylo_order_traits,method="ML"))
 
 #Amphibians
 #linear model
@@ -1938,7 +2075,9 @@ summary(gls(mammal_log_E_alpha_tiporder~mammal_log_bodymass_tiporder,
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(birdtraitmatrix)))
 #PGLS
 summary(gls(bird_log_E_alpha_tiporder~bird_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_birdtree1),data = bird_phylo_order_traits,method = "ML"))
-
+# Use Pagel's lambda model
+summary(gls(bird_log_E_alpha_tiporder~bird_log_bodymass_tiporder,
+            correlation = corPagel(value = 0.95, phy=pruned_birdtree1),data = bird_phylo_order_traits,method = "ML"))
 
 #Reptiles
 #linear model
@@ -1948,9 +2087,13 @@ summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix)))
 summary(lm(log_E_alpha~log_bodymass,data = as.data.frame(reptiletraitmatrix[rownames(reptiletraitmatrix)%in%pruned_squamatetree$tip.label,])))
 #PGLS
 summary(gls(squamate_log_E_alpha_tiporder~squamate_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
+# Use OU model
+summary(gls(squamate_log_E_alpha_tiporder~squamate_log_bodymass_tiporder,
+            correlation = corMartins(value = 0.5, phy=pruned_squamatetree),data = squamate_phylo_order_traits,method = "ML"))
 
 #Amphibians
-summary(gls(amphibian_log_E_alpha_tiporder~amphibian_log_bodymass_tiporder,correlation = corBrownian(phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
+summary(gls(amphibian_log_E_alpha_tiporder~amphibian_log_bodymass_tiporder,
+            correlation = corMartins(value = 0.5, phy=pruned_amphibiantree),data=amphibian_phylo_order_traits,method="ML"))
 
 
 
@@ -2469,3 +2612,15 @@ carnherb_int<-carnherb_set@HVList$Intersection
 #overlap of omnivores with this intersection
 hypervolume_overlap_statistics(hypervolume_set(mammalomnivore_gaussian,carnherb_int,check.memory = FALSE))
 
+# Phylogenetic signal ----------------------------------------------------
+amphibian_phylo4d <- phylo4d(pruned_amphibiantree, tip.data = amphibian_phylo_order_traits[-1])
+phyloSignal(amphibian_phylo4d)
+
+squamate_phylo4d <- phylo4d(pruned_squamatetree, tip.data = squamate_phylo_order_traits[-1])
+phyloSignal(squamate_phylo4d)
+
+mammal_phylo4d <- phylo4d(pruned_mammaltree_best, tip.data = mammal_phylo_order_traits[-1])
+phyloSignal(mammal_phylo4d)
+
+bird_phylo4d <- phylo4d(pruned_birdtree1, tip.data = bird_phylo_order_traits[-1])
+phyloSignal(bird_phylo4d)
