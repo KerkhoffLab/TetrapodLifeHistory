@@ -1,6 +1,6 @@
 # Macroevolution of dimensionless life history metrics in tetrapods
 
-Code in this repository is used for all analyses in the paper[Macroevolution of dimensionless life history metrics in tetrapods].
+Code in this repository is used for all analyses in the paper [Macroevolution of dimensionless life history metrics in tetrapods](https://www.biorxiv.org/content/10.1101/520361v1).
 
 + bodymasspattern_script.R: Code for all analyses and figures in the paper and supplementary materials
 + additional_analyses.R: Code for additional analyses not included in the paper
