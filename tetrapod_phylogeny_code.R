@@ -42,4 +42,4 @@ res <- glomogram.phylo(classtree, tree_list)
 
 plot(res, type = "fan")
 
-write.tree(res, file = "C:/Users/cecin/Desktop/HonorsPhylogenies/tetrapod_tree.tre")
+write.tree(res, file = "./trees/tetrapod_tree.tre")
