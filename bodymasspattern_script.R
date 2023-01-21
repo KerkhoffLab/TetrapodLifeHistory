@@ -1,5 +1,6 @@
 # Libraries ---------------------------------------------------------------
 library(tidyverse)
+library(readr)
 library(janitor)
 library(lattice)
 library(RColorBrewer)
@@ -23,6 +24,8 @@ library(PhyloOrchard)
 library(phangorn)
 library(magick)
 library(viridis)
+
+conflicted::conflict_prefer("filter", "dplyr")
 
 palette1 <- c("#EA9010", "#013677", "#91C16C", "#BE55C1")
 palette2 <- c( "#E69F00", "#F0E442", "#009E73", "#CC79A7")
@@ -362,6 +365,38 @@ completecase_am <- bind_rows(completecase_species,completecase_amph) %>%
 # write.csv(completecase_am, file = "./data/completecase_am.csv")
 # completecase_am<-read.csv(file = "./data/completecase_am.csv")
 
+# questionable values in litters_or_clutches_per_y
+# https://github.com/KerkhoffLab/TetrapodLifeHistory/issues/1
+questionable_litters <- augmented_amniote_database %>% 
+  dplyr::filter(litters_or_clutches_per_y > 8,
+                class == "Aves")
+
+augmented_amniote_database %>% 
+  dplyr::filter(taxaname %in% questionable_litters$taxaname) %>% 
+  dplyr::select(taxaname,
+                litter_or_clutch_size_n,
+                litters_or_clutches_per_y,
+                fledging_mass_g,
+                adult_body_mass_g,
+                maximum_longevity_y,
+                female_maturity_d,
+                C_E,
+                I_m,
+                E_alpha) %>% 
+  View()
+
+completecase_am %>% 
+  dplyr::filter(taxaname %in% questionable_litters$taxaname) %>% 
+  View()
+
+# questionable values in maximum_longevity_y
+# https://github.com/KerkhoffLab/TetrapodLifeHistory/issues/2
+questionable_longevity <- augmented_amniote_database %>% 
+  dplyr::filter(maximum_longevity_y < 0.084)
+
+completecase_am %>% 
+  dplyr::filter(taxaname %in% questionable_longevity$taxaname) %>% 
+  View()
 
 # Histograms of Traits ----------------------------------------------------
 
